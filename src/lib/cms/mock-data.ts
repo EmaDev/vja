@@ -1,6 +1,7 @@
 import { defaultHeroVariant } from "./hero-variants";
 import type { CmsSection } from "./types";
 
+/** Seed usado por `repository.ts` cuando `sites/vja-plantas` todavía no tiene un draft en Firestore. */
 export const initialSections: CmsSection[] = [
   {
     id: "header",

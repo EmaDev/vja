@@ -9,13 +9,13 @@ import { HeaderEditor } from "@/components/organisms/SectionEditors/HeaderEditor
 import { FooterEditor } from "@/components/organisms/SectionEditors/FooterEditor";
 import { CustomSectionEditor } from "@/components/organisms/SectionEditors/CustomSectionEditor";
 import { TrashIcon } from "@/components/atoms/icons";
-import { initialSections } from "@/lib/cms/mock-data";
 import { sectionTemplates } from "@/lib/cms/section-templates";
+import { useCmsDraft } from "@/lib/cms/draft-context";
 import type { CmsSection } from "@/lib/cms/types";
 
 export function CmsWorkspace() {
-  const [sections, setSections] = useState<CmsSection[]>(initialSections);
-  const [activeId, setActiveId] = useState<string>(initialSections[0].id);
+  const { sections, setSections } = useCmsDraft();
+  const [activeId, setActiveId] = useState<string>(sections[0].id);
 
   const activeSection = sections.find((section) => section.id === activeId) ?? sections[0];
 
@@ -53,6 +53,19 @@ export function CmsWorkspace() {
     setActiveId((current) => (current === id ? sections[0].id : current));
   }
 
+  function moveSection(id: string, direction: "up" | "down") {
+    setSections((current) => {
+      const index = current.findIndex((section) => section.id === id);
+      if (index === -1) return current;
+      const targetIndex = direction === "up" ? index - 1 : index + 1;
+      if (targetIndex < 0 || targetIndex >= current.length) return current;
+
+      const next = [...current];
+      [next[index], next[targetIndex]] = [next[targetIndex], next[index]];
+      return next;
+    });
+  }
+
   return (
     <div className="flex min-h-0 flex-1">
       <CmsSidebar
@@ -60,6 +73,7 @@ export function CmsWorkspace() {
         activeId={activeSection.id}
         onSelect={setActiveId}
         onAddSection={addSection}
+        onMoveSection={moveSection}
       />
       <div className="flex-1 overflow-y-auto p-8">
         <AnimatePresence mode="wait">

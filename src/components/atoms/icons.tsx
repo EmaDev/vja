@@ -61,6 +61,10 @@ export const FooterIcon = createIcon(
 
 export const CloseIcon = createIcon(<path d="M18 6 6 18M6 6l12 12" />);
 
+export const ChevronUpIcon = createIcon(<path d="m6 15 6-6 6 6" />);
+
+export const ChevronDownIcon = createIcon(<path d="m6 9 6 6 6-6" />);
+
 export const LayersIcon = createIcon(
   <>
     <path d="m12 2 9 5-9 5-9-5 9-5Z" />

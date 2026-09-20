@@ -1,8 +1,56 @@
 @import "tailwindcss";
+@source "../../node_modules/lib-kit-components/dist";
+
+/* Tokens de lib-kit-components, usados por los componentes del CMS
+   (@/app/cms). Reproducen la paleta esmeralda/zinc que ya tenía el panel
+   en vez de la azul por default del paquete — nada fuera del CMS usa
+   estas clases (bg-primary, text-danger, etc.), así que queda acotado
+   en la práctica sin tocar el resto del sitio. */
+@theme {
+  --color-primary: #059669;
+  --color-primary-hover: #10b981;
+  --color-accent: #34d399;
+  --color-surface: #ffffff;
+  --color-surface-alt: #fafafa;
+  --color-muted: #a1a1aa;
+  --color-border: #e4e4e7;
+  --color-success: #059669;
+  --color-danger: #dc2626;
+}
+
+/* `--color-foreground` no está en el bloque de arriba porque el sitio ya
+   define ese token vía `@theme inline` (arriba, en `@theme inline { --color-foreground: var(--foreground); }`).
+   Con "inline", Tailwind no crea una variable propia: compila las clases
+   (`text-foreground`, `bg-foreground`, etc.) apuntando directo a
+   `var(--foreground)` — pisar `--color-foreground` no tiene ningún efecto
+   sobre ellas. Y `--foreground` cambia con el modo oscuro del sistema
+   (@media prefers-color-scheme), así que con el OS en oscuro los
+   botones/textos del CMS que usan esas clases quedaban casi blancos sobre
+   el fondo blanco del panel. Se fija acá pisando `--foreground` directamente,
+   sin depender del tema del sistema, en el elemento raíz de las páginas del CMS. */
+.cms-scope {
+  --foreground: #18181b;
+}
 
 :root {
   --background: #ffffff;
   --foreground: #171717;
+
+  /* Raíz & Pétalo brand palette */
+  --color-cream: #e9e4d8;
+  --color-paper: #f6f1e7;
+  --color-paper-light: #fbf8f1;
+  --color-paper-dark: #f2ede0;
+  --color-sand: #e4dcc8;
+  --color-forest: #17301f;
+  --color-forest-deep: #0e1f13;
+  --color-sage: #3f6b47;
+  --color-terracotta: #c2643b;
+  --color-ink: #4b4b41;
+  --color-stone: #6b6b5e;
+  --color-taupe: #8a8878;
+  --color-line: #ddd5c2;
+  --color-line-light: #e7e0ce;
 }
 
 @theme inline {
@@ -10,6 +58,24 @@
   --color-foreground: var(--foreground);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
+
+  --color-cream: var(--color-cream);
+  --color-paper: var(--color-paper);
+  --color-paper-light: var(--color-paper-light);
+  --color-paper-dark: var(--color-paper-dark);
+  --color-sand: var(--color-sand);
+  --color-forest: var(--color-forest);
+  --color-forest-deep: var(--color-forest-deep);
+  --color-sage: var(--color-sage);
+  --color-terracotta: var(--color-terracotta);
+  --color-ink: var(--color-ink);
+  --color-stone: var(--color-stone);
+  --color-taupe: var(--color-taupe);
+  --color-line: var(--color-line);
+  --color-line-light: var(--color-line-light);
+
+  --font-display: var(--font-instrument-serif), serif;
+  --font-body: var(--font-dm-sans), sans-serif;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -23,4 +89,33 @@ body {
   background: var(--background);
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
+}
+
+@keyframes rp-rise {
+  from {
+    opacity: 0;
+    transform: translateY(24px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes rp-fade {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes rp-marquee {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
 }

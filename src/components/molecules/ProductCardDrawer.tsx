@@ -1,0 +1,33 @@
+import { ImagePlaceholder } from "@/components/atoms/ImagePlaceholder";
+
+export type ProductCardDrawerProps = {
+  image?: string;
+  imageLabel?: string;
+  badge: string;
+  name: string;
+  description: string;
+};
+
+/** Dark card whose description drawer slides up from the bottom on hover. Mockup ref: 2c. */
+export function ProductCardDrawer({
+  image,
+  imageLabel,
+  badge,
+  name,
+  description,
+}: ProductCardDrawerProps) {
+  return (
+    <div className="group relative h-[430px] cursor-pointer overflow-hidden rounded-[10px] bg-forest-deep">
+      <div className="absolute inset-0 transition-transform duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:scale-[1.06]">
+        <ImagePlaceholder src={image} alt={name} label={imageLabel ?? name} />
+      </div>
+      <div className="pointer-events-none absolute left-[18px] top-[18px] rounded-full border border-paper/28 bg-[#0c1a10]/50 px-3.5 py-[7px] text-xs uppercase tracking-[0.1em] text-paper backdrop-blur-[8px]">
+        {badge}
+      </div>
+      <div className="pointer-events-none absolute inset-x-0 bottom-0 translate-y-[101%] bg-paper px-[22px] py-5 transition-transform duration-[550ms] ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:translate-y-0">
+        <div className="font-display text-[28px] text-forest">{name}</div>
+        <p className="mt-2.5 text-[15px] leading-[1.55] text-ink">{description}</p>
+      </div>
+    </div>
+  );
+}

@@ -1,0 +1,330 @@
+<!doctype html>
+<html lang="es-AR">
+<head>
+<meta charset="utf-8">
+<title>VJA Plantas — Propuesta y presupuesto</title>
+<style>
+  @page { size: A4; margin: 13mm 14mm 11mm 14mm; }
+
+  :root {
+    --verde: #1f6b45;
+    --verde-claro: #f0f7f2;
+    --verde-borde: #cfe3d6;
+    --tinta: #1a1d1b;
+    --gris: #5c6661;
+    --gris-claro: #e6e9e7;
+  }
+
+  * { box-sizing: border-box; }
+
+  html { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+
+  body {
+    margin: 0;
+    font-family: "Segoe UI", system-ui, -apple-system, sans-serif;
+    font-size: 9.6pt;
+    line-height: 1.4;
+    color: var(--tinta);
+  }
+
+  /* ---------- Encabezado ---------- */
+  .tapa {
+    border-bottom: 2.5pt solid var(--verde);
+    padding-bottom: 10pt;
+    margin-bottom: 16pt;
+  }
+  .marca {
+    font-size: 8pt;
+    letter-spacing: .16em;
+    text-transform: uppercase;
+    color: var(--verde);
+    font-weight: 700;
+    margin-bottom: 5pt;
+  }
+  h1 {
+    font-size: 19pt;
+    line-height: 1.15;
+    margin: 0 0 8pt;
+    font-weight: 650;
+    letter-spacing: -.01em;
+  }
+  .meta {
+    display: flex;
+    gap: 22pt;
+    font-size: 8.6pt;
+    color: var(--gris);
+  }
+  .meta b { color: var(--tinta); font-weight: 600; }
+
+  /* ---------- Secciones ---------- */
+  h2 {
+    font-size: 12pt;
+    margin: 13pt 0 6pt;
+    font-weight: 650;
+    color: var(--verde);
+    letter-spacing: -.005em;
+    break-after: avoid;
+  }
+  h2:first-of-type { margin-top: 0; }
+
+  h3 {
+    font-size: 9.6pt;
+    margin: 0 0 4pt;
+    font-weight: 650;
+  }
+
+  p { margin: 0 0 5.5pt; }
+  .intro { color: var(--gris); margin-bottom: 12pt; }
+
+  /* ---------- Dos módulos ---------- */
+  .modulos {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 10pt;
+    margin-bottom: 4pt;
+  }
+  .modulo {
+    border: .8pt solid var(--verde-borde);
+    background: var(--verde-claro);
+    border-radius: 5pt;
+    padding: 10pt 12pt;
+    break-inside: avoid;
+  }
+  .modulo h3 {
+    font-size: 11.6pt;
+    margin: 0 0 5pt;
+    color: var(--verde);
+  }
+  .modulo .bajada { margin-bottom: 6pt; }
+  .modulo .pie-modulo {
+    margin: 7pt 0 0;
+    padding-top: 6pt;
+    border-top: .6pt solid var(--verde-borde);
+    color: var(--gris);
+  }
+  .modulo ul { margin: 4pt 0 0; padding-left: 13pt; }
+  .modulo li { margin-bottom: 3pt; }
+
+  ul { margin: 0 0 7pt; padding-left: 15pt; }
+  li { margin-bottom: 2pt; }
+
+  /* ---------- Tablas ---------- */
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 9.4pt;
+    margin-bottom: 8pt;
+    break-inside: avoid;
+  }
+  th {
+    text-align: left;
+    font-weight: 650;
+    font-size: 8.2pt;
+    letter-spacing: .05em;
+    text-transform: uppercase;
+    color: var(--gris);
+    border-bottom: 1pt solid var(--gris-claro);
+    padding: 0 7pt 5pt 0;
+  }
+  td {
+    padding: 4pt 7pt 4pt 0;
+    border-bottom: .6pt solid var(--gris-claro);
+    vertical-align: top;
+  }
+  th:last-child, td:last-child { padding-right: 0; }
+  .num { text-align: right; white-space: nowrap; }
+  .total td {
+    border-top: 1.2pt solid var(--verde);
+    border-bottom: none;
+    font-weight: 700;
+    font-size: 11pt;
+    padding-top: 7pt;
+    color: var(--verde);
+  }
+  .grupo td {
+    font-weight: 650;
+    background: var(--verde-claro);
+    padding-left: 5pt;
+  }
+  .grupo td:first-child { padding-left: 5pt; }
+  tbody tr.dia td:first-child { font-weight: 650; white-space: nowrap; }
+
+  /* ---------- Destacado ---------- */
+  .destacado {
+    border-left: 2.5pt solid var(--verde);
+    background: var(--verde-claro);
+    padding: 8pt 11pt;
+    border-radius: 0 4pt 4pt 0;
+    margin: 9pt 0;
+    break-inside: avoid;
+  }
+  .destacado p:last-child { margin-bottom: 0; }
+
+  .notas { font-size: 8.6pt; color: var(--gris); }
+  .notas li { margin-bottom: 2.5pt; }
+
+  .pie {
+    margin-top: 22pt;
+    padding-top: 9pt;
+    border-top: .8pt solid var(--gris-claro);
+    font-size: 8pt;
+    color: var(--gris);
+    break-inside: avoid;
+  }
+
+  .salto { break-before: page; }
+</style>
+</head>
+<body>
+
+<header class="tapa">
+  <div class="marca">Propuesta de desarrollo</div>
+  <h1>VJA Plantas — Sitio web con panel<br>de gestión de contenido</h1>
+  <div class="meta">
+    <span><b>Duración:</b> 6 días hábiles</span>
+    <span><b>Inversión:</b> $200.000</span>
+    <span><b>Fecha:</b> 13/09/2026</span>
+  </div>
+</header>
+
+<h2>1. Resumen para el cliente (sin tecnicismos)</h2>
+<p class="intro">Vamos a construir dos cosas que funcionan juntas:</p>
+
+<div class="modulos">
+  <div class="modulo">
+    <h3>🌿 Módulo A — El panel de administración (CMS)</h3>
+    <p class="bajada">Es un sitio privado, con usuario y contraseña, donde ustedes entran y <b>cambian el contenido de la página sin depender de nadie</b>.</p>
+    <p style="margin-bottom:0;"><b>Desde ahí van a poder:</b></p>
+    <ul>
+      <li>Cambiar los textos de cualquier parte de la página (títulos, descripciones, botones).</li>
+      <li><b>Subir fotos de los artículos</b> desde la computadora o el celular. Las fotos se guardan en un servicio de alojamiento profesional (Firebase, de Google) y se muestran automáticamente en la página.</li>
+      <li>Elegir <b>cómo se ve</b> cada sección. Por ejemplo, la portada principal tiene 5 diseños distintos ya armados: eligen uno de una lista y la página cambia sola.</li>
+      <li><b>Prender y apagar secciones.</b> Si una promoción terminó, la ocultan con un clic. Cuando vuelve la temporada, la vuelven a mostrar.</li>
+      <li><b>Agregar secciones nuevas</b> eligiendo de un catálogo de bloques (texto, galería de fotos, testimonios de clientes, datos de contacto).</li>
+      <li>Editar el menú de navegación y el pie de página (redes sociales, contacto).</li>
+      <li><b>Reordenar las secciones</b> subiéndolas o bajándolas, para cambiar en qué orden las ve el visitante.</li>
+      <li><b>Ver cómo queda antes de publicar.</b> Los cambios se guardan como borrador: la página que ven sus clientes no se modifica hasta que ustedes aprietan “Publicar”.</li>
+      <li><b>Volver atrás.</b> Se guardan las últimas publicaciones, así que si algo no gustó se puede recuperar la versión anterior.</li>
+      <li><b>Varias cuentas de acceso</b>, una por cada persona del equipo que vaya a cargar contenido.</li>
+      <li>Reemplazar o borrar fotos que ya no usan, para mantener el catálogo ordenado.</li>
+      <li>Trabajar también <b>desde la tablet</b>, no hace falta estar en la computadora.</li>
+    </ul>
+    <p class="pie-modulo">La idea de fondo: <b>la página no está “escrita a mano”</b>. Está armada con piezas intercambiables, como bloques de Lego. Eso significa que mañana pueden reordenar, sacar o agregar secciones sin llamarnos.</p>
+  </div>
+
+  <div class="modulo">
+    <h3>🌱 Módulo B — La página pública (landing)</h3>
+    <p class="bajada">Es la página que ven sus clientes. Se construye sola con lo que ustedes cargaron en el panel.</p>
+    <ul>
+      <li><b>Optimizada para Google (SEO):</b> títulos, descripciones, imagen de vista previa cuando comparten el link por WhatsApp o Instagram, mapa del sitio para que Google encuentre todo, y datos estructurados para que el negocio aparezca mejor en los resultados de búsqueda.</li>
+      <li><b>Rápida:</b> la página se genera en el servidor, no en el celular del visitante. Carga en menos de 2 segundos incluso con datos móviles.</li>
+      <li><b>Adaptada a todas las pantallas:</b> celular, tablet, notebook y monitores grandes. Se diseña pensando primero en el celular, que es de donde va a venir la mayoría del tráfico.</li>
+      <li><b>Accesible:</b> contraste de colores correcto, textos alternativos en las imágenes, navegación con teclado.</li>
+      <li><b>Se actualiza sola.</b> Cuando publican un cambio desde el panel, la página pública lo refleja en segundos, sin intervención de nadie.</li>
+      <li><b>Las fotos pesan lo justo.</b> Cada imagen se entrega en el tamaño que corresponde a la pantalla del visitante, así carga rápido y no consume datos de más.</li>
+      <li><b>Contacto directo:</b> botones que abren WhatsApp, Instagram o el mail con un toque, sin que el visitante tenga que copiar nada.</li>
+      <li><b>Dirección propia y segura:</b> su dominio, con el candado de seguridad (HTTPS) que Google exige para posicionar bien.</li>
+      <li><b>Preparada para crecer:</b> si más adelante quieren sumar un blog, un catálogo más grande o una tienda, la base ya está armada para eso.</li>
+    </ul>
+  </div>
+</div>
+
+<h2>2. Cómo entrego el trabajo</h2>
+<div class="destacado">
+  <p><b>No entrego todo al final y listo. Trabajo en dos etapas:</b></p>
+  <p><b>1. Versión demo (día 4).</b> Les mando un link con el sistema funcionando y contenido de ejemplo. Lo prueban, cargan una foto, cambian un texto, lo muestran a quien quieran. Me mandan su devolución.</p>
+  <p><b>2. Versión final (día 6).</b> Aplico los ajustes que surgieron de esa devolución y entrego el producto terminado.</p>
+  <p style="color:var(--gris);">Esto sirve para validar el producto antes de que esté cerrado. Es mucho más barato cambiar algo en el día 4 que descubrirlo cuando ya está todo hecho.</p>
+</div>
+
+<h2>3. Cronograma</h2>
+<table>
+  <thead>
+    <tr><th style="width:52pt;">Día</th><th>Qué se hace</th></tr>
+  </thead>
+  <tbody>
+    <tr class="dia"><td>Día 1</td><td>Acceso seguro al panel y estructura de datos del sitio.</td></tr>
+    <tr class="dia"><td>Día 2</td><td>Sistema de secciones: crear, ordenar, mostrar y ocultar.</td></tr>
+    <tr class="dia"><td>Día 3</td><td>Carga de fotos de artículos, de punta a punta.</td></tr>
+    <tr class="dia"><td>Día 4</td><td><b>Entrega de la versión demo</b> — link público para validar.</td></tr>
+    <tr class="dia"><td>Día 5</td><td>Optimización para Google, velocidad y adaptación a pantallas.</td></tr>
+    <tr class="dia"><td>Día 6</td><td><b>Entrega final</b> — ajustes de la demo, publicación y capacitación.</td></tr>
+  </tbody>
+</table>
+
+<h2>4. Inversión</h2>
+<table>
+  <thead>
+    <tr><th>Concepto</th><th class="num" style="width:78pt;">Monto</th></tr>
+  </thead>
+  <tbody>
+    <tr class="grupo"><td>Módulo 1 — Panel de administración</td><td class="num">$120.000</td></tr>
+    <tr><td>Acceso seguro con usuario y contraseña</td><td class="num">$30.000</td></tr>
+    <tr><td>Sistema de secciones editables e intercambiables</td><td class="num">$45.000</td></tr>
+    <tr><td>Carga y gestión de imágenes</td><td class="num">$25.000</td></tr>
+    <tr><td>Panel de edición y publicación</td><td class="num">$20.000</td></tr>
+    <tr class="grupo"><td>Módulo 2 — Página pública</td><td class="num">$65.000</td></tr>
+    <tr><td>Armado automático de la página desde el panel</td><td class="num">$30.000</td></tr>
+    <tr><td>Optimización para buscadores</td><td class="num">$20.000</td></tr>
+    <tr><td>Adaptación a pantallas, velocidad y accesibilidad</td><td class="num">$15.000</td></tr>
+    <tr class="grupo"><td>Entrega</td><td class="num">$15.000</td></tr>
+    <tr><td>Demo, devolución y ajustes</td><td class="num">$10.000</td></tr>
+    <tr><td>Publicación, manual de uso y capacitación</td><td class="num">$5.000</td></tr>
+    <tr class="total"><td>Total</td><td class="num">$200.000</td></tr>
+  </tbody>
+</table>
+
+<h2>5. Condiciones</h2>
+<table>
+  <tbody>
+    <tr><td style="width:98pt;font-weight:650;">Forma de pago</td><td>100% contra entrega final del proyecto.</td></tr>
+    <tr><td style="font-weight:650;">Plazo</td><td>6 días hábiles desde la confirmación y la entrega de accesos.</td></tr>
+    <tr><td style="font-weight:650;">Capacitación</td><td>Una sesión de traspaso de aproximadamente 1 hora, más el manual escrito.</td></tr>
+    <tr><td style="font-weight:650;">No incluye</td><td>Redacción de textos, fotografía de producto, dominio, costos mensuales de alojamiento y diseño de identidad de marca.</td></tr>
+    <tr><td style="font-weight:650;">Necesito</td><td>Logo, textos, fotos de los artículos, datos de contacto y redes, y el dominio.</td></tr>
+  </tbody>
+</table>
+
+
+
+<h2>6. Costo mensual del alojamiento de imágenes</h2>
+<p>Las fotos de los artículos se guardan en <b>Firebase</b>, el servicio de alojamiento de Google. Este costo <b>no forma parte del presupuesto de desarrollo</b>: es un gasto mensual que corre por cuenta de VJA Plantas, sobre su propia cuenta de Google.</p>
+<p>Google ofrece un nivel sin costo que cubre 5 GB de fotos guardadas. Además, el sistema comprime cada imagen antes de subirla y las entrega desde una red de distribución, de modo que <b>cada foto se descarga del servidor una sola vez</b>. Por eso, en el uso previsto, la factura es de <b>US$ 0 por mes</b>.</p>
+
+<h3 style="margin-top:12pt;">Según la cantidad de fotos guardadas</h3>
+<table>
+  <thead>
+    <tr><th>Fotos subidas</th><th>Espacio ocupado</th><th>Costo mensual</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>500</td><td>~0,15 GB</td><td>Sin costo</td></tr>
+    <tr><td>1.000</td><td>~0,3 GB</td><td>Sin costo</td></tr>
+    <tr><td>5.000</td><td>~1,5 GB</td><td>Sin costo</td></tr>
+    <tr><td>10.000</td><td>~3 GB</td><td>Sin costo</td></tr>
+    <tr><td>17.000</td><td>~5 GB</td><td>En el límite del nivel gratuito</td></tr>
+    <tr><td>34.000</td><td>~10 GB</td><td>~US$ 0,13</td></tr>
+    <tr><td>170.000</td><td>~50 GB</td><td>~US$ 1,17</td></tr>
+  </tbody>
+</table>
+<p class="notas" style="margin-bottom:12pt;">Con 10.000 fotos de artículos todavía no se paga nada. Guardar imágenes nunca va a ser el problema.</p>
+
+
+<ul class="notas">
+  <li>Precios de referencia de Google a la fecha de esta propuesta. Google puede modificarlos.</li>
+  <li>Google factura en dólares. Para pasarlo a pesos, multiplicar por el tipo de cambio del momento.</li>
+  <li>Dejo configurada una <b>alerta en US$ 8</b> para que les llegue un mail si el consumo se sale de lo previsto.</li>
+</ul>
+
+<h2>7. Qué reciben al finalizar</h2>
+<ul>
+  <li>La <b>página publicada</b> en su dominio, funcionando y segura.</li>
+  <li>El <b>panel de administración</b>, con sus claves de acceso.</li>
+  <li>El <b>código fuente completo</b> del sistema.</li>
+  <li>La <b>cuenta de Firebase</b> configurada y transferida a su nombre, con la alerta de costos activa.</li>
+  <li>Un <b>manual de uso</b> con capturas, explicando cada operación paso a paso.</li>
+  <li>Una <b>sesión de capacitación</b></li>
+</ul>
+
+
+</body>
+</html>

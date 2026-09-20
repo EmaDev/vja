@@ -1,0 +1,18 @@
+rules_version = '2';
+
+// Uploads (Day 3) go through a server-issued signed URL, not the Storage
+// client SDK — that upload path is authorized by the signed URL itself, not
+// by these rules. Public read is required so `next/image` can serve
+// `media/**` files directly from the bucket on the published landing.
+service firebase.storage {
+  match /b/{bucket}/o {
+    match /media/{yyyy}/{mm}/{file} {
+      allow read: if true;
+      allow write: if false;
+    }
+
+    match /{allPaths=**} {
+      allow read, write: if false;
+    }
+  }
+}

@@ -1,10 +1,12 @@
 import { NextResponse, type NextRequest } from "next/server";
-import { isCmsAuthenticated } from "@/lib/auth/session-guard";
+import { hasSessionCookie } from "@/lib/auth/session-guard";
 import { CMS_LOGIN_PATH } from "@/lib/firebase/constants";
 
 export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
-  const authenticated = await isCmsAuthenticated();
+  // Optimistic check only — real verification happens in the protected
+  // layout via `getCmsUser()`. See docs/app/guides/authentication.md.
+  const authenticated = await hasSessionCookie();
 
   if (pathname === CMS_LOGIN_PATH) {
     if (authenticated) {

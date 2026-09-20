@@ -1,5 +1,5 @@
 import { redirect } from "next/navigation";
-import { isCmsAuthenticated } from "@/lib/auth/session-guard";
+import { getCmsUser } from "@/lib/auth/session-guard";
 import { CMS_LOGIN_PATH } from "@/lib/firebase/constants";
 import { CmsTopbar } from "@/components/organisms/CmsTopbar/CmsTopbar";
 
@@ -8,9 +8,9 @@ export default async function CmsLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const authenticated = await isCmsAuthenticated();
+  const user = await getCmsUser();
 
-  if (!authenticated) {
+  if (!user) {
     redirect(CMS_LOGIN_PATH);
   }
 

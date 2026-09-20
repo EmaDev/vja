@@ -26,6 +26,7 @@ export const initialSections: CmsSection[] = [
     ctaLabel: "Ver catálogo",
     ctaHref: "#catalogo",
     imageUrl: "",
+    imageAlt: "",
   },
   {
     id: "footer",

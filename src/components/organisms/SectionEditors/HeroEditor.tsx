@@ -5,6 +5,7 @@ import type { HeroSection } from "@/lib/cms/types";
 import { Input, Textarea } from "lib-kit-components";
 import { heroVariants, type HeroVariantId } from "@/lib/cms/hero-variants";
 import { CloseIcon } from "@/components/atoms/icons";
+import { ImageUploader } from "@/components/molecules/ImageUploader/ImageUploader";
 
 interface HeroEditorProps {
   section: HeroSection;
@@ -107,12 +108,10 @@ export function HeroEditor({ section, onChange }: HeroEditorProps) {
           onChange={(event) => onChange({ ...section, ctaHref: event.target.value })}
         />
       </div>
-      <Input
-        label="URL de imagen"
-        hint="Por ahora es solo un campo de texto; la carga de imágenes se agrega más adelante."
-        value={section.imageUrl}
-        onChange={(event) => onChange({ ...section, imageUrl: event.target.value })}
-        placeholder="https://..."
+      <ImageUploader
+        imageUrl={section.imageUrl}
+        imageAlt={section.imageAlt}
+        onChange={({ imageUrl, imageAlt }) => onChange({ ...section, imageUrl, imageAlt })}
       />
 
       {previewVariant && PreviewComponent ? (

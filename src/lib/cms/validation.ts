@@ -34,7 +34,8 @@ function isHeroSection(record: Record<string, unknown>): record is HeroSection &
     isString(record.subtitle) &&
     isString(record.ctaLabel) &&
     isString(record.ctaHref) &&
-    isString(record.imageUrl)
+    isString(record.imageUrl) &&
+    isString(record.imageAlt)
   );
 }
 

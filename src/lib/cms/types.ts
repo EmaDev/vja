@@ -26,6 +26,7 @@ export interface HeroSection extends BaseSection {
   ctaLabel: string;
   ctaHref: string;
   imageUrl: string;
+  imageAlt: string;
 }
 
 export interface FooterSection extends BaseSection {

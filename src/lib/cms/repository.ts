@@ -16,16 +16,25 @@ function siteDoc() {
   return getFirestore(getAdminApp()).collection("sites").doc(SITE_ID);
 }
 
+/** Rellena campos agregados al esquema después de que el documento existente
+ * fue escrito (ej. `imageAlt` del día 3), para que datos viejos no rompan un
+ * componente controlado que espera el campo siempre presente. */
+function normalizeSections(sections: CmsSection[]): CmsSection[] {
+  return sections.map((section) =>
+    section.kind === "hero" ? { ...section, imageAlt: section.imageAlt ?? "" } : section,
+  );
+}
+
 export async function getDraft(): Promise<CmsSection[]> {
   const snap = await siteDoc().get();
   const draft = snap.data()?.draft as SiteRevision | undefined;
-  return draft?.sections ?? initialSections;
+  return normalizeSections(draft?.sections ?? initialSections);
 }
 
 export async function getPublished(): Promise<CmsSection[]> {
   const snap = await siteDoc().get();
   const published = snap.data()?.published as SiteRevision | undefined;
-  return published?.sections ?? [];
+  return normalizeSections(published?.sections ?? []);
 }
 
 export async function saveDraft(sections: CmsSection[], updatedBy: string): Promise<void> {

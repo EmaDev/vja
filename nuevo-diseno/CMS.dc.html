@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&display=swap" rel="stylesheet">
+<style>
+  body { margin: 0; background: #E9E4D8; font-family: 'DM Sans', sans-serif; }
+  a { color: #3F6B47; text-decoration: none; }
+  a:hover { color: #C2643B; }
+  input, select, textarea { font-family: 'DM Sans', sans-serif; }
+  input:focus, select:focus, textarea:focus { outline: 2px solid #3F6B47; outline-offset: 1px; }
+</style>
+</helmet>
+
+<div style="display: grid; grid-template-columns: 252px minmax(0, 1fr); min-height: 100vh; background: #F6F1E7; color: #17301F;">
+
+  <!-- ===== SIDEBAR ===== -->
+  <aside style="background: #17301F; padding: 26px 20px; display: flex; flex-direction: column; justify-content: space-between; position: sticky; top: 0; height: 100vh; box-sizing: border-box;">
+    <div style="display: flex; flex-direction: column; gap: 30px;">
+      <div style="display: flex; align-items: center; gap: 11px;">
+        <div style="width: 30px; height: 30px; border-radius: 50%; background: #3F6B47; flex: 0 0 auto;"></div>
+        <div>
+          <div style="font-family: 'Instrument Serif', serif; font-size: 20px; line-height: 1.1; color: #F6F1E7;">Raíz &amp; Pétalo</div>
+          <div style="font-size: 10px; letter-spacing: 0.22em; text-transform: uppercase; color: #7E9479; margin-top: 2px;">Editor del sitio</div>
+        </div>
+      </div>
+
+      <nav style="display: flex; flex-direction: column; gap: 22px;">
+        <div style="display: flex; flex-direction: column; gap: 3px;">
+          <div style="font-size: 10px; letter-spacing: 0.2em; text-transform: uppercase; color: #6E8569; padding: 0 12px 7px;">Diseño</div>
+          <button onClick="{{ go.header }}" style="text-align: left; border: 0; cursor: pointer; font-size: 14px; padding: 10px 12px; border-radius: 6px; background: {{ navBg.header }}; color: {{ navFg.header }}; display: flex; justify-content: space-between; align-items: center;">Header<span style="font-size: 12px; color: #8FA68A;">{{ pick.header }}</span></button>
+          <button onClick="{{ go.hero }}" style="text-align: left; border: 0; cursor: pointer; font-size: 14px; padding: 10px 12px; border-radius: 6px; background: {{ navBg.hero }}; color: {{ navFg.hero }}; display: flex; justify-content: space-between; align-items: center;">Hero<span style="font-size: 12px; color: #8FA68A;">{{ pick.hero }}</span></button>
+          <button onClick="{{ go.cards }}" style="text-align: left; border: 0; cursor: pointer; font-size: 14px; padding: 10px 12px; border-radius: 6px; background: {{ navBg.cards }}; color: {{ navFg.cards }}; display: flex; justify-content: space-between; align-items: center;">Cards de producto<span style="font-size: 12px; color: #8FA68A;">{{ pick.cards }}</span></button>
+        </div>
+        <div style="display: flex; flex-direction: column; gap: 3px;">
+          <div style="font-size: 10px; letter-spacing: 0.2em; text-transform: uppercase; color: #6E8569; padding: 0 12px 7px;">Contenido</div>
+          <button onClick="{{ go.contacto }}" style="text-align: left; border: 0; cursor: pointer; font-size: 14px; padding: 10px 12px; border-radius: 6px; background: {{ navBg.contacto }}; color: {{ navFg.contacto }};">Datos de contacto</button>
+          <button onClick="{{ go.footer }}" style="text-align: left; border: 0; cursor: pointer; font-size: 14px; padding: 10px 12px; border-radius: 6px; background: {{ navBg.footer }}; color: {{ navFg.footer }};">Footer</button>
+          <button onClick="{{ go.seo }}" style="text-align: left; border: 0; cursor: pointer; font-size: 14px; padding: 10px 12px; border-radius: 6px; background: {{ navBg.seo }}; color: {{ navFg.seo }};">SEO y social</button>
+        </div>
+      </nav>
+    </div>
+
+    <div style="background: rgba(246,241,231,0.08); border: 1px solid rgba(246,241,231,0.16); border-radius: 8px; padding: 14px;">
+      <div style="font-size: 12px; color: #C7CFC1; line-height: 1.5;">Último guardado</div>
+      <div style="font-size: 13px; color: #F6F1E7; margin-top: 3px;">Hoy, 14:32 · borrador</div>
+    </div>
+  </aside>
+
+  <!-- ===== MAIN ===== -->
+  <main style="display: flex; flex-direction: column; min-width: 0;">
+
+    <header style="position: sticky; top: 0; z-index: 5; background: rgba(246,241,231,0.94); backdrop-filter: blur(10px); border-bottom: 1px solid #E2DAC7; padding: 18px 40px; display: flex; align-items: center; justify-content: space-between; gap: 24px;">
+      <div style="min-width: 0;">
+        <div style="font-size: 11px; letter-spacing: 0.18em; text-transform: uppercase; color: #8A8878;">{{ crumb }}</div>
+        <h1 style="font-family: 'Instrument Serif', serif; font-size: 30px; margin: 3px 0 0; font-weight: 400;">{{ title }}</h1>
+      </div>
+      <div style="display: flex; align-items: center; gap: 10px; flex: 0 0 auto;">
+        <span style="display: flex; align-items: center; gap: 7px; font-size: 13px; color: #6B6B5E; margin-right: 6px;"><span style="width: 7px; height: 7px; border-radius: 50%; background: #C2643B;"></span>Cambios sin publicar</span>
+        <button style="border: 1px solid #CFC6B0; background: transparent; color: #17301F; padding: 11px 20px; border-radius: 999px; font-size: 14px; cursor: pointer;" style-hover="background: #EFE9DA;">Vista previa</button>
+        <button style="border: 0; background: #17301F; color: #F6F1E7; padding: 12px 24px; border-radius: 999px; font-size: 14px; font-weight: 500; cursor: pointer;" style-hover="background: #3F6B47;">Publicar</button>
+      </div>
+    </header>
+
+    <div style="padding: 34px 40px 80px; max-width: 1180px;">
+
+      <!-- ---------- SELECTOR DE VARIANTES ---------- -->
+      <sc-if value="{{ isPicker }}" hint-placeholder-val="{{ true }}">
+        <div style="display: flex; flex-direction: column; gap: 26px;">
+          <p style="font-size: 16px; line-height: 1.6; color: #4B4B41; max-width: 620px; margin: 0;">{{ intro }}</p>
+
+          <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 20px;">
+            <sc-for list="{{ variants }}" as="v" hint-placeholder-count="5">
+              <div onClick="{{ v.select }}" style="background: #FBF8F1; border: {{ v.border }}; border-radius: 10px; overflow: hidden; cursor: pointer; transition: transform 0.3s cubic-bezier(0.22,1,0.36,1), box-shadow 0.3s ease; box-shadow: {{ v.shadow }};" style-hover="transform: translateY(-4px);">
+                <div style="height: 168px; background: {{ v.canvas }}; padding: 16px; display: flex; flex-direction: column; gap: 7px; justify-content: {{ v.justify }};">{{ v.wire }}</div>
+                <div style="padding: 16px 18px 18px; display: flex; gap: 14px; align-items: flex-start;">
+                  <div style="width: 20px; height: 20px; border-radius: 50%; border: {{ v.dotBorder }}; background: {{ v.dotBg }}; flex: 0 0 auto; margin-top: 2px; display: flex; align-items: center; justify-content: center; color: #F6F1E7; font-size: 12px;">{{ v.check }}</div>
+                  <div style="min-width: 0;">
+                    <div style="display: flex; align-items: baseline; gap: 8px;">
+                      <span style="font-family: 'Instrument Serif', serif; font-size: 20px;">{{ v.name }}</span>
+                      <span style="font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase; color: #A09D8B;">{{ v.id }}</span>
+                    </div>
+                    <p style="font-size: 14px; line-height: 1.5; color: #6B6B5E; margin: 5px 0 0;">{{ v.desc }}</p>
+                  </div>
+                </div>
+              </div>
+            </sc-for>
+          </div>
+
+          <div style="background: #EFE9DA; border: 1px solid #E2DAC7; border-radius: 10px; padding: 20px 22px; display: flex; align-items: center; justify-content: space-between; gap: 20px;">
+            <div>
+              <div style="font-size: 13px; letter-spacing: 0.14em; text-transform: uppercase; color: #8A8878;">Selección actual</div>
+              <div style="font-family: 'Instrument Serif', serif; font-size: 24px; margin-top: 4px;">{{ currentName }}</div>
+            </div>
+            <a href="Heros y Headers.dc.html" style="border: 1px solid #17301F; color: #17301F; padding: 11px 20px; border-radius: 999px; font-size: 14px;">Abrir en tamaño real →</a>
+          </div>
+        </div>
+      </sc-if>
+
+      <!-- ---------- CONTACTO ---------- -->
+      <sc-if value="{{ isContacto }}" hint-placeholder-val="{{ false }}">
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(340px, 1fr)); gap: 28px; align-items: start;">
+          <div style="display: flex; flex-direction: column; gap: 20px;">
+
+            <div style="background: #FBF8F1; border: 1px solid #E7E0CE; border-radius: 10px; padding: 24px 26px 28px;">
+              <div style="font-family: 'Instrument Serif', serif; font-size: 22px;">Local y horarios</div>
+              <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 16px; margin-top: 20px;">
+                <label style="display: flex; flex-direction: column; gap: 7px;"><span style="font-size: 13px; color: #4B4B41;">Nombre del local</span><input value="Raíz &amp; Pétalo — Vivero" style="border: 1px solid #DDD5C2; border-radius: 6px; padding: 11px 13px; font-size: 15px; color: #17301F; background: #FFFDF8;"></label>
+                <label style="display: flex; flex-direction: column; gap: 7px;"><span style="font-size: 13px; color: #4B4B41;">Teléfono / WhatsApp</span><input value="+54 11 4820-9931" style="border: 1px solid #DDD5C2; border-radius: 6px; padding: 11px 13px; font-size: 15px; color: #17301F; background: #FFFDF8;"></label>
+                <label style="display: flex; flex-direction: column; gap: 7px; grid-column: span 2;"><span style="font-size: 13px; color: #4B4B41;">Dirección</span><input value="Av. Libertador 4820, Buenos Aires" style="border: 1px solid #DDD5C2; border-radius: 6px; padding: 11px 13px; font-size: 15px; color: #17301F; background: #FFFDF8;"></label>
+                <label style="display: flex; flex-direction: column; gap: 7px;"><span style="font-size: 13px; color: #4B4B41;">Email</span><input value="hola@raizypetalo.com.ar" style="border: 1px solid #DDD5C2; border-radius: 6px; padding: 11px 13px; font-size: 15px; color: #17301F; background: #FFFDF8;"></label>
+                <label style="display: flex; flex-direction: column; gap: 7px;"><span style="font-size: 13px; color: #4B4B41;">Horario</span><input value="Mar a Dom · 10 a 19 h" style="border: 1px solid #DDD5C2; border-radius: 6px; padding: 11px 13px; font-size: 15px; color: #17301F; background: #FFFDF8;"></label>
+              </div>
+            </div>
+
+            <div style="background: #FBF8F1; border: 1px solid #E7E0CE; border-radius: 10px; padding: 24px 26px 28px;">
+              <div style="font-family: 'Instrument Serif', serif; font-size: 22px;">Formulario de consulta</div>
+              <p style="font-size: 14px; color: #6B6B5E; margin: 6px 0 0;">Define qué campos ve el visitante y a dónde llegan las consultas.</p>
+              <div style="display: flex; flex-direction: column; gap: 2px; margin-top: 18px;">
+                <div style="display: flex; align-items: center; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid #EDE6D6;"><span style="font-size: 15px;">Nombre</span><span style="font-size: 12px; letter-spacing: 0.1em; text-transform: uppercase; color: #8A8878;">Obligatorio</span></div>
+                <div style="display: flex; align-items: center; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid #EDE6D6;"><span style="font-size: 15px;">Email</span><span style="font-size: 12px; letter-spacing: 0.1em; text-transform: uppercase; color: #8A8878;">Obligatorio</span></div>
+                <div style="display: flex; align-items: center; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid #EDE6D6;"><span style="font-size: 15px;">Teléfono</span><span style="font-size: 12px; letter-spacing: 0.1em; text-transform: uppercase; color: #8A8878;">Opcional</span></div>
+                <div style="display: flex; align-items: center; justify-content: space-between; padding: 12px 0;"><span style="font-size: 15px;">Motivo de la consulta</span><span style="font-size: 12px; letter-spacing: 0.1em; text-transform: uppercase; color: #8A8878;">Lista desplegable</span></div>
+              </div>
+              <label style="display: flex; flex-direction: column; gap: 7px; margin-top: 18px;"><span style="font-size: 13px; color: #4B4B41;">Enviar consultas a</span><input value="consultas@raizypetalo.com.ar" style="border: 1px solid #DDD5C2; border-radius: 6px; padding: 11px 13px; font-size: 15px; color: #17301F; background: #FFFDF8;"></label>
+              <label style="display: flex; flex-direction: column; gap: 7px; margin-top: 16px;"><span style="font-size: 13px; color: #4B4B41;">Mensaje de agradecimiento</span><textarea rows="3" style="border: 1px solid #DDD5C2; border-radius: 6px; padding: 11px 13px; font-size: 15px; color: #17301F; background: #FFFDF8; resize: vertical;">¡Gracias! Te respondemos dentro de las 24 horas hábiles.</textarea></label>
+            </div>
+          </div>
+
+          <aside style="background: #EFE9DA; border: 1px solid #E2DAC7; border-radius: 10px; padding: 22px; ">
+            <div style="font-size: 12px; letter-spacing: 0.16em; text-transform: uppercase; color: #8A8878;">Cómo se ve</div>
+            <div style="background: #FBF8F1; border-radius: 8px; padding: 18px; margin-top: 14px;">
+              <div style="font-family: 'Instrument Serif', serif; font-size: 20px;">Escribinos</div>
+              <div style="height: 34px; background: #F0EADB; border-radius: 5px; margin-top: 12px;"></div>
+              <div style="height: 34px; background: #F0EADB; border-radius: 5px; margin-top: 8px;"></div>
+              <div style="height: 62px; background: #F0EADB; border-radius: 5px; margin-top: 8px;"></div>
+              <div style="height: 36px; background: #17301F; border-radius: 999px; margin-top: 12px;"></div>
+            </div>
+            <p style="font-size: 13px; line-height: 1.55; color: #6B6B5E; margin: 14px 0 0;">Los campos obligatorios se validan antes de enviar. El aviso de privacidad se agrega automáticamente.</p>
+          </aside>
+        </div>
+      </sc-if>
+
+      <!-- ---------- FOOTER ---------- -->
+      <sc-if value="{{ isFooter }}" hint-placeholder-val="{{ false }}">
+        <div style="display: flex; flex-direction: column; gap: 20px;">
+          <div style="background: #FBF8F1; border: 1px solid #E7E0CE; border-radius: 10px; padding: 24px 26px 28px;">
+            <div style="font-family: 'Instrument Serif', serif; font-size: 22px;">Texto y marca</div>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 16px; margin-top: 20px;">
+              <label style="display: flex; flex-direction: column; gap: 7px; grid-column: span 2;"><span style="font-size: 13px; color: #4B4B41;">Frase de cierre</span><input value="Cultivado aquí, cortado hoy." style="border: 1px solid #DDD5C2; border-radius: 6px; padding: 11px 13px; font-size: 15px; color: #17301F; background: #FFFDF8;"></label>
+              <label style="display: flex; flex-direction: column; gap: 7px;"><span style="font-size: 13px; color: #4B4B41;">Leyenda legal</span><input value="© 2026 Raíz &amp; Pétalo" style="border: 1px solid #DDD5C2; border-radius: 6px; padding: 11px 13px; font-size: 15px; color: #17301F; background: #FFFDF8;"></label>
+              <label style="display: flex; flex-direction: column; gap: 7px;"><span style="font-size: 13px; color: #4B4B41;">Fondo del footer</span><select style="border: 1px solid #DDD5C2; border-radius: 6px; padding: 11px 13px; font-size: 15px; color: #17301F; background: #FFFDF8;"><option>Verde profundo</option><option>Papel claro</option></select></label>
+            </div>
+          </div>
+
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(340px, 1fr)); gap: 20px;">
+            <div style="background: #FBF8F1; border: 1px solid #E7E0CE; border-radius: 10px; padding: 24px 26px 26px;">
+              <div style="display: flex; align-items: center; justify-content: space-between;">
+                <div style="font-family: 'Instrument Serif', serif; font-size: 22px;">Columnas de enlaces</div>
+                <button style="border: 1px solid #CFC6B0; background: transparent; border-radius: 999px; padding: 8px 15px; font-size: 13px; cursor: pointer; color: #17301F;" style-hover="background: #EFE9DA;">+ Columna</button>
+              </div>
+              <div style="display: flex; flex-direction: column; gap: 10px; margin-top: 18px;">
+                <sc-for list="{{ footerCols }}" as="col" hint-placeholder-count="3">
+                  <div style="border: 1px solid #E7E0CE; border-radius: 8px; padding: 14px 16px; background: #FFFDF8;">
+                    <div style="display: flex; align-items: center; justify-content: space-between; gap: 12px;">
+                      <span style="font-size: 15px; font-weight: 500;">{{ col.title }}</span>
+                      <span style="font-size: 12px; color: #A09D8B;">{{ col.count }} enlaces</span>
+                    </div>
+                    <div style="display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px;">
+                      <sc-for list="{{ col.links }}" as="l" hint-placeholder-count="3">
+                        <span style="background: #F0EADB; border-radius: 999px; padding: 5px 11px; font-size: 13px; color: #4B4B41;">{{ l }}</span>
+                      </sc-for>
+                    </div>
+                  </div>
+                </sc-for>
+              </div>
+            </div>
+
+            <div style="background: #FBF8F1; border: 1px solid #E7E0CE; border-radius: 10px; padding: 24px 26px 26px;">
+              <div style="font-family: 'Instrument Serif', serif; font-size: 22px;">Redes y newsletter</div>
+              <div style="display: flex; flex-direction: column; gap: 12px; margin-top: 18px;">
+                <label style="display: flex; flex-direction: column; gap: 7px;"><span style="font-size: 13px; color: #4B4B41;">Instagram</span><input value="@raizypetalo" style="border: 1px solid #DDD5C2; border-radius: 6px; padding: 11px 13px; font-size: 15px; color: #17301F; background: #FFFDF8;"></label>
+                <label style="display: flex; flex-direction: column; gap: 7px;"><span style="font-size: 13px; color: #4B4B41;">Pinterest</span><input value="raizypetalo" style="border: 1px solid #DDD5C2; border-radius: 6px; padding: 11px 13px; font-size: 15px; color: #17301F; background: #FFFDF8;"></label>
+              </div>
+              <div style="display: flex; align-items: center; justify-content: space-between; gap: 16px; margin-top: 20px; padding-top: 18px; border-top: 1px solid #EDE6D6;">
+                <div style="min-width: 0;">
+                  <div style="font-size: 15px;">Bloque de newsletter</div>
+                  <div style="font-size: 13px; color: #6B6B5E; margin-top: 2px;">Muestra el campo de suscripción en el footer</div>
+                </div>
+                <div onClick="{{ toggleNews }}" style="width: 48px; height: 28px; border-radius: 999px; background: {{ newsBg }}; padding: 3px; cursor: pointer; flex: 0 0 auto; transition: background 0.25s ease;">
+                  <div style="width: 22px; height: 22px; border-radius: 50%; background: #FBF8F1; transition: transform 0.25s cubic-bezier(0.22,1,0.36,1); transform: translateX({{ newsX }});"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </sc-if>
+
+      <!-- ---------- SEO ---------- -->
+      <sc-if value="{{ isSeo }}" hint-placeholder-val="{{ false }}">
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(340px, 1fr)); gap: 28px; align-items: start;">
+          <div style="background: #FBF8F1; border: 1px solid #E7E0CE; border-radius: 10px; padding: 24px 26px 28px; display: flex; flex-direction: column; gap: 16px;">
+            <div style="font-family: 'Instrument Serif', serif; font-size: 22px;">Metadatos de la landing</div>
+            <label style="display: flex; flex-direction: column; gap: 7px;"><span style="font-size: 13px; color: #4B4B41;">Título (55 caracteres máx.)</span><input value="Raíz &amp; Pétalo · Vivero y floristería en Buenos Aires" style="border: 1px solid #DDD5C2; border-radius: 6px; padding: 11px 13px; font-size: 15px; color: #17301F; background: #FFFDF8;"></label>
+            <label style="display: flex; flex-direction: column; gap: 7px;"><span style="font-size: 13px; color: #4B4B41;">Descripción</span><textarea rows="3" style="border: 1px solid #DDD5C2; border-radius: 6px; padding: 11px 13px; font-size: 15px; color: #17301F; background: #FFFDF8; resize: vertical;">Plantas de interior, flores frescas y arreglos a medida. Vivero propio en Tigre y local en Av. Libertador.</textarea></label>
+            <label style="display: flex; flex-direction: column; gap: 7px;"><span style="font-size: 13px; color: #4B4B41;">Imagen para compartir</span><div style="border: 1px dashed #CFC6B0; border-radius: 8px; padding: 18px; text-align: center; font-size: 14px; color: #8A8878; background: #FFFDF8;">Arrastrá una imagen de 1200 × 630 px</div></label>
+          </div>
+          <aside style="background: #EFE9DA; border: 1px solid #E2DAC7; border-radius: 10px; padding: 22px;">
+            <div style="font-size: 12px; letter-spacing: 0.16em; text-transform: uppercase; color: #8A8878;">Vista en Google</div>
+            <div style="background: #FBF8F1; border-radius: 8px; padding: 16px; margin-top: 14px;">
+              <div style="font-size: 12px; color: #6B6B5E;">raizypetalo.com.ar</div>
+              <div style="font-size: 17px; color: #3F6B47; margin-top: 4px; line-height: 1.3;">Raíz &amp; Pétalo · Vivero y floristería</div>
+              <div style="font-size: 13px; color: #4B4B41; line-height: 1.5; margin-top: 5px;">Plantas de interior, flores frescas y arreglos a medida en Buenos Aires.</div>
+            </div>
+          </aside>
+        </div>
+      </sc-if>
+
+    </div>
+  </main>
+</div>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;: {&quot;width&quot;: 1440, &quot;height&quot;: 900}}">
+const WIRE = {
+  header: {
+    '1a': ['bar-center', 'lines-2'],
+    '1b': ['pill-float', 'block-tall'],
+    '1c': ['bar-left', 'grid-3'],
+    '1d': ['strip', 'bar-center', 'lines-2'],
+    '1e': ['side', 'lines-2']
+  }
+};
+
+const DATA = {
+  header: {
+    crumb: 'Diseño / Header',
+    title: 'Elegí el header de la landing',
+    intro: 'La variante se aplica a todas las páginas del sitio. Podés cambiarla cuando quieras: el contenido del menú no se pierde.',
+    items: [
+      { id: '1a', name: 'Editorial centrado', desc: 'Logo al medio, navegación repartida a los costados.', kind: 'center' },
+      { id: '1b', name: 'Flotante sobre foto', desc: 'Pill de navegación translúcida encima del hero.', kind: 'float' },
+      { id: '1c', name: 'Clásico a la izquierda', desc: 'Logo, menú y acciones en una sola línea.', kind: 'left' },
+      { id: '1d', name: 'Con barra de anuncio', desc: 'Franja de avisos animada sobre el menú.', kind: 'strip' },
+      { id: '1e', name: 'Lateral fija', desc: 'Navegación vertical siempre visible a la izquierda.', kind: 'side' }
+    ]
+  },
+  hero: {
+    crumb: 'Diseño / Hero',
+    title: 'Elegí el hero de la portada',
+    intro: 'Cada variante usa los mismos textos e imágenes cargados en Contenido; sólo cambia la composición.',
+    items: [
+      { id: '1a', name: 'Split editorial', desc: 'Texto a la izquierda, foto vertical y card flotante.', kind: 'split' },
+      { id: '1b', name: 'Full-bleed cinemático', desc: 'Foto a pantalla completa con titular sobre el degradado.', kind: 'bleed' },
+      { id: '1c', name: 'Collage asimétrico', desc: 'Tres fotos desfasadas con titular superpuesto.', kind: 'collage' },
+      { id: '1d', name: 'Arco con badges', desc: 'Imagen en arco y etiquetas de cuidado flotantes.', kind: 'arch' },
+      { id: '1e', name: 'Oscuro con destacados', desc: 'Fondo verde profundo y fila de productos abajo.', kind: 'dark' }
+    ]
+  },
+  cards: {
+    crumb: 'Diseño / Cards de producto',
+    title: 'Elegí cómo se muestran las plantas',
+    intro: 'Sin precios: cada card muestra nombre, categoría y datos de cuidado. Se aplica al catálogo completo.',
+    items: [
+      { id: '2a', name: 'Foto a sangre', desc: 'Los chips de cuidado aparecen al pasar el mouse.', kind: 'bleed' },
+      { id: '2b', name: 'Ficha botánica', desc: 'Imagen en arco con luz, riego y altura.', kind: 'arch' },
+      { id: '2c', name: 'Cajón deslizante', desc: 'La descripción sube desde abajo sobre la foto.', kind: 'drawer' },
+      { id: '2d', name: 'Lista horizontal', desc: 'Filas numeradas con descripción larga.', kind: 'row' },
+      { id: '2e', name: 'Retrato circular', desc: 'Cuatro por fila, foto redonda sobre papel.', kind: 'circle' }
+    ]
+  }
+};
+
+const PAGES = {
+  contacto: { crumb: 'Contenido / Contacto', title: 'Datos de contacto' },
+  footer: { crumb: 'Contenido / Footer', title: 'Footer del sitio' },
+  seo: { crumb: 'Contenido / SEO', title: 'SEO y redes sociales' }
+};
+
+class Component extends DCLogic {
+  state = {
+    tab: 'header',
+    sel: { header: '1a', hero: '1b', cards: '2b' },
+    news: true
+  };
+
+  wire(kind, on) {
+    const ink = on ? '#3F6B47' : '#C6BEA9';
+    const soft = on ? 'rgba(63,107,71,0.28)' : '#DCD4C0';
+    const bar = (w, h, c, r) => React.createElement('div', { key: Math.random(), style: { width: w, height: h, background: c, borderRadius: r || 3 } });
+    const row = (children, style) => React.createElement('div', { style: { display: 'flex', gap: 6, alignItems: 'center', ...style } }, children);
+
+    switch (kind) {
+      case 'center':
+        return [
+          React.createElement('div', { key: 'c1', style: { display: 'flex', gap: 6, justifyContent: 'center', marginBottom: 2 } }, [bar(30, 6, soft), bar(30, 6, soft)]),
+          React.createElement('div', { key: 'c2', style: { width: '46%', height: 11, background: ink, borderRadius: 4, margin: '0 auto' } }),
+          React.createElement('div', { key: 'c3', style: { display: 'flex', gap: 6, justifyContent: 'center' } }, [bar(34, 6, soft), bar(34, 6, soft)])
+        ];
+      case 'float':
+        return [React.createElement('div', { key: 'f', style: { background: soft, borderRadius: 6, height: 96, display: 'flex', alignItems: 'flex-start', justifyContent: 'center', padding: 10 } }, React.createElement('div', { style: { width: '58%', height: 16, borderRadius: 999, background: on ? '#3F6B47' : '#B6AE99' } }))];
+      case 'left':
+        return [React.createElement('div', { key: 'l', style: { display: 'flex', gap: 8, alignItems: 'center' } }, [React.createElement('div', { key: 1, style: { width: 42, height: 10, background: ink, borderRadius: 3 } }), React.createElement('div', { key: 2, style: { flex: 1, height: 6, background: soft, borderRadius: 3 } }), React.createElement('div', { key: 3, style: { width: 30, height: 14, background: soft, borderRadius: 999 } })]),
+          React.createElement('div', { key: 'g', style: { display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 6, marginTop: 8 } }, [0, 1, 2].map(i => React.createElement('div', { key: i, style: { height: 58, background: soft, borderRadius: 4 } })))];
+      case 'strip':
+        return [bar('100%', 12, ink, 3), React.createElement('div', { key: 's', style: { display: 'flex', gap: 8, alignItems: 'center', marginTop: 6 } }, [React.createElement('div', { key: 1, style: { flex: 1, height: 6, background: soft, borderRadius: 3 } }), React.createElement('div', { key: 2, style: { width: 44, height: 10, background: ink, borderRadius: 3 } }), React.createElement('div', { key: 3, style: { flex: 1, height: 6, background: soft, borderRadius: 3 } })])];
+      case 'side':
+        return [React.createElement('div', { key: 'sd', style: { display: 'flex', gap: 8, height: 108 } }, [React.createElement('div', { key: 1, style: { width: 40, background: ink, borderRadius: 4 } }), React.createElement('div', { key: 2, style: { flex: 1, background: soft, borderRadius: 4 } })])];
+      case 'split':
+        return [React.createElement('div', { key: 'sp', style: { display: 'flex', gap: 8, height: 108 } }, [React.createElement('div', { key: 1, style: { flex: 1, display: 'flex', flexDirection: 'column', gap: 6, justifyContent: 'center' } }, [React.createElement('div', { key: 'a', style: { width: '80%', height: 12, background: ink, borderRadius: 3 } }), React.createElement('div', { key: 'b', style: { width: '62%', height: 12, background: ink, borderRadius: 3 } }), React.createElement('div', { key: 'c', style: { width: '90%', height: 6, background: soft, borderRadius: 3, marginTop: 4 } })]), React.createElement('div', { key: 2, style: { flex: 1, background: soft, borderRadius: 4 } })])];
+      case 'bleed':
+        return [React.createElement('div', { key: 'bl', style: { height: 112, background: soft, borderRadius: 4, display: 'flex', flexDirection: 'column', justifyContent: 'flex-end', gap: 5, padding: 10 } }, [React.createElement('div', { key: 1, style: { width: '70%', height: 12, background: ink, borderRadius: 3 } }), React.createElement('div', { key: 2, style: { width: '45%', height: 6, background: on ? 'rgba(63,107,71,0.5)' : '#C6BEA9', borderRadius: 3 } })])];
+      case 'collage':
+        return [React.createElement('div', { key: 'co', style: { display: 'flex', gap: 6, alignItems: 'flex-start', height: 92 } }, [React.createElement('div', { key: 1, style: { flex: 1, height: 62, background: soft, borderRadius: 4, marginTop: 20 } }), React.createElement('div', { key: 2, style: { flex: 1, height: 86, background: soft, borderRadius: 4 } }), React.createElement('div', { key: 3, style: { flex: 1, height: 52, background: soft, borderRadius: 4, marginTop: 10 } })]), React.createElement('div', { key: 'ct', style: { width: '66%', height: 12, background: ink, borderRadius: 3, margin: '8px auto 0' } })];
+      case 'arch':
+        return [React.createElement('div', { key: 'ar', style: { display: 'flex', gap: 8, height: 108, alignItems: 'center' } }, [React.createElement('div', { key: 1, style: { flex: 1, display: 'flex', flexDirection: 'column', gap: 6 } }, [React.createElement('div', { key: 'a', style: { width: '85%', height: 12, background: ink, borderRadius: 3 } }), React.createElement('div', { key: 'b', style: { width: '60%', height: 6, background: soft, borderRadius: 3 } })]), React.createElement('div', { key: 2, style: { width: 62, height: 100, background: soft, borderRadius: '31px 31px 4px 4px' } })])];
+      case 'dark':
+        return [React.createElement('div', { key: 'dk', style: { height: 112, background: on ? '#17301F' : '#3A4A3C', borderRadius: 4, padding: 10, display: 'flex', flexDirection: 'column', justifyContent: 'space-between' } }, [React.createElement('div', { key: 1, style: { width: '64%', height: 12, background: '#E9E4D8', borderRadius: 3 } }), React.createElement('div', { key: 2, style: { display: 'flex', gap: 5 } }, [0, 1, 2, 3].map(i => React.createElement('div', { key: i, style: { flex: 1, height: 26, background: 'rgba(233,228,216,0.35)', borderRadius: 3 } })))])];
+      case 'drawer':
+        return [React.createElement('div', { key: 'dr', style: { display: 'flex', gap: 6, height: 112 } }, [0, 1, 2].map(i => React.createElement('div', { key: i, style: { flex: 1, background: soft, borderRadius: 4, display: 'flex', flexDirection: 'column', justifyContent: 'flex-end' } }, React.createElement('div', { style: { height: i === 1 ? 40 : 0, background: on ? '#3F6B47' : '#B6AE99', borderRadius: '0 0 4px 4px' } }))))];
+      case 'row':
+        return [React.createElement('div', { key: 'rw', style: { display: 'flex', flexDirection: 'column', gap: 8 } }, [0, 1, 2].map(i => React.createElement('div', { key: i, style: { display: 'flex', gap: 8, alignItems: 'center', height: 32 } }, [React.createElement('div', { key: 1, style: { width: 42, height: 32, background: soft, borderRadius: 3 } }), React.createElement('div', { key: 2, style: { flex: 1, height: 8, background: ink, borderRadius: 3 } }), React.createElement('div', { key: 3, style: { width: 16, height: 16, borderRadius: 999, border: `1px solid ${ink}` } })])))];
+      case 'circle':
+        return [React.createElement('div', { key: 'ci', style: { display: 'flex', gap: 6 } }, [0, 1, 2, 3].map(i => React.createElement('div', { key: i, style: { flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6 } }, [React.createElement('div', { key: 'c', style: { width: 34, height: 34, borderRadius: '50%', background: soft } }), React.createElement('div', { key: 'l', style: { width: '80%', height: 6, background: ink, borderRadius: 3 } })])))];
+      default:
+        return [bar('100%', 10, soft)];
+    }
+  }
+
+  renderVals() {
+    const { tab, sel, news } = this.state;
+    const isPicker = !!DATA[tab];
+    const meta = DATA[tab] || PAGES[tab];
+    const tabs = ['header', 'hero', 'cards', 'contacto', 'footer', 'seo'];
+    const go = {}, navBg = {}, navFg = {};
+    tabs.forEach(t => {
+      go[t] = () => this.setState({ tab: t });
+      navBg[t] = tab === t ? 'rgba(246,241,231,0.12)' : 'transparent';
+      navFg[t] = tab === t ? '#F6F1E7' : '#C7CFC1';
+    });
+
+    const variants = isPicker ? DATA[tab].items.map(it => {
+      const on = sel[tab] === it.id;
+      return {
+        ...it,
+        select: () => this.setState(s => ({ sel: { ...s.sel, [tab]: it.id } })),
+        border: on ? '2px solid #3F6B47' : '1px solid #E7E0CE',
+        shadow: on ? '0 14px 30px rgba(23,48,31,0.12)' : 'none',
+        canvas: on ? '#EDF1E9' : '#F2EDE0',
+        justify: it.kind === 'center' || it.kind === 'strip' ? 'center' : 'flex-start',
+        dotBorder: on ? '1px solid #3F6B47' : '1px solid #C6BEA9',
+        dotBg: on ? '#3F6B47' : 'transparent',
+        check: on ? '✓' : '',
+        wire: React.createElement(React.Fragment, null, this.wire(it.kind, on))
+      };
+    }) : [];
+
+    const current = isPicker ? DATA[tab].items.find(i => i.id === sel[tab]) : null;
+
+    return {
+      isPicker,
+      isContacto: tab === 'contacto',
+      isFooter: tab === 'footer',
+      isSeo: tab === 'seo',
+      crumb: meta.crumb,
+      title: meta.title,
+      intro: isPicker ? DATA[tab].intro : '',
+      currentName: current ? `${current.name} · ${current.id}` : '',
+      variants, go, navBg, navFg,
+      pick: sel,
+      newsBg: news ? '#3F6B47' : '#CFC6B0',
+      newsX: news ? '20px' : '0px',
+      toggleNews: () => this.setState(s => ({ news: !s.news })),
+      footerCols: [
+        { title: 'Tienda', count: 4, links: ['Interior', 'Exterior', 'Flores', 'Macetas'] },
+        { title: 'Ayuda', count: 3, links: ['Cuidados', 'Envíos', 'Preguntas'] },
+        { title: 'Nosotros', count: 3, links: ['El vivero', 'Talleres', 'Contacto'] }
+      ]
+    };
+  }
+}
+</script>
+</body>
+</html>

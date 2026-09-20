@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600&display=swap" rel="stylesheet">
+<script src="./image-slot.js"></script>
+<style>
+  body { margin: 0; background: #E9E4D8; font-family: 'DM Sans', sans-serif; }
+  a { color: #3F6B47; text-decoration: none; }
+  a:hover { color: #C2643B; }
+  input, select, textarea { font-family: 'DM Sans', sans-serif; }
+  input:focus, select:focus, textarea:focus { outline: 2px solid #3F6B47; outline-offset: 1px; }
+</style>
+</helmet>
+
+<div style="display: grid; grid-template-columns: 252px minmax(0, 1fr); min-height: 100vh; background: #F6F1E7; color: #17301F;">
+
+  <aside style="background: #17301F; padding: 26px 20px; display: flex; flex-direction: column; justify-content: space-between; position: sticky; top: 0; height: 100vh; box-sizing: border-box;">
+    <div style="display: flex; flex-direction: column; gap: 30px;">
+      <div style="display: flex; align-items: center; gap: 11px;">
+        <div style="width: 30px; height: 30px; border-radius: 50%; background: #3F6B47; flex: 0 0 auto;"></div>
+        <div>
+          <div style="font-family: 'Instrument Serif', serif; font-size: 20px; line-height: 1.1; color: #F6F1E7;">Raíz &amp; Pétalo</div>
+          <div style="font-size: 10px; letter-spacing: 0.22em; text-transform: uppercase; color: #7E9479; margin-top: 2px;">Editor del sitio</div>
+        </div>
+      </div>
+      <nav style="display: flex; flex-direction: column; gap: 22px;">
+        <div style="display: flex; flex-direction: column; gap: 3px;">
+          <div style="font-size: 10px; letter-spacing: 0.2em; text-transform: uppercase; color: #6E8569; padding: 0 12px 7px;">Catálogo</div>
+          <a href="ABM Productos.dc.html" style="font-size: 14px; padding: 10px 12px; border-radius: 6px; background: rgba(246,241,231,0.12); color: #F6F1E7;">Productos</a>
+          <a href="ABM Productos.dc.html" style="font-size: 14px; padding: 10px 12px; border-radius: 6px; color: #C7CFC1;">Categorías</a>
+          <a href="ABM Productos.dc.html" style="font-size: 14px; padding: 10px 12px; border-radius: 6px; color: #C7CFC1;">Biblioteca de medios</a>
+        </div>
+        <div style="display: flex; flex-direction: column; gap: 3px;">
+          <div style="font-size: 10px; letter-spacing: 0.2em; text-transform: uppercase; color: #6E8569; padding: 0 12px 7px;">Sitio</div>
+          <a href="CMS.dc.html" style="font-size: 14px; padding: 10px 12px; border-radius: 6px; color: #C7CFC1;">Diseño</a>
+          <a href="CMS.dc.html" style="font-size: 14px; padding: 10px 12px; border-radius: 6px; color: #C7CFC1;">Contenido</a>
+        </div>
+      </nav>
+    </div>
+    <div style="background: rgba(246,241,231,0.08); border: 1px solid rgba(246,241,231,0.16); border-radius: 8px; padding: 14px;">
+      <div style="font-size: 12px; color: #C7CFC1;">Catálogo publicado</div>
+      <div style="font-size: 13px; color: #F6F1E7; margin-top: 3px;">{{ count }} productos · 2 borradores</div>
+    </div>
+  </aside>
+
+  <main style="display: flex; flex-direction: column; min-width: 0;">
+
+    <header style="position: sticky; top: 0; z-index: 5; background: rgba(246,241,231,0.94); backdrop-filter: blur(10px); border-bottom: 1px solid #E2DAC7; padding: 18px 40px; display: flex; align-items: center; justify-content: space-between; gap: 24px; flex-wrap: wrap;">
+      <div style="min-width: 0;">
+        <div style="font-size: 11px; letter-spacing: 0.18em; text-transform: uppercase; color: #8A8878;">{{ crumb }}</div>
+        <h1 style="font-family: 'Instrument Serif', serif; font-size: 30px; margin: 3px 0 0; font-weight: 400;">{{ title }}</h1>
+      </div>
+      <div style="display: flex; align-items: center; gap: 10px; flex: 0 0 auto;">
+        <sc-if value="{{ isList }}" hint-placeholder-val="{{ true }}">
+          <button onClick="{{ newItem }}" style="border: 0; background: #17301F; color: #F6F1E7; padding: 12px 24px; border-radius: 999px; font-size: 14px; font-weight: 500; cursor: pointer;" style-hover="background: #3F6B47;">+ Nuevo producto</button>
+        </sc-if>
+        <sc-if value="{{ isEdit }}" hint-placeholder-val="{{ false }}">
+          <div style="display: flex; align-items: center; gap: 10px;">
+            <button onClick="{{ back }}" style="border: 1px solid #CFC6B0; background: transparent; color: #17301F; padding: 11px 20px; border-radius: 999px; font-size: 14px; cursor: pointer;" style-hover="background: #EFE9DA;">Descartar</button>
+            <button style="border: 1px solid #CFC6B0; background: transparent; color: #17301F; padding: 11px 20px; border-radius: 999px; font-size: 14px; cursor: pointer;" style-hover="background: #EFE9DA;">Guardar borrador</button>
+            <button style="border: 0; background: #17301F; color: #F6F1E7; padding: 12px 24px; border-radius: 999px; font-size: 14px; font-weight: 500; cursor: pointer;" style-hover="background: #3F6B47;">Publicar</button>
+          </div>
+        </sc-if>
+      </div>
+    </header>
+
+    <div style="padding: 28px 40px 80px;">
+
+      <!-- ================= LISTADO ================= -->
+      <sc-if value="{{ isList }}" hint-placeholder-val="{{ true }}">
+        <div style="display: flex; flex-direction: column; gap: 20px;">
+
+          <div style="display: flex; flex-wrap: wrap; align-items: center; gap: 10px;">
+            <input placeholder="Buscar por nombre o nombre científico" style="flex: 1 1 280px; border: 1px solid #DDD5C2; border-radius: 999px; padding: 12px 18px; font-size: 14px; background: #FBF8F1; color: #17301F;">
+            <select style="border: 1px solid #DDD5C2; border-radius: 999px; padding: 12px 16px; font-size: 14px; background: #FBF8F1; color: #17301F;"><option>Todas las categorías</option><option>Interior</option><option>Exterior</option><option>Flores de corte</option><option>Accesorios</option></select>
+            <select style="border: 1px solid #DDD5C2; border-radius: 999px; padding: 12px 16px; font-size: 14px; background: #FBF8F1; color: #17301F;"><option>Todos los estados</option><option>Publicado</option><option>Borrador</option></select>
+            <div style="display: flex; background: #EFE9DA; border-radius: 999px; padding: 3px;">
+              <button onClick="{{ setGrid }}" style="border: 0; cursor: pointer; border-radius: 999px; padding: 9px 16px; font-size: 13px; background: {{ viewBg.grid }}; color: {{ viewFg.grid }};">Galería</button>
+              <button onClick="{{ setRows }}" style="border: 0; cursor: pointer; border-radius: 999px; padding: 9px 16px; font-size: 13px; background: {{ viewBg.rows }}; color: {{ viewFg.rows }};">Lista</button>
+            </div>
+          </div>
+
+          <!-- vista galería -->
+          <sc-if value="{{ isGrid }}" hint-placeholder-val="{{ true }}">
+            <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 18px;">
+              <sc-for list="{{ items }}" as="p" hint-placeholder-count="6">
+                <div onClick="{{ p.open }}" style="background: #FBF8F1; border: 1px solid #E7E0CE; border-radius: 10px; overflow: hidden; cursor: pointer; transition: transform 0.3s cubic-bezier(0.22,1,0.36,1), box-shadow 0.3s ease;" style-hover="transform: translateY(-4px); box-shadow: 0 16px 32px rgba(23,48,31,0.12);">
+                  <div style="position: relative; height: 180px; background: #E4DCC8;">
+                    <image-slot id="{{ p.slotId }}" shape="rect" placeholder="{{ p.name }}"></image-slot>
+                    <span style="position: absolute; left: 12px; top: 12px; background: {{ p.stateBg }}; color: {{ p.stateFg }}; border-radius: 999px; padding: 5px 11px; font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; pointer-events: none;">{{ p.state }}</span>
+                  </div>
+                  <div style="padding: 14px 16px 16px;">
+                    <div style="font-family: 'Instrument Serif', serif; font-size: 21px; line-height: 1.15;">{{ p.name }}</div>
+                    <div style="font-size: 13px; color: #8A8878; margin-top: 3px;">{{ p.latin }}</div>
+                    <div style="display: flex; align-items: center; justify-content: space-between; margin-top: 12px; padding-top: 11px; border-top: 1px solid #EDE6D6;">
+                      <span style="font-size: 13px; color: #4B4B41;">{{ p.category }}</span>
+                      <span style="font-size: 12px; color: #A09D8B;">{{ p.photos }} fotos</span>
+                    </div>
+                  </div>
+                </div>
+              </sc-for>
+            </div>
+          </sc-if>
+
+          <!-- vista lista -->
+          <sc-if value="{{ isRows }}" hint-placeholder-val="{{ false }}">
+            <div style="background: #FBF8F1; border: 1px solid #E7E0CE; border-radius: 10px; overflow-x: auto;">
+              <div style="min-width: 860px; display: grid; grid-template-columns: 56px minmax(0, 2.2fr) minmax(0, 1fr) minmax(0, 1.2fr) 120px 92px; gap: 16px; align-items: center; padding: 13px 18px; background: #F2EDE0; font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase; color: #8A8878;">
+                <span></span><span>Producto</span><span>Categoría</span><span>Luz / riego</span><span>Estado</span><span></span>
+              </div>
+              <sc-for list="{{ items }}" as="p" hint-placeholder-count="6">
+                <div style="min-width: 860px; display: grid; grid-template-columns: 56px minmax(0, 2.2fr) minmax(0, 1fr) minmax(0, 1.2fr) 120px 92px; gap: 16px; align-items: center; padding: 12px 18px; border-top: 1px solid #EDE6D6; transition: background 0.25s ease;" style-hover="background: #FFFDF8;">
+                  <div style="width: 44px; height: 44px; border-radius: 6px; background: #E4DCC8;"></div>
+                  <div style="min-width: 0;">
+                    <div style="font-size: 15px; font-weight: 500;">{{ p.name }}</div>
+                    <div style="font-size: 13px; color: #8A8878;">{{ p.latin }}</div>
+                  </div>
+                  <span style="font-size: 14px; color: #4B4B41;">{{ p.category }}</span>
+                  <span style="font-size: 14px; color: #4B4B41;">{{ p.care }}</span>
+                  <span style="justify-self: start; background: {{ p.stateBg }}; color: {{ p.stateFg }}; border-radius: 999px; padding: 5px 11px; font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase;">{{ p.state }}</span>
+                  <button onClick="{{ p.open }}" style="justify-self: end; border: 1px solid #CFC6B0; background: transparent; border-radius: 999px; padding: 8px 15px; font-size: 13px; cursor: pointer; color: #17301F;" style-hover="background: #EFE9DA;">Editar</button>
+                </div>
+              </sc-for>
+            </div>
+          </sc-if>
+        </div>
+      </sc-if>
+
+      <!-- ================= FICHA / EDICIÓN ================= -->
+      <sc-if value="{{ isEdit }}" hint-placeholder-val="{{ false }}">
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(340px, 1fr)); gap: 24px; align-items: start;">
+
+          <div style="display: flex; flex-direction: column; gap: 20px;">
+
+            <div style="background: #FBF8F1; border: 1px solid #E7E0CE; border-radius: 10px; padding: 24px 26px 28px;">
+              <div style="font-family: 'Instrument Serif', serif; font-size: 22px;">Identificación</div>
+              <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 16px; margin-top: 20px;">
+                <label style="display: flex; flex-direction: column; gap: 7px;"><span style="font-size: 13px; color: #4B4B41;">Nombre del producto</span><input value="{{ form.name }}" style="border: 1px solid #DDD5C2; border-radius: 6px; padding: 11px 13px; font-size: 15px; color: #17301F; background: #FFFDF8;"></label>
+                <label style="display: flex; flex-direction: column; gap: 7px;"><span style="font-size: 13px; color: #4B4B41;">Nombre científico</span><input value="{{ form.latin }}" style="border: 1px solid #DDD5C2; border-radius: 6px; padding: 11px 13px; font-size: 15px; color: #17301F; background: #FFFDF8; font-style: italic;"></label>
+                <label style="display: flex; flex-direction: column; gap: 7px;"><span style="font-size: 13px; color: #4B4B41;">URL</span><input value="{{ form.slug }}" style="border: 1px solid #DDD5C2; border-radius: 6px; padding: 11px 13px; font-size: 15px; color: #6B6B5E; background: #F2EDE0;"></label>
+                <label style="display: flex; flex-direction: column; gap: 7px;"><span style="font-size: 13px; color: #4B4B41;">Categoría</span><select style="border: 1px solid #DDD5C2; border-radius: 6px; padding: 11px 13px; font-size: 15px; color: #17301F; background: #FFFDF8;"><option>Interior</option><option>Exterior</option><option>Flores de corte</option><option>Accesorios</option></select></label>
+              </div>
+            </div>
+
+            <div style="background: #FBF8F1; border: 1px solid #E7E0CE; border-radius: 10px; padding: 24px 26px 28px;">
+              <div style="display: flex; align-items: baseline; justify-content: space-between; gap: 14px;">
+                <div style="font-family: 'Instrument Serif', serif; font-size: 22px;">Galería de imágenes</div>
+                <span style="font-size: 13px; color: #8A8878;">La primera es la portada</span>
+              </div>
+              <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; margin-top: 18px;">
+                <div style="position: relative; height: 200px; border-radius: 8px; overflow: hidden; background: #E4DCC8; border: 2px solid #3F6B47;">
+                  <image-slot id="abm-g1" shape="rect" placeholder="Portada"></image-slot>
+                  <span style="position: absolute; left: 10px; top: 10px; background: #3F6B47; color: #F6F1E7; border-radius: 999px; padding: 4px 10px; font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; pointer-events: none;">Portada</span>
+                </div>
+                <div style="height: 200px; border-radius: 8px; overflow: hidden; background: #E4DCC8;"><image-slot id="abm-g2" shape="rect" placeholder="Detalle de hoja"></image-slot></div>
+                <div style="height: 200px; border-radius: 8px; overflow: hidden; background: #E4DCC8;"><image-slot id="abm-g3" shape="rect" placeholder="En ambiente"></image-slot></div>
+                <div style="height: 200px; border: 1px dashed #CFC6B0; border-radius: 8px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px; background: #FFFDF8; cursor: pointer; transition: border-color 0.3s ease, background 0.3s ease;" style-hover="border-color: #3F6B47; background: #F4F6F0;">
+                  <span style="font-size: 26px; color: #A09D8B; line-height: 1;">+</span>
+                  <span style="font-size: 13px; color: #8A8878;">Agregar imagen</span>
+                </div>
+              </div>
+              <p style="font-size: 13px; color: #8A8878; margin: 14px 0 0;">JPG o WEBP, mínimo 1200 px de lado. Arrastrá para reordenar.</p>
+            </div>
+
+            <div style="background: #FBF8F1; border: 1px solid #E7E0CE; border-radius: 10px; padding: 24px 26px 28px; display: flex; flex-direction: column; gap: 16px;">
+              <div style="font-family: 'Instrument Serif', serif; font-size: 22px;">Descripción</div>
+              <label style="display: flex; flex-direction: column; gap: 7px;"><span style="font-size: 13px; color: #4B4B41;">Bajada corta · aparece en la card</span><input value="{{ form.short }}" style="border: 1px solid #DDD5C2; border-radius: 6px; padding: 11px 13px; font-size: 15px; color: #17301F; background: #FFFDF8;"></label>
+              <label style="display: flex; flex-direction: column; gap: 7px;">
+                <span style="font-size: 13px; color: #4B4B41;">Texto completo</span>
+                <div style="border: 1px solid #DDD5C2; border-radius: 6px; background: #FFFDF8; overflow: hidden;">
+                  <div style="display: flex; gap: 2px; padding: 7px 9px; border-bottom: 1px solid #EDE6D6; background: #F7F2E6;">
+                    <span style="font-size: 14px; font-weight: 600; padding: 4px 9px; border-radius: 4px; color: #4B4B41; cursor: pointer;">B</span>
+                    <span style="font-size: 14px; font-style: italic; padding: 4px 9px; border-radius: 4px; color: #4B4B41; cursor: pointer;">I</span>
+                    <span style="font-size: 13px; padding: 4px 9px; border-radius: 4px; color: #4B4B41; cursor: pointer;">Título</span>
+                    <span style="font-size: 13px; padding: 4px 9px; border-radius: 4px; color: #4B4B41; cursor: pointer;">Lista</span>
+                    <span style="font-size: 13px; padding: 4px 9px; border-radius: 4px; color: #4B4B41; cursor: pointer;">Enlace</span>
+                  </div>
+                  <textarea rows="7" style="border: 0; width: 100%; box-sizing: border-box; padding: 13px; font-size: 15px; line-height: 1.6; color: #17301F; background: transparent; resize: vertical;">{{ form.long }}</textarea>
+                </div>
+              </label>
+            </div>
+
+            <div style="background: #FBF8F1; border: 1px solid #E7E0CE; border-radius: 10px; padding: 24px 26px 28px;">
+              <div style="font-family: 'Instrument Serif', serif; font-size: 22px;">Ficha de cuidados</div>
+              <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin-top: 20px;">
+                <label style="display: flex; flex-direction: column; gap: 7px;"><span style="font-size: 13px; color: #4B4B41;">Luz</span><select style="border: 1px solid #DDD5C2; border-radius: 6px; padding: 11px 13px; font-size: 15px; color: #17301F; background: #FFFDF8;"><option>Luz indirecta</option><option>Pleno sol</option><option>Media sombra</option><option>Sombra</option></select></label>
+                <label style="display: flex; flex-direction: column; gap: 7px;"><span style="font-size: 13px; color: #4B4B41;">Riego</span><select style="border: 1px solid #DDD5C2; border-radius: 6px; padding: 11px 13px; font-size: 15px; color: #17301F; background: #FFFDF8;"><option>Semanal</option><option>Dos veces por semana</option><option>Quincenal</option><option>Mensual</option></select></label>
+                <label style="display: flex; flex-direction: column; gap: 7px;"><span style="font-size: 13px; color: #4B4B41;">Altura aproximada</span><input value="1,4 m" style="border: 1px solid #DDD5C2; border-radius: 6px; padding: 11px 13px; font-size: 15px; color: #17301F; background: #FFFDF8;"></label>
+                <label style="display: flex; flex-direction: column; gap: 7px;"><span style="font-size: 13px; color: #4B4B41;">Dificultad</span><select style="border: 1px solid #DDD5C2; border-radius: 6px; padding: 11px 13px; font-size: 15px; color: #17301F; background: #FFFDF8;"><option>Fácil</option><option>Media</option><option>Requiere experiencia</option></select></label>
+                <label style="display: flex; flex-direction: column; gap: 7px;"><span style="font-size: 13px; color: #4B4B41;">Maceta incluida</span><select style="border: 1px solid #DDD5C2; border-radius: 6px; padding: 11px 13px; font-size: 15px; color: #17301F; background: #FFFDF8;"><option>Cerámica esmaltada</option><option>Terracota</option><option>Sin maceta</option></select></label>
+                <label style="display: flex; flex-direction: column; gap: 7px;"><span style="font-size: 13px; color: #4B4B41;">Apta para mascotas</span><select style="border: 1px solid #DDD5C2; border-radius: 6px; padding: 11px 13px; font-size: 15px; color: #17301F; background: #FFFDF8;"><option>No</option><option>Sí</option></select></label>
+              </div>
+            </div>
+          </div>
+
+          <!-- columna lateral -->
+          <div style="display: flex; flex-direction: column; gap: 20px;">
+
+            <div style="background: #EFE9DA; border: 1px solid #E2DAC7; border-radius: 10px; padding: 22px;">
+              <div style="font-family: 'Instrument Serif', serif; font-size: 20px;">Publicación</div>
+              <div style="display: flex; flex-direction: column; gap: 14px; margin-top: 16px;">
+                <div style="display: flex; align-items: center; justify-content: space-between; gap: 14px;">
+                  <span style="font-size: 14px; color: #4B4B41;">Estado</span>
+                  <div style="display: flex; background: #FBF8F1; border-radius: 999px; padding: 3px;">
+                    <button onClick="{{ setDraft }}" style="border: 0; cursor: pointer; border-radius: 999px; padding: 7px 14px; font-size: 13px; background: {{ stBg.draft }}; color: {{ stFg.draft }};">Borrador</button>
+                    <button onClick="{{ setLive }}" style="border: 0; cursor: pointer; border-radius: 999px; padding: 7px 14px; font-size: 13px; background: {{ stBg.live }}; color: {{ stFg.live }};">Publicado</button>
+                  </div>
+                </div>
+                <div style="display: flex; align-items: center; justify-content: space-between; gap: 14px; padding-top: 14px; border-top: 1px solid #E2DAC7;">
+                  <div><div style="font-size: 14px; color: #17301F;">Destacar en la portada</div><div style="font-size: 13px; color: #6B6B5E; margin-top: 2px;">Aparece en "Lo más pedido"</div></div>
+                  <div onClick="{{ toggleFeat }}" style="width: 48px; height: 28px; border-radius: 999px; background: {{ featBg }}; padding: 3px; cursor: pointer; flex: 0 0 auto; transition: background 0.25s ease;">
+                    <div style="width: 22px; height: 22px; border-radius: 50%; background: #FBF8F1; transition: transform 0.25s cubic-bezier(0.22,1,0.36,1); transform: translateX({{ featX }});"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div style="background: #FBF8F1; border: 1px solid #E7E0CE; border-radius: 10px; padding: 22px;">
+              <div style="font-family: 'Instrument Serif', serif; font-size: 20px;">Etiquetas</div>
+              <div style="display: flex; flex-wrap: wrap; gap: 7px; margin-top: 14px;">
+                <sc-for list="{{ tags }}" as="t" hint-placeholder-count="4">
+                  <span style="background: #F0EADB; border-radius: 999px; padding: 6px 12px; font-size: 13px; color: #4B4B41; display: flex; align-items: center; gap: 7px;">{{ t }}<span style="color: #A09D8B; cursor: pointer;">×</span></span>
+                </sc-for>
+                <span style="border: 1px dashed #CFC6B0; border-radius: 999px; padding: 6px 12px; font-size: 13px; color: #8A8878; cursor: pointer;">+ Agregar</span>
+              </div>
+            </div>
+
+            <div style="background: #FBF8F1; border: 1px solid #E7E0CE; border-radius: 10px; padding: 22px;">
+              <div style="font-size: 12px; letter-spacing: 0.16em; text-transform: uppercase; color: #8A8878;">Vista previa de la card</div>
+              <div style="border-radius: 8px; overflow: hidden; border: 1px solid #E7E0CE; margin-top: 14px;">
+                <div style="height: 150px; background: #E4DCC8;"><image-slot id="abm-prev" shape="rect" placeholder="Portada"></image-slot></div>
+                <div style="padding: 13px 15px 15px; background: #FFFDF8;">
+                  <div style="font-family: 'Instrument Serif', serif; font-size: 20px;">{{ form.name }}</div>
+                  <div style="font-size: 13px; color: #8A8878; margin-top: 2px;">{{ form.short }}</div>
+                </div>
+              </div>
+              <p style="font-size: 13px; line-height: 1.5; color: #6B6B5E; margin: 12px 0 0;">Se muestra con la variante de card elegida en Diseño. Sin precio ni stock.</p>
+            </div>
+
+            <div style="background: #FBF8F1; border: 1px solid #E7E0CE; border-radius: 10px; padding: 22px;">
+              <div style="font-family: 'Instrument Serif', serif; font-size: 20px;">Zona de riesgo</div>
+              <p style="font-size: 13px; line-height: 1.5; color: #6B6B5E; margin: 8px 0 14px;">Eliminar el producto lo quita del sitio y del buscador. No se puede deshacer.</p>
+              <button style="border: 1px solid #C2643B; background: transparent; color: #C2643B; padding: 10px 18px; border-radius: 999px; font-size: 14px; cursor: pointer;" style-hover="background: #C2643B; color: #FBF8F1;">Eliminar producto</button>
+            </div>
+          </div>
+        </div>
+      </sc-if>
+
+    </div>
+  </main>
+</div>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;: {&quot;width&quot;: 1440, &quot;height&quot;: 900}}">
+const ITEMS = [
+  { name: 'Monstera Deliciosa', latin: 'Monstera deliciosa', category: 'Interior', care: 'Media · semanal', state: 'Publicado', photos: 4 },
+  { name: 'Ficus Lyrata', latin: 'Ficus lyrata', category: 'Interior', care: 'Indirecta · semanal', state: 'Publicado', photos: 5 },
+  { name: 'Calathea Orbifolia', latin: 'Goeppertia orbifolia', category: 'Interior', care: 'Media · 2 por semana', state: 'Borrador', photos: 2 },
+  { name: 'Olivo en maceta', latin: 'Olea europaea', category: 'Exterior', care: 'Pleno sol · quincenal', state: 'Publicado', photos: 3 },
+  { name: 'Tulipanes blancos', latin: 'Tulipa gesneriana', category: 'Flores de corte', care: 'Interior · agua diaria', state: 'Publicado', photos: 3 },
+  { name: 'Kokedama de musgo', latin: 'Nephrolepis exaltata', category: 'Accesorios', care: 'Sombra · inmersión', state: 'Borrador', photos: 2 },
+  { name: 'Zamioculca', latin: 'Zamioculcas zamiifolia', category: 'Interior', care: 'Baja · mensual', state: 'Publicado', photos: 4 },
+  { name: 'Lavanda', latin: 'Lavandula angustifolia', category: 'Exterior', care: 'Pleno sol · semanal', state: 'Publicado', photos: 3 }
+];
+
+class Component extends DCLogic {
+  state = { view: 'list', layout: 'grid', editing: 0, status: 'live', featured: true };
+
+  renderVals() {
+    const { view, layout, editing, status, featured } = this.state;
+    const isEdit = view === 'edit';
+    const src = ITEMS[editing] || ITEMS[0];
+
+    const items = ITEMS.map((p, i) => {
+      const live = p.state === 'Publicado';
+      return {
+        ...p,
+        slotId: 'abm-card-' + i,
+        thumbId: 'abm-row-' + i,
+        stateBg: live ? '#DFE8D9' : '#F0E3D4',
+        stateFg: live ? '#2F5636' : '#8A5A33',
+        open: () => this.setState({ view: 'edit', editing: i, status: live ? 'live' : 'draft' })
+      };
+    });
+
+    return {
+      count: ITEMS.length,
+      isList: !isEdit,
+      isEdit,
+      isGrid: !isEdit && layout === 'grid',
+      isRows: !isEdit && layout === 'rows',
+      crumb: isEdit ? 'Catálogo / Productos / Editar' : 'Catálogo',
+      title: isEdit ? src.name : 'Productos',
+      items,
+      viewBg: { grid: layout === 'grid' ? '#17301F' : 'transparent', rows: layout === 'rows' ? '#17301F' : 'transparent' },
+      viewFg: { grid: layout === 'grid' ? '#F6F1E7' : '#4B4B41', rows: layout === 'rows' ? '#F6F1E7' : '#4B4B41' },
+      setGrid: () => this.setState({ layout: 'grid' }),
+      setRows: () => this.setState({ layout: 'rows' }),
+      newItem: () => this.setState({ view: 'edit', editing: 0, status: 'draft' }),
+      back: () => this.setState({ view: 'list' }),
+      form: {
+        name: src.name,
+        latin: src.latin,
+        slug: 'raizypetalo.com.ar/' + src.name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, ''),
+        short: src.category + ' · ' + src.care,
+        long: 'Una de las plantas de interior más agradecidas: tolera el olvido ocasional y crece rápido cuando encuentra su lugar. La cultivamos en nuestro vivero de Tigre y la entregamos ya aclimatada, con sustrato propio y una ficha de riego escrita a mano.'
+      },
+      tags: ['Fácil de cuidar', 'Hoja grande', 'Purifica el aire', 'Regalo'],
+      stBg: { draft: status === 'draft' ? '#17301F' : 'transparent', live: status === 'live' ? '#17301F' : 'transparent' },
+      stFg: { draft: status === 'draft' ? '#F6F1E7' : '#4B4B41', live: status === 'live' ? '#F6F1E7' : '#4B4B41' },
+      setDraft: () => this.setState({ status: 'draft' }),
+      setLive: () => this.setState({ status: 'live' }),
+      featBg: featured ? '#3F6B47' : '#CFC6B0',
+      featX: featured ? '20px' : '0px',
+      toggleFeat: () => this.setState(s => ({ featured: !s.featured }))
+    };
+  }
+}
+</script>
+</body>
+</html>

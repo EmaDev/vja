@@ -4,6 +4,7 @@ import { HeroCinematic } from "@/components/organisms/HeroCinematic";
 import { HeroCollage } from "@/components/organisms/HeroCollage";
 import { HeroAnnouncementArch } from "@/components/organisms/HeroAnnouncementArch";
 import { HeroSidebarProduct } from "@/components/organisms/HeroSidebarProduct";
+import type { WireKind } from "@/components/molecules/VariantWireframe/VariantWireframe";
 
 export type HeroVariantId =
   | "editorial-split"
@@ -25,8 +26,10 @@ export interface HeroContentData {
 
 export interface HeroVariantDefinition {
   id: HeroVariantId;
+  code: string;
   label: string;
   description: string;
+  wireKind: WireKind;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   Component: ComponentType<any>;
   /** Traduce los campos genéricos del CMS a las props puntuales de este hero. */
@@ -36,8 +39,10 @@ export interface HeroVariantDefinition {
 export const heroVariants: HeroVariantDefinition[] = [
   {
     id: "editorial-split",
-    label: "Editorial split",
-    description: "Logo centrado, título tipográfico y foto vertical con dato destacado.",
+    code: "1a",
+    label: "Split editorial",
+    description: "Texto a la izquierda, foto vertical y card flotante.",
+    wireKind: "split",
     Component: HeroEditorialSplit,
     getProps: (data) => ({
       titleLine1: data.title,
@@ -48,8 +53,10 @@ export const heroVariants: HeroVariantDefinition[] = [
   },
   {
     id: "cinematic",
-    label: "Cinemático",
-    description: "Foto a pantalla completa con header flotante y copy sobre la imagen.",
+    code: "1b",
+    label: "Full-bleed cinemático",
+    description: "Foto a pantalla completa con titular sobre el degradado.",
+    wireKind: "bleed",
     Component: HeroCinematic,
     getProps: (data) => ({
       titleLine1: data.title,
@@ -60,8 +67,10 @@ export const heroVariants: HeroVariantDefinition[] = [
   },
   {
     id: "collage",
-    label: "Collage",
-    description: "Título enorme superpuesto a un collage asimétrico de fotos.",
+    code: "1c",
+    label: "Collage asimétrico",
+    description: "Tres fotos desfasadas con titular superpuesto.",
+    wireKind: "collage",
     Component: HeroCollage,
     getProps: (data) => ({
       titlePrefix: data.title,
@@ -71,8 +80,10 @@ export const heroVariants: HeroVariantDefinition[] = [
   },
   {
     id: "announcement-arch",
-    label: "Anuncio + arco",
-    description: "Barra de anuncios en marquesina y foto de producto en arco.",
+    code: "1d",
+    label: "Arco con badges",
+    description: "Imagen en arco y etiquetas de cuidado flotantes.",
+    wireKind: "arch",
     Component: HeroAnnouncementArch,
     getProps: (data) => ({
       titleLine1: data.title,
@@ -83,8 +94,10 @@ export const heroVariants: HeroVariantDefinition[] = [
   },
   {
     id: "sidebar-product",
-    label: "Sidebar + producto",
-    description: "Nav lateral fija, hero oscuro y carrusel de productos.",
+    code: "1e",
+    label: "Oscuro con destacados",
+    description: "Fondo verde profundo y fila de productos abajo.",
+    wireKind: "dark",
     Component: HeroSidebarProduct,
     getProps: (data) => ({
       titleLine1: data.title,

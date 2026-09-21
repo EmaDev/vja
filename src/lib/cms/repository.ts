@@ -3,6 +3,7 @@ import { getFirestore, FieldValue } from "firebase-admin/firestore";
 import type { CollectionReference } from "firebase-admin/firestore";
 import { getAdminApp } from "@/lib/firebase/admin";
 import { initialSections } from "./mock-data";
+import { isCmsSection } from "./validation";
 import type { CmsSection } from "./types";
 
 const SITE_ID = "vja-plantas";
@@ -16,25 +17,29 @@ function siteDoc() {
   return getFirestore(getAdminApp()).collection("sites").doc(SITE_ID);
 }
 
-/** Rellena campos agregados al esquema después de que el documento existente
- * fue escrito (ej. `imageAlt` del día 3), para que datos viejos no rompan un
- * componente controlado que espera el campo siempre presente. */
-function normalizeSections(sections: CmsSection[]): CmsSection[] {
-  return sections.map((section) =>
-    section.kind === "hero" ? { ...section, imageAlt: section.imageAlt ?? "" } : section,
-  );
+/** Devuelve siempre una sección por cada `kind` del seed, en ese orden.
+ *
+ * El editor busca cada sección por su `kind` y asume que existe, así que un draft
+ * incompleto —por ejemplo uno guardado antes de que existieran `cards`, `contact` o
+ * `seo`— rompería la pantalla. Completa lo que falte con el seed en vez de
+ * descartar las secciones que sí quedaron bien, y filtra las que no validan contra
+ * el esquema actual para no alimentar campos `undefined` a inputs controlados. */
+function normalizeSections(sections: unknown): CmsSection[] {
+  const stored = Array.isArray(sections) ? sections.filter(isCmsSection) : [];
+  return initialSections.map((seed) => stored.find((section) => section.kind === seed.kind) ?? seed);
 }
 
 export async function getDraft(): Promise<CmsSection[]> {
   const snap = await siteDoc().get();
   const draft = snap.data()?.draft as SiteRevision | undefined;
-  return normalizeSections(draft?.sections ?? initialSections);
+  return normalizeSections(draft?.sections);
 }
 
 export async function getPublished(): Promise<CmsSection[]> {
   const snap = await siteDoc().get();
   const published = snap.data()?.published as SiteRevision | undefined;
-  return normalizeSections(published?.sections ?? []);
+  if (!published) return [];
+  return normalizeSections(published.sections);
 }
 
 export async function saveDraft(sections: CmsSection[], updatedBy: string): Promise<void> {

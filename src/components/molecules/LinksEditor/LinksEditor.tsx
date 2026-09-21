@@ -1,22 +1,18 @@
 "use client";
 
-import { Button, Input } from "lib-kit-components";
+import { TextField } from "@/components/atoms/TextField";
+import { AdminButton } from "@/components/atoms/AdminButton";
 import { PlusIcon, TrashIcon } from "@/components/atoms/icons";
+import type { NavLink } from "@/lib/cms/types";
 
-export interface LinkItem {
-  id: string;
-  label: string;
-  href: string;
-}
-
-interface ListEditorProps {
-  items: LinkItem[];
-  onChange: (items: LinkItem[]) => void;
+interface LinksEditorProps {
+  items: NavLink[];
+  onChange: (items: NavLink[]) => void;
   addLabel: string;
 }
 
-export function ListEditor({ items, onChange, addLabel }: ListEditorProps) {
-  function updateItem(id: string, patch: Partial<LinkItem>) {
+export function LinksEditor({ items, onChange, addLabel }: LinksEditorProps) {
+  function updateItem(id: string, patch: Partial<NavLink>) {
     onChange(items.map((item) => (item.id === id ? { ...item, ...patch } : item)));
   }
 
@@ -32,31 +28,32 @@ export function ListEditor({ items, onChange, addLabel }: ListEditorProps) {
     <div className="flex flex-col gap-2">
       {items.map((item) => (
         <div key={item.id} className="flex items-center gap-2">
-          <Input
+          <TextField
             value={item.label}
             onChange={(event) => updateItem(item.id, { label: event.target.value })}
             placeholder="Texto"
             className="flex-1"
           />
-          <Input
+          <TextField
             value={item.href}
             onChange={(event) => updateItem(item.id, { href: event.target.value })}
             placeholder="URL"
             className="flex-1"
           />
-          <Button size="icon" variant="danger" aria-label="Eliminar" onClick={() => removeItem(item.id)}>
+          <button
+            type="button"
+            onClick={() => removeItem(item.id)}
+            aria-label="Eliminar enlace"
+            className="flex h-9 w-9 shrink-0 items-center justify-center rounded-md text-taupe transition-colors hover:bg-terracotta/10 hover:text-terracotta"
+          >
             <TrashIcon className="h-4 w-4" />
-          </Button>
+          </button>
         </div>
       ))}
-      <Button
-        variant="secondary"
-        leftIcon={<PlusIcon className="h-4 w-4" />}
-        onClick={addItem}
-        className="self-start"
-      >
+      <AdminButton variant="outline" onClick={addItem} className="w-fit gap-1.5">
+        <PlusIcon className="h-4 w-4" />
         {addLabel}
-      </Button>
+      </AdminButton>
     </div>
   );
 }

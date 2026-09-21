@@ -1,8 +1,10 @@
 "use client";
 
 import { useRef, useState } from "react";
-import { Button, Input, ProgressBar } from "lib-kit-components";
+import { Button, ProgressBar } from "lib-kit-components";
 import { ImagePlaceholder } from "@/components/atoms/ImagePlaceholder";
+import { TextField } from "@/components/atoms/TextField";
+import { AdminButton } from "@/components/atoms/AdminButton";
 import { TrashIcon } from "@/components/atoms/icons";
 import { deleteMediaAction, saveMediaAction } from "@/lib/cms/media-actions";
 
@@ -153,14 +155,18 @@ export function ImageUploader({ imageUrl, imageAlt, onChange }: ImageUploaderPro
 
   return (
     <div className="flex flex-col gap-3">
-      <Input
-        label="Texto alternativo"
-        hint="Describe la imagen para lectores de pantalla y SEO. Obligatorio para subir una foto."
-        value={imageAlt}
-        onChange={(event) => onChange({ imageUrl, imageAlt: event.target.value })}
-      />
+      <div className="flex flex-col gap-[7px]">
+        <TextField
+          label="Texto alternativo"
+          value={imageAlt}
+          onChange={(event) => onChange({ imageUrl, imageAlt: event.target.value })}
+        />
+        <p className="text-xs text-taupe">
+          Describe la imagen para lectores de pantalla y SEO. Obligatorio para subir una foto.
+        </p>
+      </div>
 
-      <div className="relative h-40 w-full overflow-hidden rounded-lg border border-zinc-200">
+      <div className="relative h-40 w-full overflow-hidden rounded-lg border border-line-light">
         <ImagePlaceholder src={imageUrl || undefined} alt={imageAlt} label="Sin imagen" />
         {imageUrl ? (
           <Button
@@ -179,9 +185,9 @@ export function ImageUploader({ imageUrl, imageAlt, onChange }: ImageUploaderPro
       </div>
 
       {status === "uploading" ? <ProgressBar value={progress} max={100} showValue label="Subiendo…" /> : null}
-      {status === "compressing" ? <p className="text-xs text-zinc-400">Comprimiendo imagen…</p> : null}
-      {status === "saving" ? <p className="text-xs text-zinc-400">Guardando…</p> : null}
-      {error ? <p className="text-sm text-red-500">{error}</p> : null}
+      {status === "compressing" ? <p className="text-xs text-taupe">Comprimiendo imagen…</p> : null}
+      {status === "saving" ? <p className="text-xs text-taupe">Guardando…</p> : null}
+      {error ? <p className="text-sm text-terracotta">{error}</p> : null}
 
       <input
         ref={fileInputRef}
@@ -194,15 +200,15 @@ export function ImageUploader({ imageUrl, imageAlt, onChange }: ImageUploaderPro
           if (file) void handleFile(file);
         }}
       />
-      <Button
+      <AdminButton
         type="button"
-        variant="secondary"
+        variant="outline"
         onClick={() => fileInputRef.current?.click()}
         disabled={!imageAlt.trim() || busy}
-        loading={status === "compressing" || status === "uploading" || status === "saving"}
+        className="w-fit"
       >
         {imageUrl ? "Cambiar imagen" : "Subir imagen"}
-      </Button>
+      </AdminButton>
     </div>
   );
 }

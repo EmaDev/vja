@@ -1,0 +1,173 @@
+"use client";
+
+import { useState } from "react";
+import { useSearchParams } from "next/navigation";
+import { Modal } from "lib-kit-components";
+import { AdminPageHeader } from "@/components/organisms/AdminPageHeader/AdminPageHeader";
+import { AdminButton } from "@/components/atoms/AdminButton";
+import { VariantPickerPanel } from "@/components/organisms/VariantPickerPanel/VariantPickerPanel";
+import { HeaderEditor } from "@/components/organisms/SectionEditors/HeaderEditor";
+import { HeroEditor } from "@/components/organisms/SectionEditors/HeroEditor";
+import { ContactEditor } from "@/components/organisms/SectionEditors/ContactEditor";
+import { FooterEditor } from "@/components/organisms/SectionEditors/FooterEditor";
+import { SeoEditor } from "@/components/organisms/SectionEditors/SeoEditor";
+import { SAVE_STATUS_LABEL, useCmsDraft } from "@/lib/cms/draft-context";
+import { resolveTab } from "@/lib/cms/tabs";
+import { headerVariants, type HeaderVariantId } from "@/lib/cms/header-variants";
+import { heroVariants, type HeroVariantId } from "@/lib/cms/hero-variants";
+import { cardVariants, type CardVariantId } from "@/lib/cms/card-variants";
+import type {
+  CardsSection,
+  CmsSection,
+  ContactSection,
+  FooterSection,
+  HeaderSection,
+  HeroSection,
+  SeoSection,
+} from "@/lib/cms/types";
+
+const TAB_META: Record<string, { crumb: string; title: string }> = {
+  header: { crumb: "Diseño / Header", title: "Elegí el header de la landing" },
+  hero: { crumb: "Diseño / Hero", title: "Elegí el hero de la portada" },
+  cards: { crumb: "Diseño / Cards de producto", title: "Elegí cómo se muestran las plantas" },
+  contacto: { crumb: "Contenido / Contacto", title: "Datos de contacto" },
+  footer: { crumb: "Contenido / Footer", title: "Footer del sitio" },
+  seo: { crumb: "Contenido / SEO", title: "SEO y redes sociales" },
+};
+
+export function CmsDesignWorkspace() {
+  const searchParams = useSearchParams();
+  const tab = resolveTab(searchParams.get("tab"));
+  const { sections, setSections, saveStatus, publish, publishStatus, publishError } = useCmsDraft();
+  const [confirmOpen, setConfirmOpen] = useState(false);
+  const [justPublished, setJustPublished] = useState(false);
+
+  const header = sections.find((s): s is HeaderSection => s.kind === "header")!;
+  const hero = sections.find((s): s is HeroSection => s.kind === "hero")!;
+  const cards = sections.find((s): s is CardsSection => s.kind === "cards")!;
+  const contact = sections.find((s): s is ContactSection => s.kind === "contact")!;
+  const footer = sections.find((s): s is FooterSection => s.kind === "footer")!;
+  const seo = sections.find((s): s is SeoSection => s.kind === "seo")!;
+
+  function updateSection(updated: CmsSection) {
+    setSections((current) => current.map((section) => (section.id === updated.id ? updated : section)));
+  }
+
+  async function handlePublish() {
+    const ok = await publish();
+    if (ok) {
+      setConfirmOpen(false);
+      setJustPublished(true);
+      setTimeout(() => setJustPublished(false), 4000);
+    }
+  }
+
+  const meta = TAB_META[tab];
+  const dotColor = saveStatus === "saved" ? "bg-sage" : "bg-terracotta";
+
+  return (
+    <>
+      <AdminPageHeader
+        crumb={meta.crumb}
+        title={meta.title}
+        actions={
+          <>
+            <span className="mr-1.5 flex items-center gap-[7px] text-[13px] text-stone">
+              <span className={`h-[7px] w-[7px] rounded-full ${dotColor}`} />
+              {justPublished ? "Publicado" : SAVE_STATUS_LABEL[saveStatus]}
+            </span>
+            <AdminButton href="/" variant="outline" newTab>
+              Vista previa
+            </AdminButton>
+            <AdminButton variant="solid" onClick={() => setConfirmOpen(true)}>
+              Publicar
+            </AdminButton>
+          </>
+        }
+      />
+
+      <div className="max-w-[1180px] px-6 pb-20 pt-[34px] lg:px-10">
+        {tab === "header" ? (
+          <div className="flex flex-col gap-7">
+            <VariantPickerPanel<HeaderVariantId>
+              intro="La variante se aplica a todas las páginas del sitio. Podés cambiarla cuando quieras: el contenido del menú no se pierde."
+              options={headerVariants}
+              selected={header.variant}
+              onSelect={(variant) => updateSection({ ...header, variant })}
+              renderPreview={(id) => {
+                const Variant = headerVariants.find((v) => v.id === id)!.Component;
+                return (
+                  <div className="pt-16">
+                    <Variant />
+                  </div>
+                );
+              }}
+            />
+            <HeaderEditor section={header} onChange={updateSection} />
+          </div>
+        ) : null}
+
+        {tab === "hero" ? (
+          <div className="flex flex-col gap-7">
+            <VariantPickerPanel<HeroVariantId>
+              intro="Cada variante usa los mismos textos e imágenes cargados en Contenido; sólo cambia la composición."
+              options={heroVariants}
+              selected={hero.variant}
+              onSelect={(variant) => updateSection({ ...hero, variant })}
+              renderPreview={(id) => {
+                const variant = heroVariants.find((v) => v.id === id)!;
+                const Variant = variant.Component;
+                return <Variant {...variant.getProps(hero)} />;
+              }}
+            />
+            <HeroEditor section={hero} onChange={updateSection} />
+          </div>
+        ) : null}
+
+        {tab === "cards" ? (
+          <VariantPickerPanel<CardVariantId>
+            intro="Sin precios: cada card muestra nombre, categoría y datos de cuidado. Se aplica al catálogo completo."
+            options={cardVariants}
+            selected={cards.variant}
+            onSelect={(variant) => updateSection({ ...cards, variant })}
+            renderPreview={(id) => {
+              const variant = cardVariants.find((v) => v.id === id)!;
+              const Card = variant.Component;
+              return (
+                <div className={`grid grid-cols-3 gap-[26px] p-11 pt-24 ${variant.previewBg}`}>
+                  {variant.sampleItems.map((item, index) => (
+                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                    <Card key={index} {...(item as any)} />
+                  ))}
+                </div>
+              );
+            }}
+          />
+        ) : null}
+
+        {tab === "contacto" ? <ContactEditor section={contact} onChange={updateSection} /> : null}
+        {tab === "footer" ? <FooterEditor section={footer} onChange={updateSection} /> : null}
+        {tab === "seo" ? <SeoEditor section={seo} onChange={updateSection} /> : null}
+      </div>
+
+      <Modal
+        open={confirmOpen}
+        onClose={() => setConfirmOpen(false)}
+        title="Publicar cambios"
+        description="El contenido publicado se actualiza con el borrador actual. La publicación anterior queda en el historial de versiones."
+        footer={
+          <div className="flex justify-end gap-2">
+            <AdminButton variant="outline" onClick={() => setConfirmOpen(false)}>
+              Cancelar
+            </AdminButton>
+            <AdminButton variant="solid" onClick={handlePublish} disabled={publishStatus === "publishing"}>
+              {publishStatus === "publishing" ? "Publicando…" : "Publicar"}
+            </AdminButton>
+          </div>
+        }
+      >
+        {publishStatus === "error" && publishError ? <p className="text-sm text-terracotta">{publishError}</p> : null}
+      </Modal>
+    </>
+  );
+}

@@ -17,6 +17,14 @@ import type { CmsSection } from "./types";
 export type SaveStatus = "saved" | "pending" | "saving" | "error";
 export type PublishStatus = "idle" | "publishing" | "error";
 
+/** Describe el estado del autoguardado del borrador (no si está publicado). */
+export const SAVE_STATUS_LABEL: Record<SaveStatus, string> = {
+  saved: "Borrador guardado",
+  pending: "Cambios sin guardar",
+  saving: "Guardando…",
+  error: "Error al guardar",
+};
+
 type SectionsUpdater = CmsSection[] | ((current: CmsSection[]) => CmsSection[]);
 
 interface CmsDraftContextValue {

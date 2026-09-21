@@ -1,42 +1,13 @@
 @import "tailwindcss";
 @source "../../node_modules/lib-kit-components/dist";
 
-/* Tokens de lib-kit-components, usados por los componentes del CMS
-   (@/app/cms). Reproducen la paleta esmeralda/zinc que ya tenía el panel
-   en vez de la azul por default del paquete — nada fuera del CMS usa
-   estas clases (bg-primary, text-danger, etc.), así que queda acotado
-   en la práctica sin tocar el resto del sitio. */
+/* Paleta Raíz & Pétalo.
+   Declarada en un único `@theme` en vez de duplicarla en `:root` y volver a
+   listarla en `@theme inline` apuntándose a sí misma (`--color-paper:
+   var(--color-paper)`). Las dos formas compilan igual —incluidos los
+   modificadores de opacidad tipo `bg-paper/14`, que salen como `color-mix`—,
+   pero esta deja un solo lugar donde tocar un color. */
 @theme {
-  --color-primary: #059669;
-  --color-primary-hover: #10b981;
-  --color-accent: #34d399;
-  --color-surface: #ffffff;
-  --color-surface-alt: #fafafa;
-  --color-muted: #a1a1aa;
-  --color-border: #e4e4e7;
-  --color-success: #059669;
-  --color-danger: #dc2626;
-}
-
-/* `--color-foreground` no está en el bloque de arriba porque el sitio ya
-   define ese token vía `@theme inline` (arriba, en `@theme inline { --color-foreground: var(--foreground); }`).
-   Con "inline", Tailwind no crea una variable propia: compila las clases
-   (`text-foreground`, `bg-foreground`, etc.) apuntando directo a
-   `var(--foreground)` — pisar `--color-foreground` no tiene ningún efecto
-   sobre ellas. Y `--foreground` cambia con el modo oscuro del sistema
-   (@media prefers-color-scheme), así que con el OS en oscuro los
-   botones/textos del CMS que usan esas clases quedaban casi blancos sobre
-   el fondo blanco del panel. Se fija acá pisando `--foreground` directamente,
-   sin depender del tema del sistema, en el elemento raíz de las páginas del CMS. */
-.cms-scope {
-  --foreground: #18181b;
-}
-
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-
-  /* Raíz & Pétalo brand palette */
   --color-cream: #e9e4d8;
   --color-paper: #f6f1e7;
   --color-paper-light: #fbf8f1;
@@ -51,29 +22,41 @@
   --color-taupe: #8a8878;
   --color-line: #ddd5c2;
   --color-line-light: #e7e0ce;
+
+  /* Tokens que consumen los componentes de lib-kit-components (Modal, ProgressBar,
+     Button, el formulario de login). Apuntan a la paleta de la marca para que el
+     kit no desentone con el resto del panel. */
+  --color-primary: #3f6b47;
+  --color-primary-hover: #17301f;
+  --color-accent: #c2643b;
+  --color-surface: #fbf8f1;
+  --color-surface-alt: #f2ede0;
+  --color-muted: #8a8878;
+  --color-border: #e7e0ce;
+  --color-success: #3f6b47;
+  --color-danger: #c2643b;
+}
+
+/* `--color-foreground` no se pisa en el bloque de arriba porque está declarado con
+   `@theme inline`: Tailwind compila `text-foreground` apuntando directo a
+   `var(--foreground)`, así que redefinir `--color-foreground` no tendría efecto. Y
+   `--foreground` cambia con el modo oscuro del sistema (@media prefers-color-scheme),
+   con lo cual el panel quedaba casi blanco sobre papel claro. Se fija acá, sin
+   depender del tema del sistema, en el elemento raíz de las páginas del CMS. */
+.cms-scope {
+  --foreground: #17301f;
+}
+
+:root {
+  --background: #ffffff;
+  --foreground: #171717;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
 
-  --color-cream: var(--color-cream);
-  --color-paper: var(--color-paper);
-  --color-paper-light: var(--color-paper-light);
-  --color-paper-dark: var(--color-paper-dark);
-  --color-sand: var(--color-sand);
-  --color-forest: var(--color-forest);
-  --color-forest-deep: var(--color-forest-deep);
-  --color-sage: var(--color-sage);
-  --color-terracotta: var(--color-terracotta);
-  --color-ink: var(--color-ink);
-  --color-stone: var(--color-stone);
-  --color-taupe: var(--color-taupe);
-  --color-line: var(--color-line);
-  --color-line-light: var(--color-line-light);
-
+  --font-sans: var(--font-dm-sans), system-ui, sans-serif;
   --font-display: var(--font-instrument-serif), serif;
   --font-body: var(--font-dm-sans), sans-serif;
 }
@@ -88,7 +71,7 @@
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-dm-sans), system-ui, sans-serif;
 }
 
 @keyframes rp-rise {

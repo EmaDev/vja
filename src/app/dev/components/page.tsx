@@ -9,6 +9,7 @@ import { HeroCinematic } from "@/components/organisms/HeroCinematic";
 import { HeroCollage } from "@/components/organisms/HeroCollage";
 import { HeroEditorialSplit } from "@/components/organisms/HeroEditorialSplit";
 import { HeroSidebarProduct } from "@/components/organisms/HeroSidebarProduct";
+import { AdminKitPreview } from "./AdminKitPreview";
 
 function Slot({ id, note, children }: { id: string; note: string; children: React.ReactNode }) {
   return (
@@ -183,6 +184,14 @@ export default function ComponentsPreviewPage() {
         <Slot id="1e" note="Nav lateral fija, hero oscuro y carrusel de producto">
           <HeroSidebarProduct />
         </Slot>
+      </section>
+
+      <section className="flex flex-col gap-11 bg-paper px-12 py-14">
+        <div className="flex items-baseline gap-5">
+          <span className="font-display text-[38px] text-forest">Panel de administración</span>
+          <span className="text-sm uppercase tracking-[0.08em] text-stone">/cms</span>
+        </div>
+        <AdminKitPreview />
       </section>
     </main>
   );

@@ -37,7 +37,7 @@ export function SeoEditor({ section, onChange }: SeoEditorProps) {
 
       <FieldCard title="Vista en Google" tinted>
         <div className="rounded-lg bg-paper-light p-4">
-          <div className="text-xs text-stone">raizypetalo.com.ar</div>
+          <div className="text-xs text-stone">vjaplantas.com.ar</div>
           <div className="mt-1 text-[17px] leading-[1.3] text-sage">{section.metaTitle}</div>
           <div className="mt-[5px] text-[13px] leading-[1.5] text-ink">{section.metaDescription}</div>
         </div>

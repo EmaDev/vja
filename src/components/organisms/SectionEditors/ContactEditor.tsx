@@ -1,13 +1,11 @@
 "use client";
 
-import type { ContactField, ContactSection } from "@/lib/cms/types";
+import type { ContactSection } from "@/lib/cms/types";
 import { TextField } from "@/components/atoms/TextField";
 import { TextAreaField } from "@/components/atoms/TextAreaField";
-import { AdminButton } from "@/components/atoms/AdminButton";
-import { PlusIcon, TrashIcon } from "@/components/atoms/icons";
+import { ToggleSwitch } from "@/components/atoms/ToggleSwitch";
 import { FieldCard } from "@/components/molecules/FieldCard/FieldCard";
-
-const REQUIREMENTS: ContactField["requirement"][] = ["Obligatorio", "Opcional", "Lista desplegable"];
+import { whatsappHref } from "@/lib/cms/whatsapp";
 
 interface ContactEditorProps {
   section: ContactSection;
@@ -15,23 +13,8 @@ interface ContactEditorProps {
 }
 
 export function ContactEditor({ section, onChange }: ContactEditorProps) {
-  function updateField(id: string, patch: Partial<ContactField>) {
-    onChange({
-      ...section,
-      fields: section.fields.map((field) => (field.id === id ? { ...field, ...patch } : field)),
-    });
-  }
-
-  function removeField(id: string) {
-    onChange({ ...section, fields: section.fields.filter((field) => field.id !== id) });
-  }
-
-  function addField() {
-    onChange({
-      ...section,
-      fields: [...section.fields, { id: crypto.randomUUID(), label: "", requirement: "Opcional" }],
-    });
-  }
+  const href = whatsappHref(section.whatsappPhone, section.whatsappMessage);
+  const label = section.whatsappLabel.trim() || "Escribinos";
 
   return (
     <div className="grid grid-cols-[repeat(auto-fit,minmax(340px,1fr))] items-start gap-7">
@@ -44,7 +27,7 @@ export function ContactEditor({ section, onChange }: ContactEditorProps) {
               onChange={(event) => onChange({ ...section, storeName: event.target.value })}
             />
             <TextField
-              label="Teléfono / WhatsApp"
+              label="Teléfono"
               value={section.phone}
               onChange={(event) => onChange({ ...section, phone: event.target.value })}
             />
@@ -68,78 +51,66 @@ export function ContactEditor({ section, onChange }: ContactEditorProps) {
         </FieldCard>
 
         <FieldCard
-          title="Formulario de consulta"
-          subtitle="Define qué campos ve el visitante y a dónde llegan las consultas."
+          title="Botón de WhatsApp"
+          subtitle="Reemplaza al formulario de consultas. Flota en todas las pantallas de la landing."
         >
-          <div className="flex flex-col">
-            {section.fields.map((field, index) => (
-              <div
-                key={field.id}
-                className={`flex items-center gap-2 py-1.5 ${
-                  index < section.fields.length - 1 ? "border-b border-[#EDE6D6]" : ""
-                }`}
-              >
-                <input
-                  value={field.label}
-                  onChange={(event) => updateField(field.id, { label: event.target.value })}
-                  placeholder="Nombre del campo"
-                  aria-label="Nombre del campo"
-                  className="min-w-0 flex-1 rounded border border-transparent bg-transparent px-2 py-1.5 text-[15px] text-forest outline-none transition-colors placeholder:text-taupe hover:border-line focus:border-line focus:outline-2 focus:outline-sage focus:outline-offset-1"
-                />
-                <select
-                  value={field.requirement}
-                  onChange={(event) =>
-                    updateField(field.id, { requirement: event.target.value as ContactField["requirement"] })
-                  }
-                  aria-label={`Requisito de ${field.label || "el campo"}`}
-                  className="shrink-0 rounded border border-transparent bg-transparent px-2 py-1.5 text-xs uppercase tracking-[0.1em] text-taupe outline-none transition-colors hover:border-line focus:border-line focus:outline-2 focus:outline-sage focus:outline-offset-1"
-                >
-                  {REQUIREMENTS.map((option) => (
-                    <option key={option} value={option}>
-                      {option}
-                    </option>
-                  ))}
-                </select>
-                <button
-                  type="button"
-                  onClick={() => removeField(field.id)}
-                  aria-label={`Eliminar ${field.label || "campo"}`}
-                  className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md text-taupe transition-colors hover:bg-terracotta/10 hover:text-terracotta"
-                >
-                  <TrashIcon className="h-4 w-4" />
-                </button>
-              </div>
-            ))}
+          <div className="flex items-center justify-between gap-4">
+            <span className="text-[15px] text-forest">Mostrar el botón en el sitio</span>
+            <ToggleSwitch
+              checked={section.whatsappEnabled}
+              onChange={(whatsappEnabled) => onChange({ ...section, whatsappEnabled })}
+              label="Botón flotante de WhatsApp"
+            />
           </div>
-          <AdminButton variant="outline" onClick={addField} className="w-fit gap-1.5">
-            <PlusIcon className="h-4 w-4" />
-            Agregar campo
-          </AdminButton>
-          <TextField
-            label="Enviar consultas a"
-            value={section.formRecipientEmail}
-            onChange={(event) => onChange({ ...section, formRecipientEmail: event.target.value })}
-          />
+          <div className="grid grid-cols-[repeat(auto-fit,minmax(240px,1fr))] gap-4">
+            <TextField
+              label="Número de WhatsApp"
+              value={section.whatsappPhone}
+              placeholder="+54 9 11 4820-9931"
+              onChange={(event) => onChange({ ...section, whatsappPhone: event.target.value })}
+            />
+            <TextField
+              label="Texto del botón"
+              value={section.whatsappLabel}
+              placeholder="Escribinos"
+              onChange={(event) => onChange({ ...section, whatsappLabel: event.target.value })}
+            />
+          </div>
           <TextAreaField
-            label="Mensaje de agradecimiento"
+            label="Mensaje con el que arranca la conversación"
             rows={3}
-            value={section.thankYouMessage}
-            onChange={(event) => onChange({ ...section, thankYouMessage: event.target.value })}
+            value={section.whatsappMessage}
+            onChange={(event) => onChange({ ...section, whatsappMessage: event.target.value })}
           />
+          {section.whatsappEnabled && !href ? (
+            <p className="text-[13px] leading-[1.5] text-terracotta">
+              Ese número no es válido, así que el botón no se va a mostrar. Escribilo en formato
+              internacional, por ejemplo +54 9 11 4820-9931.
+            </p>
+          ) : null}
         </FieldCard>
       </div>
 
       <FieldCard title="Cómo se ve" tinted>
-        <div className="rounded-lg bg-paper-light p-[18px]">
-          <div className="font-display text-xl text-forest">Escribinos</div>
-          <div className="mt-3 h-[34px] rounded-[5px] bg-[#F0EADB]" />
-          <div className="mt-2 h-[34px] rounded-[5px] bg-[#F0EADB]" />
-          <div className="mt-2 h-[62px] rounded-[5px] bg-[#F0EADB]" />
-          <div className="mt-3 h-9 rounded-full bg-forest" />
+        <div className="relative h-[190px] overflow-hidden rounded-lg bg-paper-light">
+          <div className="p-[18px]">
+            <div className="h-3 w-24 rounded-full bg-[#F0EADB]" />
+            <div className="mt-3 h-3 w-40 rounded-full bg-[#F0EADB]" />
+            <div className="mt-3 h-3 w-32 rounded-full bg-[#F0EADB]" />
+          </div>
+          <div
+            className={`absolute bottom-4 right-4 flex items-center gap-2 rounded-full px-[18px] py-2.5 text-[13px] font-medium text-paper-light transition-opacity ${
+              section.whatsappEnabled && href ? "bg-[#25D366]" : "bg-[#CFC6B0] opacity-70"
+            }`}
+          >
+            <span className="h-[15px] w-[15px] rounded-full bg-paper-light/90" />
+            {label}
+          </div>
         </div>
         <p className="text-[13px] leading-[1.55] text-stone">
-          Los campos obligatorios se validan antes de enviar. El aviso de privacidad se agrega
-          automáticamente.
+          {section.whatsappEnabled && href
+            ? "Al tocarlo se abre WhatsApp con el mensaje ya escrito. En celulares angostos el botón queda sólo con el ícono."
+            : "El botón está apagado: la landing no lo muestra."}
         </p>
       </FieldCard>
     </div>

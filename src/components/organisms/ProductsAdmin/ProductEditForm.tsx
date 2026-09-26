@@ -1,7 +1,10 @@
 "use client";
 
 import { useRef, useState } from "react";
-import type { Product } from "@/lib/cms/product-mock-data";
+import { productUrlPreview, type CatalogStatus, type Product } from "@/lib/cms/catalog-types";
+import { productQrUrl } from "@/lib/cms/qr-labels";
+import { QrCode } from "@/components/atoms/QrCode";
+import { QrPrintDialog } from "@/components/organisms/QrLabels/QrPrintDialog";
 import { TextField } from "@/components/atoms/TextField";
 import { SelectField } from "@/components/atoms/SelectField";
 import { ToggleSwitch } from "@/components/atoms/ToggleSwitch";
@@ -11,29 +14,38 @@ import { ImagePlaceholder } from "@/components/atoms/ImagePlaceholder";
 import { FieldCard } from "@/components/molecules/FieldCard/FieldCard";
 import { AdminPageHeader } from "@/components/organisms/AdminPageHeader/AdminPageHeader";
 
-function slugify(value: string): string {
-  return (
-    "raizypetalo.com.ar/" +
-    value
-      .normalize("NFD")
-      .replace(/\p{Diacritic}/gu, "")
-      .toLowerCase()
-      .replace(/[^a-z0-9]+/g, "-")
-      .replace(/^-|-$/g, "")
-  );
-}
-
 interface ProductEditFormProps {
   product: Product;
+  /** Categorías cargadas en el CMS. */
+  categoryNames: string[];
+  saving: boolean;
+  error: string | null;
   onDiscard: () => void;
-  onSave: (product: Product, status: "draft" | "live") => void;
+  onSave: (product: Product, status: CatalogStatus) => void;
   onDelete: (id: string) => void;
 }
 
-export function ProductEditForm({ product, onDiscard, onSave, onDelete }: ProductEditFormProps) {
+export function ProductEditForm({
+  product,
+  categoryNames,
+  saving,
+  error,
+  onDiscard,
+  onSave,
+  onDelete,
+}: ProductEditFormProps) {
   const [form, setForm] = useState<Product>(product);
   const [newTag, setNewTag] = useState<string | null>(null);
+  const [printing, setPrinting] = useState(false);
   const longRef = useRef<HTMLTextAreaElement>(null);
+
+  // El QR sale del producto guardado, no del formulario: codifica la URL, y la
+  // URL sólo existe una vez que el servidor asignó el id.
+  const qrUrl = productQrUrl(product);
+
+  /** Si el producto quedó en una categoría que ya no existe, se ofrece igual:
+   * sin ella el `select` mostraría otra y el guardado lo reasignaría solo. */
+  const categoryOptions = [...new Set([form.category, ...categoryNames])].filter(Boolean);
 
   function set<K extends keyof Product>(key: K, value: Product[K]) {
     setForm((current) => ({ ...current, [key]: value }));
@@ -91,18 +103,27 @@ export function ProductEditForm({ product, onDiscard, onSave, onDelete }: Produc
         title={form.name}
         actions={
           <>
-            <AdminButton variant="outline" onClick={onDiscard}>
+            <AdminButton variant="outline" onClick={onDiscard} disabled={saving}>
               Descartar
             </AdminButton>
-            <AdminButton variant="outline" onClick={() => onSave(form, "draft")}>
-              Guardar borrador
+            <AdminButton variant="outline" onClick={() => onSave(form, "draft")} disabled={saving}>
+              {saving ? "Guardando…" : "Guardar borrador"}
             </AdminButton>
-            <AdminButton variant="solid" onClick={() => onSave(form, "live")}>
+            <AdminButton variant="solid" onClick={() => onSave(form, "live")} disabled={saving}>
               Publicar
             </AdminButton>
           </>
         }
       />
+
+      {error ? (
+        <div
+          role="alert"
+          className="mx-6 mt-5 rounded-md border border-terracotta/40 bg-terracotta/10 px-4 py-3 text-sm text-terracotta lg:mx-10"
+        >
+          {error}
+        </div>
+      ) : null}
 
       <div className="grid grid-cols-[repeat(auto-fit,minmax(340px,1fr))] items-start gap-6 px-6 pb-20 pt-7 lg:px-10">
         <div className="flex flex-col gap-5">
@@ -119,12 +140,16 @@ export function ProductEditForm({ product, onDiscard, onSave, onDelete }: Produc
                 onChange={(e) => set("latin", e.target.value)}
                 className="italic"
               />
-              <TextField label="URL" value={slugify(form.name)} readOnly className="bg-paper-dark text-stone" />
+              <TextField
+                label="URL"
+                value={productUrlPreview(form)}
+                readOnly
+                className="bg-paper-dark text-stone"
+              />
               <SelectField label="Categoría" value={form.category} onChange={(e) => set("category", e.target.value)}>
-                <option>Interior</option>
-                <option>Exterior</option>
-                <option>Flores de corte</option>
-                <option>Accesorios</option>
+                {categoryOptions.map((name) => (
+                  <option key={name}>{name}</option>
+                ))}
               </SelectField>
             </div>
           </FieldCard>
@@ -214,42 +239,6 @@ export function ProductEditForm({ product, onDiscard, onSave, onDelete }: Produc
                 />
               </div>
             </label>
-          </FieldCard>
-
-          <FieldCard title="Ficha de cuidados">
-            <div className="grid grid-cols-[repeat(auto-fit,minmax(200px,1fr))] gap-4">
-              <SelectField label="Luz" value={form.light} onChange={(e) => set("light", e.target.value)}>
-                <option>Luz indirecta</option>
-                <option>Pleno sol</option>
-                <option>Media sombra</option>
-                <option>Sombra</option>
-                <option>Luz baja</option>
-                <option>Interior</option>
-              </SelectField>
-              <SelectField label="Riego" value={form.water} onChange={(e) => set("water", e.target.value)}>
-                <option>Semanal</option>
-                <option>Dos veces por semana</option>
-                <option>Quincenal</option>
-                <option>Mensual</option>
-                <option>Inmersión</option>
-                <option>Agua diaria</option>
-              </SelectField>
-              <TextField label="Altura aproximada" value={form.height} onChange={(e) => set("height", e.target.value)} />
-              <SelectField label="Dificultad" value={form.difficulty} onChange={(e) => set("difficulty", e.target.value)}>
-                <option>Fácil</option>
-                <option>Media</option>
-                <option>Requiere experiencia</option>
-              </SelectField>
-              <SelectField label="Maceta incluida" value={form.pot} onChange={(e) => set("pot", e.target.value)}>
-                <option>Cerámica esmaltada</option>
-                <option>Terracota</option>
-                <option>Sin maceta</option>
-              </SelectField>
-              <SelectField label="Apta para mascotas" value={form.petSafe} onChange={(e) => set("petSafe", e.target.value)}>
-                <option>No</option>
-                <option>Sí</option>
-              </SelectField>
-            </div>
           </FieldCard>
         </div>
 
@@ -341,16 +330,48 @@ export function ProductEditForm({ product, onDiscard, onSave, onDelete }: Produc
             </p>
           </FieldCard>
 
+          <FieldCard title="Etiqueta QR">
+            {qrUrl ? (
+              <>
+                <div className="flex items-center gap-3.5">
+                  <QrCode value={qrUrl} size="72px" className="shrink-0 rounded border border-line-light" />
+                  <p className="min-w-0 text-[13px] leading-[1.5] text-stone">
+                    Lleva a la ficha pública de esta planta.
+                    <span className="mt-1 block break-all text-taupe">{qrUrl}</span>
+                  </p>
+                </div>
+                <AdminButton onClick={() => setPrinting(true)} className="w-fit">
+                  Imprimir etiqueta
+                </AdminButton>
+              </>
+            ) : (
+              <p className="-mt-2 text-[13px] leading-[1.5] text-stone">
+                {product.id
+                  ? "Falta configurar NEXT_PUBLIC_SITE_URL con el dominio del sitio para poder generar el QR."
+                  : "Guardá el producto primero: el QR necesita la URL definitiva de la ficha."}
+              </p>
+            )}
+          </FieldCard>
+
           <FieldCard title="Zona de riesgo">
             <p className="-mt-2 text-[13px] leading-[1.5] text-stone">
               Eliminar el producto lo quita del sitio y del buscador. No se puede deshacer.
             </p>
-            <AdminButton variant="danger-outline" onClick={() => onDelete(product.id)} className="w-fit">
+            <AdminButton
+              variant="danger-outline"
+              disabled={saving}
+              onClick={() => onDelete(product.id)}
+              className="w-fit"
+            >
               Eliminar producto
             </AdminButton>
           </FieldCard>
         </div>
       </div>
+
+      {printing ? (
+        <QrPrintDialog products={[product]} onClose={() => setPrinting(false)} />
+      ) : null}
     </>
   );
 }

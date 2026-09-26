@@ -12,11 +12,17 @@ export type HeroEditorialSplitProps = {
   titleEmphasis?: string;
   description?: string;
   primaryCtaLabel?: string;
+  primaryCtaHref?: string;
   secondaryCtaLabel?: string;
+  secondaryCtaHref?: string;
   stats?: { value: string; label: string }[];
   image?: string;
+  imageAlt?: string;
   imageLabel?: string;
   featured?: { eyebrow: string; title: string; subtitle: string };
+  /** El header propio de la variante. La landing lo apaga y renderiza el elegido
+   * en el CMS, que puede no ser el que trae el mockup de este hero. */
+  showHeader?: boolean;
 };
 
 const defaultStats = [
@@ -32,38 +38,48 @@ export function HeroEditorialSplit({
   titleEmphasis = "viven bien en tu casa",
   description = "Seleccionamos cada especie a mano en nuestro vivero de Tigre. Llega con maceta, sustrato y una ficha de cuidados escrita por nosotros.",
   primaryCtaLabel = "Ver catálogo",
+  primaryCtaHref,
   secondaryCtaLabel = "Armar mi ramo →",
+  secondaryCtaHref,
   stats = defaultStats,
   image,
+  imageAlt,
   imageLabel = "Foto vertical: monstera junto a ventana",
   featured = { eyebrow: "Favorita", title: "Monstera Deliciosa", subtitle: "Luz media" },
+  showHeader = true,
 }: HeroEditorialSplitProps) {
   return (
     <div className="bg-paper">
-      <SiteHeaderCentered />
-      <div className="grid min-h-[620px] grid-cols-[minmax(0,1.05fr)_minmax(0,1fr)] items-stretch">
-        <div className="flex animate-[rp-rise_0.7s_ease_both] flex-col justify-center px-14 py-20">
-          <Eyebrow>{eyebrow}</Eyebrow>
-          <h1 className="mt-[22px] text-pretty font-display text-[88px] font-normal leading-[0.98] text-forest">
+      {showHeader ? <SiteHeaderCentered /> : null}
+      <div className="grid items-stretch lg:min-h-[620px] lg:grid-cols-[minmax(0,1.05fr)_minmax(0,1fr)]">
+        <div className="site-gutter flex animate-[rp-rise_0.7s_ease_both] flex-col justify-center py-14 md:py-20">
+          {eyebrow ? <Eyebrow>{eyebrow}</Eyebrow> : null}
+          <h1 className="mt-[18px] text-pretty font-display text-[46px] font-normal leading-[1] text-forest sm:text-[62px] lg:mt-[22px] lg:text-[72px] xl:text-[88px] xl:leading-[0.98]">
             {titleLine1}
-            <br />
-            <em className="text-sage">{titleEmphasis}</em>
+            {titleEmphasis ? (
+              <>
+                <br />
+                <em className="text-sage">{titleEmphasis}</em>
+              </>
+            ) : null}
           </h1>
-          <p className="mt-[26px] max-w-[430px] text-lg leading-[1.6] text-ink">{description}</p>
-          <div className="mt-[38px] flex items-center gap-3.5">
-            <CtaButton>{primaryCtaLabel}</CtaButton>
-            <TextLink>{secondaryCtaLabel}</TextLink>
+          <p className="mt-5 max-w-[430px] text-base leading-[1.6] text-ink md:text-lg lg:mt-[26px]">
+            {description}
+          </p>
+          <div className="mt-8 flex flex-wrap items-center gap-3.5 lg:mt-[38px]">
+            {primaryCtaLabel ? <CtaButton href={primaryCtaHref}>{primaryCtaLabel}</CtaButton> : null}
+            {secondaryCtaLabel ? <TextLink href={secondaryCtaHref}>{secondaryCtaLabel}</TextLink> : null}
           </div>
-          <div className="mt-16 flex gap-10 border-t border-line pt-[26px]">
+          <div className="mt-10 flex flex-wrap gap-x-10 gap-y-5 border-t border-line pt-[26px] lg:mt-16">
             {stats.map((stat) => (
               <StatBlock key={stat.label} {...stat} />
             ))}
           </div>
         </div>
-        <div className="relative bg-sand">
-          <ImagePlaceholder src={image} alt={titleEmphasis} label={imageLabel} />
+        <div className="relative h-[380px] bg-sand sm:h-[520px] lg:h-auto">
+          <ImagePlaceholder src={image} alt={imageAlt ?? titleLine1} label={imageLabel} />
           <FloatingBadge
-            className="absolute bottom-14 left-[-56px] w-[196px]"
+            className="absolute bottom-8 left-5 w-[170px] lg:bottom-14 lg:left-[-56px] lg:w-[196px]"
             eyebrow={featured.eyebrow}
             title={featured.title}
             subtitle={featured.subtitle}

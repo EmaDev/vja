@@ -1,11 +1,12 @@
 import Link from "next/link";
 import { CtaButton } from "@/components/atoms/CtaButton";
 import { Logo } from "@/components/atoms/Logo";
-import type { NavItem } from "@/components/molecules/SiteHeaderCentered";
+import type { NavItem } from "@/components/atoms/NavLink";
 
 export type StandardHeaderProps = {
+  logoText?: string;
   navLeft?: NavItem[];
-  cartCount?: number;
+  ctaLabel?: string;
 };
 
 const defaultNavLeft: NavItem[] = [
@@ -15,27 +16,35 @@ const defaultNavLeft: NavItem[] = [
   { label: "Accesorios" },
 ];
 
-/** Non-floating shop header with search/account pills and a cart CTA. Mockup ref: 1d. */
-export function StandardHeader({ navLeft = defaultNavLeft, cartCount = 2 }: StandardHeaderProps) {
+const pillClasses = "border-[#CFC6B0] text-[#3A4A3C]";
+
+/** Non-floating shop header with search/account pills and a contact CTA. Mockup ref: 1d.
+ * En mobile el logo va primero y la navegación pasa a una fila con scroll horizontal. */
+export function StandardHeader({
+  logoText,
+  navLeft = defaultNavLeft,
+  ctaLabel = "Contacto",
+}: StandardHeaderProps) {
   return (
-    <header className="flex items-center justify-between border-b border-[#E2DAC7] bg-paper px-14 py-5">
-      <nav className="flex flex-1 gap-7 text-sm tracking-[0.03em] text-[#3A4A3C]">
+    <header className="site-gutter flex flex-wrap items-center justify-between gap-y-3 border-b border-[#E2DAC7] bg-paper py-4 md:py-5">
+      <nav className="order-3 -mx-5 flex w-screen gap-6 overflow-x-auto px-5 text-sm tracking-[0.03em] text-[#3A4A3C] md:order-none md:mx-0 md:w-auto md:flex-1 md:gap-7 md:overflow-visible md:px-0">
         {navLeft.map((item) => (
-          <Link key={item.label} href={item.href ?? "#"}>
+          <Link
+            key={item.label}
+            href={item.href ?? "#"}
+            className="shrink-0 transition-colors hover:text-forest"
+          >
             {item.label}
           </Link>
         ))}
       </nav>
-      <Logo size="sm" />
-      <div className="flex flex-1 justify-end gap-2.5">
-        <CtaButton tone="forest" variant="outline" shape="pill" size="sm" className="border-[#CFC6B0] text-[#3A4A3C]">
+      <Logo text={logoText} size="sm" />
+      <div className="flex gap-2.5 md:flex-1 md:justify-end">
+        <CtaButton tone="forest" variant="outline" shape="pill" size="sm" className={`hidden sm:inline-flex ${pillClasses}`}>
           Buscar
         </CtaButton>
-        <CtaButton tone="forest" variant="outline" shape="pill" size="sm" className="border-[#CFC6B0] text-[#3A4A3C]">
-          Cuenta
-        </CtaButton>
-        <CtaButton tone="forest" shape="pill" size="sm" className="bg-sage">
-          Carrito · {cartCount}
+        <CtaButton href="#contacto" tone="forest" shape="pill" size="sm" className="bg-sage">
+          {ctaLabel}
         </CtaButton>
       </div>
     </header>

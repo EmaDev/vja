@@ -4,7 +4,6 @@ import { cardVariants } from "./card-variants";
 import type {
   CardsSection,
   CmsSection,
-  ContactField,
   ContactSection,
   FooterColumn,
   FooterSection,
@@ -17,7 +16,6 @@ import type {
 const HERO_VARIANT_IDS = new Set<string>(heroVariants.map((variant) => variant.id));
 const HEADER_VARIANT_IDS = new Set<string>(headerVariants.map((variant) => variant.id));
 const CARD_VARIANT_IDS = new Set<string>(cardVariants.map((variant) => variant.id));
-const CONTACT_REQUIREMENTS = new Set(["Obligatorio", "Opcional", "Lista desplegable"]);
 const FOOTER_BACKGROUNDS = new Set(["forest", "paper"]);
 
 function isString(value: unknown): value is string {
@@ -36,17 +34,6 @@ function isNavLink(value: unknown): value is NavLink {
 
 function isNavLinkArray(value: unknown): value is NavLink[] {
   return Array.isArray(value) && value.every(isNavLink);
-}
-
-function isContactField(value: unknown): value is ContactField {
-  if (typeof value !== "object" || value === null) return false;
-  const record = value as Record<string, unknown>;
-  return (
-    isString(record.id) &&
-    isString(record.label) &&
-    isString(record.requirement) &&
-    CONTACT_REQUIREMENTS.has(record.requirement)
-  );
 }
 
 function isFooterColumn(value: unknown): value is FooterColumn {
@@ -74,10 +61,14 @@ function isHeroSection(record: Record<string, unknown>): record is HeroSection &
     hasBaseFields(record) &&
     isString(record.variant) &&
     HERO_VARIANT_IDS.has(record.variant) &&
+    isString(record.eyebrow) &&
     isString(record.title) &&
+    isString(record.titleHighlight) &&
     isString(record.subtitle) &&
     isString(record.ctaLabel) &&
     isString(record.ctaHref) &&
+    isString(record.secondaryCtaLabel) &&
+    isString(record.secondaryCtaHref) &&
     isString(record.imageUrl) &&
     isString(record.imageAlt)
   );
@@ -95,10 +86,10 @@ function isContactSection(record: Record<string, unknown>): record is ContactSec
     isString(record.address) &&
     isString(record.email) &&
     isString(record.hours) &&
-    isString(record.formRecipientEmail) &&
-    isString(record.thankYouMessage) &&
-    Array.isArray(record.fields) &&
-    (record.fields as unknown[]).every(isContactField)
+    isBoolean(record.whatsappEnabled) &&
+    isString(record.whatsappPhone) &&
+    isString(record.whatsappLabel) &&
+    isString(record.whatsappMessage)
   );
 }
 

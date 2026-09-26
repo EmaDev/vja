@@ -1,27 +1,77 @@
-export type ProductStatus = "live" | "draft";
+// Carga inicial del catálogo en Firestore. Los datos vivían hardcodeados en
+// `src/lib/cms/product-mock-data.ts` y `category-mock-data.ts`; ahora viven acá,
+// en un script de una sola vez, y la app lee únicamente de la base.
+//
+//   node scripts/seed-catalog.mjs              # sólo crea lo que falta
+//   node scripts/seed-catalog.mjs --overwrite  # pisa lo que ya está cargado
+//
+// Sin `--overwrite` no toca un documento existente: si el vivero ya editó una
+// planta desde el CMS, volver a correr el seed no puede deshacer ese trabajo.
+import { readFileSync } from "node:fs";
+import { cert, initializeApp } from "firebase-admin/app";
+import { getFirestore, FieldValue } from "firebase-admin/firestore";
 
-export interface Product {
-  id: string;
-  name: string;
-  latin: string;
-  category: string;
-  light: string;
-  water: string;
-  height: string;
-  difficulty: string;
-  pot: string;
-  petSafe: string;
-  status: ProductStatus;
-  photos: number;
-  short: string;
-  long: string;
-  tags: string[];
-  featured: boolean;
+// Mismo criterio que `scripts/set-cms-role.mjs`: el .env se lee a mano porque
+// no se puede confiar en `node --env-file` en todas las máquinas del equipo.
+//
+// El corte contempla CRLF: el .env.local de Windows los trae, y en JavaScript
+// `.` no matchea `\r`, así que un `split("\n")` a secas deja un `\r` colgando
+// que hace fallar la línea entera en silencio.
+for (const line of readFileSync(new URL("../.env.local", import.meta.url), "utf8").split(/\r?\n/)) {
+  const match = line.match(/^([A-Z0-9_]+)=(.*)$/);
+  if (!match) continue;
+  const [, key, rawValue] = match;
+  const value = rawValue.replace(/^"(.*)"$/, "$1");
+  process.env[key] ??= value;
 }
 
-/** Catálogo de ejemplo — no hay colección de productos en Firestore todavía, esta
- * pantalla trabaja en memoria mientras se define el modelo de datos real. */
-export const mockProducts: Product[] = [
+const SITE_ID = "vja-plantas";
+const overwrite = process.argv.includes("--overwrite");
+
+const categories = [
+  {
+    id: "interior",
+    name: "Interior",
+    slug: "interior",
+    short: "Plantas que viven bien puertas adentro",
+    description:
+      "Especies aclimatadas a la luz de una casa o una oficina. Llegan en maceta, con sustrato propio y una ficha de riego escrita a mano.",
+    status: "live",
+    featured: true,
+  },
+  {
+    id: "exterior",
+    name: "Exterior",
+    slug: "exterior",
+    short: "Para patio, balcón y jardín",
+    description:
+      "Plantas de sol directo y media sombra, criadas a la intemperie en nuestro vivero de Tigre para que no sufran el cambio.",
+    status: "live",
+    featured: true,
+  },
+  {
+    id: "flores-de-corte",
+    name: "Flores de corte",
+    slug: "flores-de-corte",
+    short: "Ramos de temporada, cortados el mismo día",
+    description:
+      "Lo que esté floreciendo esa semana. La disponibilidad cambia seguido: preguntanos antes de encargar un ramo grande.",
+    status: "live",
+    featured: false,
+  },
+  {
+    id: "accesorios",
+    name: "Accesorios",
+    slug: "accesorios",
+    short: "Macetas, sustratos y herramientas",
+    description:
+      "Cerámica esmaltada y terracota de ceramistas del conurbano, más el sustrato que usamos nosotros en el vivero.",
+    status: "draft",
+    featured: false,
+  },
+];
+
+const products = [
   {
     id: "monstera-deliciosa",
     name: "Monstera Deliciosa",
@@ -167,3 +217,50 @@ export const mockProducts: Product[] = [
     featured: false,
   },
 ];
+
+const app = initializeApp({
+  credential: cert({
+    projectId: process.env.FIREBASE_PROJECT_ID,
+    clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
+    privateKey: process.env.FIREBASE_PRIVATE_KEY?.replace(/\\n/g, "\n"),
+  }),
+});
+
+const siteDoc = getFirestore(app).collection("sites").doc(SITE_ID);
+
+/** El índice del array es el campo `order`: el orden en que se cargaron acá es
+ * el orden en que se muestran en el sitio. */
+async function seed(collectionName, items) {
+  const ref = siteDoc.collection(collectionName);
+  let written = 0;
+  let skipped = 0;
+
+  for (const [index, { id, ...fields }] of items.entries()) {
+    const doc = ref.doc(id);
+
+    if (!overwrite && (await doc.get()).exists) {
+      skipped++;
+      continue;
+    }
+
+    await doc.set({
+      ...fields,
+      order: index,
+      createdAt: FieldValue.serverTimestamp(),
+      updatedAt: FieldValue.serverTimestamp(),
+      updatedBy: "seed",
+    });
+    written++;
+  }
+
+  console.log(`${collectionName}: ${written} escritos, ${skipped} ya existían`);
+}
+
+await seed("categories", categories);
+await seed("products", products);
+
+console.log(
+  overwrite
+    ? "Listo. Publicá desde el CMS o esperá la revalidación para verlo en el sitio."
+    : "Listo. Usá --overwrite para pisar los documentos que ya estaban.",
+);

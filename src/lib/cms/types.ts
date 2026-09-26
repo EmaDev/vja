@@ -14,14 +14,6 @@ export interface FooterColumn {
   links: NavLink[];
 }
 
-export type ContactFieldRequirement = "Obligatorio" | "Opcional" | "Lista desplegable";
-
-export interface ContactField {
-  id: string;
-  label: string;
-  requirement: ContactFieldRequirement;
-}
-
 interface BaseSection {
   id: string;
 }
@@ -36,10 +28,18 @@ export interface HeaderSection extends BaseSection {
 export interface HeroSection extends BaseSection {
   kind: "hero";
   variant: HeroVariantId;
+  /** Línea chica sobre el titular. Vacío lo oculta. */
+  eyebrow: string;
   title: string;
+  /** Segunda línea del titular, la que cada variante destaca en itálica o color.
+   * Vacío deja el titular en una sola línea. */
+  titleHighlight: string;
   subtitle: string;
   ctaLabel: string;
   ctaHref: string;
+  /** Acción secundaria. Vacío la oculta; la variante cinemática no la usa. */
+  secondaryCtaLabel: string;
+  secondaryCtaHref: string;
   imageUrl: string;
   imageAlt: string;
 }
@@ -56,9 +56,13 @@ export interface ContactSection extends BaseSection {
   address: string;
   email: string;
   hours: string;
-  formRecipientEmail: string;
-  thankYouMessage: string;
-  fields: ContactField[];
+  /** Botón flotante de WhatsApp, visible en toda la landing. */
+  whatsappEnabled: boolean;
+  /** Puede ser distinto de `phone`: el fijo del local no suele recibir mensajes. */
+  whatsappPhone: string;
+  whatsappLabel: string;
+  /** Texto con el que arranca la conversación cuando el visitante toca el botón. */
+  whatsappMessage: string;
 }
 
 export type FooterBackground = "forest" | "paper";

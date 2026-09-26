@@ -1,4 +1,5 @@
 import "server-only";
+import { unstable_cache } from "next/cache";
 import { getFirestore, FieldValue } from "firebase-admin/firestore";
 import type { CollectionReference } from "firebase-admin/firestore";
 import { getAdminApp } from "@/lib/firebase/admin";
@@ -9,11 +10,15 @@ import type { CmsSection } from "./types";
 const SITE_ID = "vja-plantas";
 const MAX_VERSIONS = 10;
 
+/** Etiqueta de caché del contenido publicado. `publishAction` la invalida para que
+ * la landing se regenere al publicar, sin esperar a un redeploy. */
+export const PUBLISHED_TAG = "published-site";
+
 interface SiteRevision {
   sections: CmsSection[];
 }
 
-function siteDoc() {
+export function siteDoc() {
   return getFirestore(getAdminApp()).collection("sites").doc(SITE_ID);
 }
 
@@ -21,12 +26,28 @@ function siteDoc() {
  *
  * El editor busca cada sección por su `kind` y asume que existe, así que un draft
  * incompleto —por ejemplo uno guardado antes de que existieran `cards`, `contact` o
- * `seo`— rompería la pantalla. Completa lo que falte con el seed en vez de
- * descartar las secciones que sí quedaron bien, y filtra las que no validan contra
- * el esquema actual para no alimentar campos `undefined` a inputs controlados. */
+ * `seo`— rompería la pantalla. Completa lo que falte con el seed para no alimentar
+ * campos `undefined` a inputs controlados.
+ *
+ * Cuando una sección guardada no valida contra el esquema actual, casi siempre es
+ * porque la sección ganó campos nuevos después de que se guardó. En ese caso se
+ * rellena con el seed sólo lo que falta, en vez de tirar abajo todo lo que el
+ * cliente ya había cargado. Sólo se descarta entera si ni siquiera así valida. */
 function normalizeSections(sections: unknown): CmsSection[] {
-  const stored = Array.isArray(sections) ? sections.filter(isCmsSection) : [];
-  return initialSections.map((seed) => stored.find((section) => section.kind === seed.kind) ?? seed);
+  const stored = Array.isArray(sections) ? sections : [];
+
+  return initialSections.map((seed) => {
+    const match = stored.find(
+      (section): section is Record<string, unknown> =>
+        typeof section === "object" && section !== null && section.kind === seed.kind,
+    );
+
+    if (!match) return seed;
+    if (isCmsSection(match)) return match;
+
+    const merged = { ...seed, ...match };
+    return isCmsSection(merged) ? merged : seed;
+  });
 }
 
 export async function getDraft(): Promise<CmsSection[]> {
@@ -41,6 +62,15 @@ export async function getPublished(): Promise<CmsSection[]> {
   if (!published) return [];
   return normalizeSections(published.sections);
 }
+
+/** Versión cacheada de `getPublished()` para la landing pública.
+ *
+ * Sin esto cada visita sería una lectura de Firestore. El proyecto no usa
+ * Cache Components (`use cache` pide el flag `cacheComponents`), así que va por
+ * el modelo anterior: `unstable_cache` + `revalidateTag` al publicar. */
+export const getPublishedCached = unstable_cache(getPublished, ["published-sections"], {
+  tags: [PUBLISHED_TAG],
+});
 
 export async function saveDraft(sections: CmsSection[], updatedBy: string): Promise<void> {
   await siteDoc().set(

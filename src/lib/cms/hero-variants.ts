@@ -17,11 +17,16 @@ export type HeroVariantId =
  * acá aparte (en vez de importarla de `./types`) para no generar un import
  * circular, ya que `types.ts` importa `HeroVariantId` de este archivo. */
 export interface HeroContentData {
+  eyebrow: string;
   title: string;
+  titleHighlight: string;
   subtitle: string;
   ctaLabel: string;
   ctaHref: string;
+  secondaryCtaLabel: string;
+  secondaryCtaHref: string;
   imageUrl: string;
+  imageAlt: string;
 }
 
 export interface HeroVariantDefinition {
@@ -36,6 +41,27 @@ export interface HeroVariantDefinition {
   getProps: (data: HeroContentData) => Record<string, unknown>;
 }
 
+/** Lo que todas las variantes reciben igual. Cada una le suma el mapeo de su
+ * titular, que es lo único que cambia de nombre entre un diseño y otro.
+ *
+ * Los textos se pasan tal cual, incluso vacíos: si fueran `undefined` el componente
+ * caería en el texto de ejemplo de su mockup, y borrar la volanta en el panel haría
+ * aparecer "Temporada de interior" en el sitio publicado. Cada hero ya se encarga de
+ * no dibujar lo que llega vacío. Los `href` sí van como `undefined`, porque ahí la
+ * ausencia significa "botón sin link", no "texto vacío". */
+function commonProps(data: HeroContentData): Record<string, unknown> {
+  return {
+    eyebrow: data.eyebrow,
+    description: data.subtitle,
+    primaryCtaLabel: data.ctaLabel,
+    primaryCtaHref: data.ctaHref || undefined,
+    secondaryCtaLabel: data.secondaryCtaLabel,
+    secondaryCtaHref: data.secondaryCtaHref || undefined,
+    image: data.imageUrl || undefined,
+    imageAlt: data.imageAlt || undefined,
+  };
+}
+
 export const heroVariants: HeroVariantDefinition[] = [
   {
     id: "editorial-split",
@@ -45,10 +71,9 @@ export const heroVariants: HeroVariantDefinition[] = [
     wireKind: "split",
     Component: HeroEditorialSplit,
     getProps: (data) => ({
+      ...commonProps(data),
       titleLine1: data.title,
-      description: data.subtitle,
-      primaryCtaLabel: data.ctaLabel,
-      image: data.imageUrl || undefined,
+      titleEmphasis: data.titleHighlight,
     }),
   },
   {
@@ -59,10 +84,12 @@ export const heroVariants: HeroVariantDefinition[] = [
     wireKind: "bleed",
     Component: HeroCinematic,
     getProps: (data) => ({
+      ...commonProps(data),
       titleLine1: data.title,
-      description: data.subtitle,
+      titleLine2: data.titleHighlight,
+      // Esta variante no tiene botón sólido: su única acción es el link del pie.
       ctaLabel: data.ctaLabel,
-      image: data.imageUrl || undefined,
+      ctaHref: data.ctaHref || undefined,
     }),
   },
   {
@@ -73,9 +100,9 @@ export const heroVariants: HeroVariantDefinition[] = [
     wireKind: "collage",
     Component: HeroCollage,
     getProps: (data) => ({
-      titlePrefix: data.title,
-      description: data.subtitle,
-      primaryCtaLabel: data.ctaLabel,
+      ...commonProps(data),
+      titleLine1: data.title,
+      titleEmphasis: data.titleHighlight,
     }),
   },
   {
@@ -86,10 +113,9 @@ export const heroVariants: HeroVariantDefinition[] = [
     wireKind: "arch",
     Component: HeroAnnouncementArch,
     getProps: (data) => ({
+      ...commonProps(data),
       titleLine1: data.title,
-      description: data.subtitle,
-      primaryCtaLabel: data.ctaLabel,
-      image: data.imageUrl || undefined,
+      titleLine2: data.titleHighlight,
     }),
   },
   {
@@ -100,11 +126,20 @@ export const heroVariants: HeroVariantDefinition[] = [
     wireKind: "dark",
     Component: HeroSidebarProduct,
     getProps: (data) => ({
+      ...commonProps(data),
       titleLine1: data.title,
-      description: data.subtitle,
-      primaryCtaLabel: data.ctaLabel,
+      titleEmphasis: data.titleHighlight,
     }),
   },
 ];
 
 export const defaultHeroVariant: HeroVariantId = "editorial-split";
+
+/** Fondo del hero, para que el header flotante elija su contraste. */
+export const heroTone: Record<HeroVariantId, "light" | "dark"> = {
+  "editorial-split": "light",
+  cinematic: "dark",
+  collage: "light",
+  "announcement-arch": "light",
+  "sidebar-product": "dark",
+};

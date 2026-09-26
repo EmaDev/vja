@@ -1,16 +1,19 @@
 import Link from "next/link";
 import { CtaButton } from "@/components/atoms/CtaButton";
 import { Logo } from "@/components/atoms/Logo";
-import type { NavItem } from "@/components/molecules/SiteHeaderCentered";
+import type { NavItem } from "@/components/atoms/NavLink";
+
+export type SidebarNavItem = NavItem & { active?: boolean };
 
 export type SidebarNavProps = {
-  navItems?: (NavItem & { active?: boolean })[];
-  cartCount?: number;
+  logoText?: string;
+  navItems?: SidebarNavItem[];
+  ctaLabel?: string;
   address?: string;
   hours?: string;
 };
 
-const defaultNavItems: (NavItem & { active?: boolean })[] = [
+const defaultNavItems: SidebarNavItem[] = [
   { label: "Catálogo", active: true },
   { label: "Flores frescas" },
   { label: "Suscripción" },
@@ -20,15 +23,16 @@ const defaultNavItems: (NavItem & { active?: boolean })[] = [
 
 /** Fixed dark sidebar navigation for full-height layouts. Mockup ref: 1e. */
 export function SidebarNav({
+  logoText,
   navItems = defaultNavItems,
-  cartCount = 2,
+  ctaLabel = "Contacto",
   address = "Av. Libertador 4820",
   hours = "Mar–Dom · 10 a 19 h",
 }: SidebarNavProps) {
   return (
-    <aside className="flex flex-col justify-between border-r border-paper/16 px-[26px] py-8">
+    <aside className="flex h-full flex-col justify-between border-r border-paper/16 px-[26px] py-8">
       <div>
-        <Logo tone="light" stacked />
+        <Logo text={logoText} tone="light" stacked />
         <nav className="mt-[52px] flex flex-col gap-[3px]">
           {navItems.map((item) => (
             <Link
@@ -37,7 +41,7 @@ export function SidebarNav({
               className={
                 item.active
                   ? "rounded-md bg-paper/10 px-3 py-[10px] text-[15px] text-paper"
-                  : "rounded-md px-3 py-[10px] text-[15px] text-[#C7CFC1]"
+                  : "rounded-md px-3 py-[10px] text-[15px] text-[#C7CFC1] transition-colors hover:bg-paper/[0.06] hover:text-paper"
               }
             >
               {item.label}
@@ -46,8 +50,8 @@ export function SidebarNav({
         </nav>
       </div>
       <div className="flex flex-col gap-3">
-        <CtaButton tone="paper" size="sm" className="text-center">
-          Carrito · {cartCount}
+        <CtaButton href="#contacto" tone="paper" size="sm" className="text-center">
+          {ctaLabel}
         </CtaButton>
         <span className="text-xs leading-relaxed text-[#8FA68A]">
           {address}

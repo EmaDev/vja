@@ -5,7 +5,6 @@ import { usePathname, useSearchParams } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { SAVE_STATUS_LABEL, useCmsDraft } from "@/lib/cms/draft-context";
 import { DESIGN_TABS, CONTENT_TABS, resolveTab, isDesignTab, isContentTab } from "@/lib/cms/tabs";
-import { mockProducts } from "@/lib/cms/product-mock-data";
 import { logout } from "@/lib/auth/actions";
 
 function GroupLabel({ children }: { children: React.ReactNode }) {
@@ -60,13 +59,34 @@ function SubNavButton({
   );
 }
 
-export function AdminSidebar() {
+/** Totales del catálogo, calculados en el servidor. */
+export interface CatalogTotals {
+  total: number;
+  drafts: number;
+}
+
+/** Promociones cargadas y cuántas de ellas corren hoy. El conteo de activas se
+ * hace en el servidor: la barra lateral sólo informa, no decide nada. */
+export interface PromotionTotals {
+  total: number;
+  active: number;
+}
+
+export interface AdminSidebarProps {
+  products: CatalogTotals;
+  categories: CatalogTotals;
+  promotions: PromotionTotals;
+}
+
+export function AdminSidebar({ products, categories, promotions }: AdminSidebarProps) {
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const { saveStatus } = useCmsDraft();
 
   const onCms = pathname === "/cms";
   const onProducts = pathname.startsWith("/cms/productos");
+  const onCategories = pathname.startsWith("/cms/categorias");
+  const onPromotions = pathname.startsWith("/cms/promociones");
   const activeTab = resolveTab(searchParams.get("tab"));
 
   return (
@@ -78,7 +98,7 @@ export function AdminSidebar() {
         >
           <div className="h-[30px] w-[30px] shrink-0 rounded-full bg-sage" />
           <div>
-            <div className="font-display text-xl leading-[1.1] text-paper">Raíz &amp; Pétalo</div>
+            <div className="font-display text-xl leading-[1.1] text-paper">VJA Plantas</div>
             <div className="mt-0.5 text-[10px] uppercase tracking-[0.22em] text-[#7E9479]">
               Editor del sitio
             </div>
@@ -91,16 +111,17 @@ export function AdminSidebar() {
             <NavButton href="/cms/productos" active={onProducts}>
               Productos
             </NavButton>
-            <NavButton href="/cms/productos" active={false}>
+            <NavButton href="/cms/categorias" active={onCategories}>
               Categorías
-            </NavButton>
-            <NavButton href="/cms/productos" active={false}>
-              Biblioteca de medios
             </NavButton>
           </div>
 
           <div className="flex flex-col gap-[3px]">
             <GroupLabel>Sitio</GroupLabel>
+
+            <NavButton href="/cms/promociones" active={onPromotions}>
+              Promocional
+            </NavButton>
 
             <NavButton href="/cms?tab=header" active={onCms && isDesignTab(activeTab)}>
               Diseño
@@ -133,11 +154,26 @@ export function AdminSidebar() {
 
       <div className="flex flex-col gap-2.5">
         <div className="rounded-lg border border-paper/16 bg-paper/[0.08] p-3.5">
-          {onProducts ? (
+          {onPromotions ? (
+            <>
+              <div className="text-xs text-[#C7CFC1]">Promociones</div>
+              <div className="mt-[3px] text-[13px] text-paper">
+                {promotions.total} cargadas · {promotions.active} activa
+                {promotions.active === 1 ? "" : "s"} hoy
+              </div>
+            </>
+          ) : onCategories ? (
+            <>
+              <div className="text-xs text-[#C7CFC1]">Catálogo agrupado</div>
+              <div className="mt-[3px] text-[13px] text-paper">
+                {categories.total} categorías · {categories.drafts} borradores
+              </div>
+            </>
+          ) : onProducts ? (
             <>
               <div className="text-xs text-[#C7CFC1]">Catálogo publicado</div>
               <div className="mt-[3px] text-[13px] text-paper">
-                {mockProducts.length} productos · {mockProducts.filter((p) => p.status === "draft").length} borradores
+                {products.total} productos · {products.drafts} borradores
               </div>
             </>
           ) : (

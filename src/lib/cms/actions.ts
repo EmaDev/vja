@@ -1,7 +1,8 @@
 "use server";
 
+import { revalidateTag } from "next/cache";
 import { getCmsUser } from "@/lib/auth/session-guard";
-import { publish as publishSite, saveDraft as saveDraftRepo } from "./repository";
+import { PUBLISHED_TAG, publish as publishSite, saveDraft as saveDraftRepo } from "./repository";
 import { isCmsSectionArray } from "./validation";
 import type { CmsSection } from "./types";
 
@@ -28,5 +29,8 @@ export async function publishAction(): Promise<ActionResult> {
   }
 
   await publishSite(user.uid);
+  // `{ expire: 0 }` en vez del perfil "max": tras publicar, el editor abre la
+  // vista previa enseguida y no puede ver contenido viejo mientras revalida.
+  revalidateTag(PUBLISHED_TAG, { expire: 0 });
   return { ok: true };
 }

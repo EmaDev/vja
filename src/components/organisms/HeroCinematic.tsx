@@ -10,8 +10,11 @@ export type HeroCinematicProps = {
   description?: string;
   note?: string;
   ctaLabel?: string;
+  ctaHref?: string;
   image?: string;
+  imageAlt?: string;
   imageLabel?: string;
+  showHeader?: boolean;
 };
 
 /** Full-bleed cinematic hero with a floating glass header. Mockup ref: 1b. */
@@ -22,36 +25,45 @@ export function HeroCinematic({
   description = "Plantas, flores frescas y arreglos a medida. Entregamos todos los días antes de las 18 h.",
   note = "Envío el mismo día en CABA y GBA norte.",
   ctaLabel = "Ver flores de temporada →",
+  ctaHref,
   image,
+  imageAlt,
   imageLabel = "Foto apaisada: invernadero con luz difusa",
+  showHeader = true,
 }: HeroCinematicProps) {
   return (
-    <div className="relative h-[760px] overflow-hidden bg-forest">
+    <div className="relative h-[560px] overflow-hidden bg-forest md:h-[660px] lg:h-[760px]">
       <ImagePlaceholder
         src={image}
-        alt={titleLine1}
+        alt={imageAlt ?? titleLine1}
         label={imageLabel}
         className="absolute inset-0"
       />
       <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(180deg,rgba(12,26,16,0.66)_0%,rgba(12,26,16,0.18)_38%,rgba(12,26,16,0.82)_100%)]" />
-      <FloatingHeader />
-      <div className="pointer-events-none absolute inset-x-12 bottom-16 flex items-end justify-between gap-12">
+      {showHeader ? <FloatingHeader /> : null}
+      <div className="site-inset pointer-events-none absolute bottom-10 flex flex-col items-start gap-8 lg:bottom-16 lg:flex-row lg:items-end lg:justify-between lg:gap-12 lg:[--site-gutter:3rem]">
         <div className="max-w-[760px] animate-[rp-rise_0.9s_ease_both]">
-          <Eyebrow tone="cream">{eyebrow}</Eyebrow>
-          <h1 className="mt-5 font-display text-[104px] font-normal leading-[0.94] text-[#F9F6EF]">
+          {eyebrow ? <Eyebrow tone="cream">{eyebrow}</Eyebrow> : null}
+          <h1 className="mt-4 font-display text-[48px] font-normal leading-[0.98] text-[#F9F6EF] sm:text-[64px] lg:mt-5 lg:text-[84px] lg:leading-[0.94] xl:text-[104px]">
             {titleLine1}
-            <br />
-            {titleLine2}
+            {titleLine2 ? (
+              <>
+                <br />
+                {titleLine2}
+              </>
+            ) : null}
           </h1>
-          <p className="mt-6 max-w-[520px] text-[19px] leading-[1.6] text-[#EDE8DA]">
+          <p className="mt-5 max-w-[520px] text-base leading-[1.6] text-[#EDE8DA] md:text-[19px] lg:mt-6">
             {description}
           </p>
         </div>
-        <div className="pointer-events-auto flex flex-col items-end gap-4 text-right text-sm text-[#EDE8DA]">
+        <div className="pointer-events-auto flex flex-col items-start gap-4 text-sm text-[#EDE8DA] lg:items-end lg:text-right">
           <div className="w-[220px] border-t border-paper/30 pt-3">{note}</div>
-          <TextLink tone="light" className="text-[#F9F6EF]">
-            {ctaLabel}
-          </TextLink>
+          {ctaLabel ? (
+            <TextLink href={ctaHref} tone="light" className="text-[#F9F6EF]">
+              {ctaLabel}
+            </TextLink>
+          ) : null}
         </div>
       </div>
     </div>

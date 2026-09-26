@@ -161,7 +161,7 @@ export default function ComponentsPreviewPage() {
 
       <section className="flex flex-col gap-24 px-12 pb-30">
         <div className="flex items-baseline gap-5">
-          <span className="font-display text-[38px] text-forest">Raíz &amp; Pétalo — Heros &amp; Headers</span>
+          <span className="font-display text-[38px] text-forest">VJA Plantas — Heros &amp; Headers</span>
           <span className="text-sm uppercase tracking-[0.08em] text-stone">5 variantes</span>
         </div>
 

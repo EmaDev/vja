@@ -18,7 +18,7 @@ export function TrendingProductsRow({
         <span className="text-xs uppercase tracking-[0.2em] text-[#9FB09A]">{label}</span>
         <span className="text-[13px] text-[#9FB09A]">{pager}</span>
       </div>
-      <div className="grid grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 gap-3 sm:grid-cols-4 sm:gap-4">
         {products.map((product) => (
           <MiniProductTile key={product.name} {...product} />
         ))}

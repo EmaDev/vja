@@ -1,9 +1,11 @@
 import { cn } from "@/lib/utils";
 
 export type LogoProps = {
+  /** Wordmark text. Comes from the CMS `header.logoText` on the public site. */
+  text?: string;
   tone?: "dark" | "light";
   align?: "left" | "center";
-  /** Stack "Raíz" and "& Pétalo" on two lines instead of one. */
+  /** Split the wordmark on the "&" so it reads on two lines instead of one. */
   stacked?: boolean;
   showTagline?: boolean;
   size?: "sm" | "md" | "lg";
@@ -11,12 +13,21 @@ export type LogoProps = {
 };
 
 const sizeClasses = {
-  sm: "text-[22px]",
-  md: "text-[27px]",
-  lg: "text-[38px]",
+  sm: "text-[20px] md:text-[22px]",
+  md: "text-[23px] md:text-[27px]",
+  lg: "text-[30px] md:text-[38px]",
 };
 
+/** Parte el wordmark en la primera "&" para la variante apilada. Sin "&" queda en
+ * una sola línea, que es lo correcto para un nombre de una sola palabra. */
+function splitOnAmpersand(text: string): [string, string] | null {
+  const index = text.indexOf("&");
+  if (index <= 0) return null;
+  return [text.slice(0, index).trim(), text.slice(index).trim()];
+}
+
 export function Logo({
+  text = "VJA Plantas",
   tone = "dark",
   align = "left",
   stacked = false,
@@ -24,6 +35,8 @@ export function Logo({
   size = "md",
   className,
 }: LogoProps) {
+  const parts = stacked ? splitOnAmpersand(text) : null;
+
   return (
     <div className={cn(align === "center" && "text-center", className)}>
       <div
@@ -33,14 +46,14 @@ export function Logo({
           tone === "light" ? "text-paper" : "text-forest",
         )}
       >
-        {stacked ? (
+        {parts ? (
           <>
-            Raíz
+            {parts[0]}
             <br />
-            &amp; Pétalo
+            {parts[1]}
           </>
         ) : (
-          "Raíz & Pétalo"
+          text
         )}
       </div>
       {showTagline && (

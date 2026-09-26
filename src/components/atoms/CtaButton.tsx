@@ -10,6 +10,8 @@ export type CtaButtonProps = {
   size?: "sm" | "md";
   className?: string;
   onClick?: () => void;
+  /** Sólo aplica cuando no hay `href`, es decir cuando se renderiza como `<button>`. */
+  type?: "button" | "submit";
 };
 
 const toneVariantClasses: Record<string, string> = {
@@ -36,6 +38,7 @@ export function CtaButton({
   size = "md",
   className,
   onClick,
+  type = "button",
 }: CtaButtonProps) {
   const classes = cn(
     "inline-flex items-center justify-center whitespace-nowrap font-medium transition-colors duration-300",
@@ -54,7 +57,7 @@ export function CtaButton({
   }
 
   return (
-    <button type="button" onClick={onClick} className={classes}>
+    <button type={type} onClick={onClick} className={classes}>
       {children}
     </button>
   );

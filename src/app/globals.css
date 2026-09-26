@@ -1,7 +1,7 @@
 @import "tailwindcss";
 @source "../../node_modules/lib-kit-components/dist";
 
-/* Paleta Raíz & Pétalo.
+/* Paleta VJA Plantas.
    Declarada en un único `@theme` en vez de duplicarla en `:root` y volver a
    listarla en `@theme inline` apuntándose a sí misma (`--color-paper:
    var(--color-paper)`). Las dos formas compilan igual —incluidos los
@@ -50,6 +50,9 @@
 :root {
   --background: #ffffff;
   --foreground: #171717;
+
+  /* Hasta acá se estira el contenido del sitio público. Ver `site-gutter`. */
+  --site-max: 1700px;
 }
 
 @theme inline {
@@ -72,6 +75,50 @@ body {
   background: var(--background);
   color: var(--foreground);
   font-family: var(--font-dm-sans), system-ui, sans-serif;
+}
+
+/* Ancho máximo del sitio.
+ *
+ * El tope se aplica como margen lateral calculado, no como un `max-width` sobre
+ * un contenedor: así el fondo de cada sección —el papel, la crema, el verde del
+ * footer— sigue llegando al borde de la pantalla, y lo único que se frena y
+ * queda centrado es el contenido.
+ *
+ * Por debajo de `--site-max` la resta da negativo y `max()` elige el margen de
+ * siempre, así que en mobile y notebook no cambia nada. Las secciones que
+ * posicionan su contenido en absoluto en vez de con padding usan `site-inset`,
+ * que hace la misma cuenta sobre `left`/`right`.
+ *
+ * Una sección puede pedir otro margen con `lg:[--site-gutter:3rem]`: las
+ * utilidades de Tailwind pisan a esta capa. */
+@layer components {
+  .site-gutter,
+  .site-inset {
+    --site-gutter: 1.25rem;
+  }
+
+  .site-gutter {
+    padding-inline: max(var(--site-gutter), (100% - var(--site-max)) / 2);
+  }
+
+  .site-inset {
+    left: max(var(--site-gutter), (100% - var(--site-max)) / 2);
+    right: max(var(--site-gutter), (100% - var(--site-max)) / 2);
+  }
+
+  @media (width >= 48rem) {
+    .site-gutter,
+    .site-inset {
+      --site-gutter: 2rem;
+    }
+  }
+
+  @media (width >= 64rem) {
+    .site-gutter,
+    .site-inset {
+      --site-gutter: 3.5rem;
+    }
+  }
 }
 
 @keyframes rp-rise {
@@ -100,5 +147,73 @@ body {
   }
   to {
     transform: translateX(-50%);
+  }
+}
+
+/* Quien pidió menos movimiento en su sistema no debería recibir las entradas
+ * escalonadas ni la marquesina. No se anulan del todo —una duración de cero
+ * cancelaría animaciones que dejan al elemento en su estado final y lo harían
+ * desaparecer— sino que se reducen a un instante y a una sola pasada. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-delay: 0ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* Impresión de etiquetas QR.
+ *
+ * El diálogo se monta en un portal que cuelga directo de `<body>`, así que para
+ * dejar la hoja sola alcanza con ocultar los demás hijos directos: no importa
+ * desde qué pantalla del CMS se haya abierto, nada de la barra lateral ni del
+ * encabezado fijo se cuela en el papel.
+ *
+ * El overlay se desarma (deja de ser `fixed`) porque un contenedor fijo imprime
+ * sólo lo que entra en una pantalla: el resto de las etiquetas se perdería en
+ * vez de pasar a la hoja siguiente. */
+@media print {
+  body > *:not(#qr-print-portal) {
+    display: none !important;
+  }
+
+  #qr-print-portal .qr-print-chrome {
+    display: none !important;
+  }
+
+  #qr-print-portal .qr-print-overlay {
+    position: static;
+    display: block;
+    overflow: visible;
+    background: none;
+    padding: 0;
+    backdrop-filter: none;
+  }
+
+  /* El marco es sólo la ventana de vista previa en pantalla: su ancho máximo y
+   * su `overflow: hidden` recortarían las etiquetas sobre el papel. */
+  #qr-print-portal .qr-print-frame {
+    max-width: none;
+    overflow: visible;
+    border-radius: 0;
+    box-shadow: none;
+  }
+
+  #qr-print-portal .qr-print-sheet {
+    padding: 0;
+    gap: 4mm;
+  }
+
+  /* Una etiqueta partida al medio entre dos hojas es una etiqueta perdida. */
+  .qr-print-label {
+    break-inside: avoid;
+  }
+
+  @page {
+    margin: 8mm;
   }
 }

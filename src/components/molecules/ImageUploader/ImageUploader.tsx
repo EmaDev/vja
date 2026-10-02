@@ -153,20 +153,15 @@ export function ImageUploader({ imageUrl, imageAlt, onChange }: ImageUploaderPro
     setStatus("idle");
   }
 
+  /* La miniatura va al costado de los controles, no encima: apilados, cada foto
+     ocupaba media pantalla de alto y las listas de imágenes —la galería, las
+     cards de servicios— quedaban larguísimas.
+     La decisión es por consulta de contenedor (`@container`) y no por ancho de
+     pantalla: el mismo uploader se usa suelto en una tarjeta ancha y dentro de
+     una celda angosta de la grilla de fotos, y ahí al lado no entra. */
   return (
-    <div className="flex flex-col gap-3">
-      <div className="flex flex-col gap-[7px]">
-        <TextField
-          label="Texto alternativo"
-          value={imageAlt}
-          onChange={(event) => onChange({ imageUrl, imageAlt: event.target.value })}
-        />
-        <p className="text-xs text-taupe">
-          Describe la imagen para lectores de pantalla y SEO. Obligatorio para subir una foto.
-        </p>
-      </div>
-
-      <div className="relative h-40 w-full overflow-hidden rounded-lg border border-line-light">
+    <div className="@container flex flex-col gap-3 @[26rem]:flex-row @[26rem]:items-start @[26rem]:gap-4">
+      <div className="relative h-[132px] w-full shrink-0 overflow-hidden rounded-lg border border-line-light @[26rem]:h-[124px] @[26rem]:w-[168px]">
         <ImagePlaceholder src={imageUrl || undefined} alt={imageAlt} label="Sin imagen" />
         {imageUrl ? (
           <Button
@@ -184,31 +179,42 @@ export function ImageUploader({ imageUrl, imageAlt, onChange }: ImageUploaderPro
         ) : null}
       </div>
 
-      {status === "uploading" ? <ProgressBar value={progress} max={100} showValue label="Subiendo…" /> : null}
-      {status === "compressing" ? <p className="text-xs text-taupe">Comprimiendo imagen…</p> : null}
-      {status === "saving" ? <p className="text-xs text-taupe">Guardando…</p> : null}
-      {error ? <p className="text-sm text-terracotta">{error}</p> : null}
+      <div className="flex min-w-0 flex-1 flex-col gap-2">
+        <TextField
+          label="Texto alternativo"
+          value={imageAlt}
+          onChange={(event) => onChange({ imageUrl, imageAlt: event.target.value })}
+        />
+        <p className="text-xs leading-[1.45] text-taupe">
+          Describe la imagen para lectores de pantalla y SEO. Obligatorio para subir una foto.
+        </p>
 
-      <input
-        ref={fileInputRef}
-        type="file"
-        accept="image/*"
-        className="hidden"
-        onChange={(event) => {
-          const file = event.target.files?.[0];
-          event.target.value = "";
-          if (file) void handleFile(file);
-        }}
-      />
-      <AdminButton
-        type="button"
-        variant="outline"
-        onClick={() => fileInputRef.current?.click()}
-        disabled={!imageAlt.trim() || busy}
-        className="w-fit"
-      >
-        {imageUrl ? "Cambiar imagen" : "Subir imagen"}
-      </AdminButton>
+        {status === "uploading" ? <ProgressBar value={progress} max={100} showValue label="Subiendo…" /> : null}
+        {status === "compressing" ? <p className="text-xs text-taupe">Comprimiendo imagen…</p> : null}
+        {status === "saving" ? <p className="text-xs text-taupe">Guardando…</p> : null}
+        {error ? <p className="text-sm text-terracotta">{error}</p> : null}
+
+        <input
+          ref={fileInputRef}
+          type="file"
+          accept="image/*"
+          className="hidden"
+          onChange={(event) => {
+            const file = event.target.files?.[0];
+            event.target.value = "";
+            if (file) void handleFile(file);
+          }}
+        />
+        <AdminButton
+          type="button"
+          variant="outline"
+          onClick={() => fileInputRef.current?.click()}
+          disabled={!imageAlt.trim() || busy}
+          className="w-fit"
+        >
+          {imageUrl ? "Cambiar imagen" : "Subir imagen"}
+        </AdminButton>
+      </div>
     </div>
   );
 }

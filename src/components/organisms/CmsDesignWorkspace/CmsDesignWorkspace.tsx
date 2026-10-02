@@ -8,6 +8,13 @@ import { AdminButton } from "@/components/atoms/AdminButton";
 import { VariantPickerPanel } from "@/components/organisms/VariantPickerPanel/VariantPickerPanel";
 import { HeaderEditor } from "@/components/organisms/SectionEditors/HeaderEditor";
 import { HeroEditor } from "@/components/organisms/SectionEditors/HeroEditor";
+import { AboutEditor } from "@/components/organisms/SectionEditors/AboutEditor";
+import { ServicesEditor } from "@/components/organisms/SectionEditors/ServicesEditor";
+import { GalleryEditor } from "@/components/organisms/SectionEditors/GalleryEditor";
+import { CareEditor } from "@/components/organisms/SectionEditors/CareEditor";
+import { VisitEditor } from "@/components/organisms/SectionEditors/VisitEditor";
+import { ShippingEditor } from "@/components/organisms/SectionEditors/ShippingEditor";
+import { FaqEditor } from "@/components/organisms/SectionEditors/FaqEditor";
 import { ContactEditor } from "@/components/organisms/SectionEditors/ContactEditor";
 import { FooterEditor } from "@/components/organisms/SectionEditors/FooterEditor";
 import { SeoEditor } from "@/components/organisms/SectionEditors/SeoEditor";
@@ -17,19 +24,33 @@ import { headerVariants, type HeaderVariantId } from "@/lib/cms/header-variants"
 import { heroVariants, type HeroVariantId } from "@/lib/cms/hero-variants";
 import { cardVariants, type CardVariantId } from "@/lib/cms/card-variants";
 import type {
+  AboutSection,
   CardsSection,
+  CareSection,
   CmsSection,
   ContactSection,
+  FaqSection,
   FooterSection,
+  GallerySection,
   HeaderSection,
   HeroSection,
   SeoSection,
+  ServicesSection,
+  ShippingSection,
+  VisitSection,
 } from "@/lib/cms/types";
 
 const TAB_META: Record<string, { crumb: string; title: string }> = {
   header: { crumb: "Diseño / Header", title: "Elegí el header de la landing" },
   hero: { crumb: "Diseño / Hero", title: "Elegí el hero de la portada" },
   cards: { crumb: "Diseño / Cards de producto", title: "Elegí cómo se muestran las plantas" },
+  nosotros: { crumb: "Secciones / Nosotros", title: "Quiénes somos" },
+  servicios: { crumb: "Secciones / Servicios", title: "Servicios del local" },
+  galeria: { crumb: "Secciones / Galería", title: "Galería de fotos" },
+  cuidados: { crumb: "Secciones / Cuidados", title: "Notas de cuidado" },
+  visitanos: { crumb: "Secciones / Visitanos", title: "Horarios y ubicación" },
+  envios: { crumb: "Secciones / Envíos", title: "Zona de envíos" },
+  faq: { crumb: "Secciones / Preguntas frecuentes", title: "Preguntas frecuentes" },
   contacto: { crumb: "Contenido / Contacto", title: "Datos de contacto" },
   footer: { crumb: "Contenido / Footer", title: "Footer del sitio" },
   seo: { crumb: "Contenido / SEO", title: "SEO y redes sociales" },
@@ -45,6 +66,13 @@ export function CmsDesignWorkspace() {
   const header = sections.find((s): s is HeaderSection => s.kind === "header")!;
   const hero = sections.find((s): s is HeroSection => s.kind === "hero")!;
   const cards = sections.find((s): s is CardsSection => s.kind === "cards")!;
+  const about = sections.find((s): s is AboutSection => s.kind === "about")!;
+  const services = sections.find((s): s is ServicesSection => s.kind === "services")!;
+  const gallery = sections.find((s): s is GallerySection => s.kind === "gallery")!;
+  const care = sections.find((s): s is CareSection => s.kind === "care")!;
+  const visit = sections.find((s): s is VisitSection => s.kind === "visit")!;
+  const shipping = sections.find((s): s is ShippingSection => s.kind === "shipping")!;
+  const faq = sections.find((s): s is FaqSection => s.kind === "faq")!;
   const contact = sections.find((s): s is ContactSection => s.kind === "contact")!;
   const footer = sections.find((s): s is FooterSection => s.kind === "footer")!;
   const seo = sections.find((s): s is SeoSection => s.kind === "seo")!;
@@ -144,6 +172,16 @@ export function CmsDesignWorkspace() {
             }}
           />
         ) : null}
+
+        {tab === "nosotros" ? <AboutEditor section={about} onChange={updateSection} /> : null}
+        {tab === "servicios" ? <ServicesEditor section={services} onChange={updateSection} /> : null}
+        {tab === "galeria" ? <GalleryEditor section={gallery} onChange={updateSection} /> : null}
+        {tab === "cuidados" ? <CareEditor section={care} onChange={updateSection} /> : null}
+        {tab === "visitanos" ? (
+          <VisitEditor section={visit} onChange={updateSection} address={contact.address} />
+        ) : null}
+        {tab === "envios" ? <ShippingEditor section={shipping} onChange={updateSection} /> : null}
+        {tab === "faq" ? <FaqEditor section={faq} onChange={updateSection} /> : null}
 
         {tab === "contacto" ? <ContactEditor section={contact} onChange={updateSection} /> : null}
         {tab === "footer" ? <FooterEditor section={footer} onChange={updateSection} /> : null}

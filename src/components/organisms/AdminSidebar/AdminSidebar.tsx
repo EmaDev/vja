@@ -4,7 +4,15 @@ import Link from "next/link";
 import { usePathname, useSearchParams } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { SAVE_STATUS_LABEL, useCmsDraft } from "@/lib/cms/draft-context";
-import { DESIGN_TABS, CONTENT_TABS, resolveTab, isDesignTab, isContentTab } from "@/lib/cms/tabs";
+import {
+  DESIGN_TABS,
+  SECTION_TABS,
+  CONTENT_TABS,
+  resolveTab,
+  isDesignTab,
+  isSectionTab,
+  isContentTab,
+} from "@/lib/cms/tabs";
 import { logout } from "@/lib/auth/actions";
 
 function GroupLabel({ children }: { children: React.ReactNode }) {
@@ -129,6 +137,19 @@ export function AdminSidebar({ products, categories, promotions }: AdminSidebarP
             {onCms && isDesignTab(activeTab) ? (
               <div className="ml-3 flex flex-col gap-[2px] border-l border-paper/10 pl-2">
                 {DESIGN_TABS.map((item) => (
+                  <SubNavButton key={item.tab} href={`/cms?tab=${item.tab}`} active={activeTab === item.tab}>
+                    {item.label}
+                  </SubNavButton>
+                ))}
+              </div>
+            ) : null}
+
+            <NavButton href="/cms?tab=nosotros" active={onCms && isSectionTab(activeTab)}>
+              Secciones
+            </NavButton>
+            {onCms && isSectionTab(activeTab) ? (
+              <div className="ml-3 flex flex-col gap-[2px] border-l border-paper/10 pl-2">
+                {SECTION_TABS.map((item) => (
                   <SubNavButton key={item.tab} href={`/cms?tab=${item.tab}`} active={activeTab === item.tab}>
                     {item.label}
                   </SubNavButton>

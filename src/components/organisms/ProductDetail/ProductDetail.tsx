@@ -39,13 +39,19 @@ function inquiryHref(product: Product, contact?: ContactSection): string | null 
   return whatsappHref(contact.whatsappPhone, `Hola, quería consultar por ${product.name}.`);
 }
 
-/** `photos` es un conteo, no las imágenes: todavía no hay archivos cargados, así
- * que la galería recibe esa cantidad de recuadros. Cuando el producto guarde
- * URLs, sólo cambia esta función. */
+/** Las fotos cargadas en el CMS.
+ *
+ * Un producto sin fotos devuelve igual un recuadro: la ficha sin galería queda
+ * coja, y el recuadro con el nombre es el mismo marcador de posición que usan
+ * las cards del catálogo. */
 function galleryPhotos(product: Product): GalleryPhoto[] {
-  const count = Math.max(1, Math.min(product.photos, 5));
-  return Array.from({ length: count }, (_, index) => ({
-    alt: index === 0 ? product.name : "",
+  if (product.photos.length === 0) {
+    return [{ alt: product.name, label: product.name }];
+  }
+
+  return product.photos.map((photo, index) => ({
+    src: photo.imageUrl,
+    alt: photo.imageAlt || (index === 0 ? product.name : ""),
     label: index === 0 ? product.name : `${product.name} ${index + 1}`,
   }));
 }

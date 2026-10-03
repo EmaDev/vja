@@ -3,6 +3,9 @@ import { ImagePlaceholder } from "@/components/atoms/ImagePlaceholder";
 
 export type ProductCardDrawerProps = {
   image?: string;
+  /** Texto alternativo de la foto. Sin él se usa el nombre, que es mejor que
+   *  nada pero describe la planta y no la imagen. */
+  imageAlt?: string;
   imageLabel?: string;
   badge: string;
   name: string;
@@ -14,6 +17,7 @@ export type ProductCardDrawerProps = {
 /** Dark card whose description drawer slides up from the bottom on hover. Mockup ref: 2c. */
 export function ProductCardDrawer({
   image,
+  imageAlt,
   imageLabel,
   badge,
   name,
@@ -27,7 +31,7 @@ export function ProductCardDrawer({
       className="group relative block h-[360px] cursor-pointer overflow-hidden rounded-[10px] bg-forest-deep sm:h-[430px]"
     >
       <div className="absolute inset-0 transition-transform duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:scale-[1.06]">
-        <ImagePlaceholder src={image} alt={name} label={imageLabel ?? name} />
+        <ImagePlaceholder src={image} alt={imageAlt ?? name} label={imageLabel ?? name} />
       </div>
       <div className="pointer-events-none absolute left-[18px] top-[18px] rounded-full border border-paper/28 bg-[#0c1a10]/50 px-3.5 py-[7px] text-xs uppercase tracking-[0.1em] text-paper backdrop-blur-[8px]">
         {badge}

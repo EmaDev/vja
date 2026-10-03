@@ -1,4 +1,4 @@
-import type { CatalogStatus, Category, Product } from "./catalog-types";
+import type { CatalogStatus, Category, Product, ProductPhoto } from "./catalog-types";
 
 /** Los payloads llegan desde el cliente, así que el servidor no puede confiar en
  * el tipo: se validan igual que las secciones en `validation.ts`. */
@@ -13,6 +13,12 @@ function isBoolean(value: unknown): value is boolean {
 
 export function isCatalogStatus(value: unknown): value is CatalogStatus {
   return value === "live" || value === "draft";
+}
+
+function isProductPhoto(value: unknown): value is ProductPhoto {
+  if (typeof value !== "object" || value === null) return false;
+  const record = value as Record<string, unknown>;
+  return isString(record.id) && isString(record.imageUrl) && isString(record.imageAlt);
 }
 
 export function isProduct(value: unknown): value is Product {
@@ -31,8 +37,8 @@ export function isProduct(value: unknown): value is Product {
     isString(record.pot) &&
     isString(record.petSafe) &&
     isCatalogStatus(record.status) &&
-    typeof record.photos === "number" &&
-    Number.isFinite(record.photos) &&
+    Array.isArray(record.photos) &&
+    record.photos.every(isProductPhoto) &&
     isString(record.short) &&
     isString(record.long) &&
     Array.isArray(record.tags) &&
@@ -52,6 +58,8 @@ export function isCategory(value: unknown): value is Category {
     isString(record.short) &&
     isString(record.description) &&
     isCatalogStatus(record.status) &&
-    isBoolean(record.featured)
+    isBoolean(record.featured) &&
+    isString(record.imageUrl) &&
+    isString(record.imageAlt)
   );
 }

@@ -6,6 +6,8 @@ export type { NavItem };
 
 export type SiteHeaderCenteredProps = {
   logoText?: string;
+  logoImageUrl?: string;
+  logoImageAlt?: string;
   navLeft?: NavItem[];
   navRight?: NavItem[];
 };
@@ -39,6 +41,8 @@ function NavCluster({ items, className }: { items: NavItem[]; className?: string
  * a ese ancho no entran tres zonas en la misma línea. */
 export function SiteHeaderCentered({
   logoText,
+  logoImageUrl,
+  logoImageAlt,
   navLeft = defaultNavLeft,
   navRight = defaultNavRight,
 }: SiteHeaderCenteredProps) {
@@ -50,7 +54,7 @@ export function SiteHeaderCentered({
     <header className="border-b border-line bg-paper">
       <div className="site-gutter flex flex-col items-center gap-4 py-4 md:grid md:grid-cols-[1fr_auto_1fr] md:items-center md:gap-0 md:py-[22px]">
         <NavCluster items={navLeft} className={`${baseNav} hidden gap-[30px] md:flex`} />
-        <Logo text={logoText} align="center" showTagline />
+        <Logo text={logoText} imageUrl={logoImageUrl} imageAlt={logoImageAlt} align="center" showTagline />
         <NavCluster
           items={navRight}
           className={`${baseNav} hidden justify-end gap-[26px] md:flex`}

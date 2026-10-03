@@ -7,6 +7,8 @@ export type SidebarNavItem = NavItem & { active?: boolean };
 
 export type SidebarNavProps = {
   logoText?: string;
+  logoImageUrl?: string;
+  logoImageAlt?: string;
   navItems?: SidebarNavItem[];
   ctaLabel?: string;
   address?: string;
@@ -24,6 +26,8 @@ const defaultNavItems: SidebarNavItem[] = [
 /** Fixed dark sidebar navigation for full-height layouts. Mockup ref: 1e. */
 export function SidebarNav({
   logoText,
+  logoImageUrl,
+  logoImageAlt,
   navItems = defaultNavItems,
   ctaLabel = "Contacto",
   address = "Av. Libertador 4820",
@@ -32,7 +36,7 @@ export function SidebarNav({
   return (
     <aside className="flex h-full flex-col justify-between border-r border-paper/16 px-[26px] py-8">
       <div>
-        <Logo text={logoText} tone="light" stacked />
+        <Logo text={logoText} imageUrl={logoImageUrl} imageAlt={logoImageAlt} tone="light" stacked />
         <nav className="mt-[52px] flex flex-col gap-[3px]">
           {navItems.map((item) => (
             <Link

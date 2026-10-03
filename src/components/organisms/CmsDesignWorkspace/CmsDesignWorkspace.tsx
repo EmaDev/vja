@@ -124,9 +124,15 @@ export function CmsDesignWorkspace() {
               onSelect={(variant) => updateSection({ ...header, variant })}
               renderPreview={(id) => {
                 const Variant = headerVariants.find((v) => v.id === id)!.Component;
+                // Con el logo y el texto reales, el selector muestra cómo va a
+                // quedar cada variante y no un maniquí con el nombre de ejemplo.
                 return (
                   <div className="pt-16">
-                    <Variant />
+                    <Variant
+                      logoText={header.logoText}
+                      logoImageUrl={header.logoImageUrl}
+                      logoImageAlt={header.logoImageAlt}
+                    />
                   </div>
                 );
               }}

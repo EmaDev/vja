@@ -5,6 +5,9 @@ import { ImagePlaceholder } from "@/components/atoms/ImagePlaceholder";
 export type ProductCardEditorialRowProps = {
   index: string;
   image?: string;
+  /** Texto alternativo de la foto. Sin él se usa el nombre, que es mejor que
+   *  nada pero describe la planta y no la imagen. */
+  imageAlt?: string;
   imageLabel?: string;
   category: string;
   name: string;
@@ -18,6 +21,7 @@ export type ProductCardEditorialRowProps = {
 export function ProductCardEditorialRow({
   index,
   image,
+  imageAlt,
   imageLabel,
   category,
   name,
@@ -31,7 +35,7 @@ export function ProductCardEditorialRow({
       className="grid items-center gap-5 rounded-lg border border-line-light bg-paper-light p-[18px] transition-[background,transform] duration-[350ms] ease-out sm:grid-cols-[150px_minmax(0,1fr)] sm:gap-6 lg:grid-cols-[190px_minmax(0,1fr)_auto] lg:gap-8 lg:hover:translate-x-2 hover:bg-white"
     >
       <div className="h-[180px] overflow-hidden rounded-[5px] bg-sand sm:h-[150px]">
-        <ImagePlaceholder src={image} alt={name} label={imageLabel ?? name} />
+        <ImagePlaceholder src={image} alt={imageAlt ?? name} label={imageLabel ?? name} />
       </div>
       <div>
         <div className="flex items-center gap-3">

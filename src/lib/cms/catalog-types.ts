@@ -4,6 +4,14 @@
 
 export type CatalogStatus = "live" | "draft";
 
+/** Una foto del producto. El orden del array es el orden de la galería y la
+ * primera hace de portada: es la que sale en la card del catálogo. */
+export interface ProductPhoto {
+  id: string;
+  imageUrl: string;
+  imageAlt: string;
+}
+
 export interface Product {
   /** Id del documento en Firestore y segmento de URL de la ficha.
    *
@@ -20,7 +28,7 @@ export interface Product {
   pot: string;
   petSafe: string;
   status: CatalogStatus;
-  photos: number;
+  photos: ProductPhoto[];
   short: string;
   long: string;
   tags: string[];
@@ -40,6 +48,15 @@ export interface Category {
   status: CatalogStatus;
   /** Aparece en el menú de navegación del sitio. */
   featured: boolean;
+  imageUrl: string;
+  imageAlt: string;
+}
+
+/** Portada del producto: la primera foto cargada. Devuelve `undefined` cuando
+ * todavía no hay ninguna, que es lo que `ImagePlaceholder` espera para dibujar
+ * el recuadro de papel en su lugar. */
+export function productCover(product: Product): ProductPhoto | undefined {
+  return product.photos.find((photo) => photo.imageUrl);
 }
 
 /** Convierte un nombre en segmento de URL. Devuelve `""` si no queda ningún

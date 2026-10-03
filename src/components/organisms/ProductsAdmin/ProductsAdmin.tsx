@@ -12,7 +12,7 @@ import { ImagePlaceholder } from "@/components/atoms/ImagePlaceholder";
 import { ProductEditForm } from "@/components/organisms/ProductsAdmin/ProductEditForm";
 import { QrPrintDialog } from "@/components/organisms/QrLabels/QrPrintDialog";
 import { deleteProductAction, saveProductAction } from "@/lib/cms/catalog-actions";
-import type { CatalogStatus, Product } from "@/lib/cms/catalog-types";
+import { productCover, type CatalogStatus, type Product } from "@/lib/cms/catalog-types";
 
 const ALL_CATEGORIES = "all";
 const ALL_STATUSES = "all";
@@ -58,7 +58,7 @@ export function ProductsAdmin({ products: initialProducts, categoryNames }: Prod
       pot: "Cerámica esmaltada",
       petSafe: "No",
       status: "draft",
-      photos: 0,
+      photos: [],
       short: "",
       long: "",
       tags: [],
@@ -332,7 +332,11 @@ export function ProductsAdmin({ products: initialProducts, categoryNames }: Prod
                   className="flex w-full flex-col overflow-hidden rounded-[10px] border border-line-light bg-paper-light text-left transition-transform duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] hover:-translate-y-1 hover:shadow-[0_16px_32px_rgba(23,48,31,0.12)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sage"
                 >
                   <div className="relative h-[180px] bg-sand">
-                    <ImagePlaceholder label={product.name} />
+                    <ImagePlaceholder
+                      src={productCover(product)?.imageUrl}
+                      alt={productCover(product)?.imageAlt}
+                      label={product.name}
+                    />
                     <StatusPill live={product.status === "live"} className="absolute left-3 top-3" />
                   </div>
                   <div className="px-4 pb-4 pt-3.5">
@@ -340,7 +344,9 @@ export function ProductsAdmin({ products: initialProducts, categoryNames }: Prod
                     <div className="mt-0.5 text-[13px] text-taupe">{product.latin}</div>
                     <div className="mt-3 flex items-center justify-between border-t border-[#EDE6D6] pt-[11px]">
                       <span className="text-[13px] text-ink">{product.category}</span>
-                      <span className="text-xs text-taupe">{product.photos} fotos</span>
+                      <span className="text-xs text-taupe">
+                        {product.photos.length === 1 ? "1 foto" : `${product.photos.length} fotos`}
+                      </span>
                     </div>
                   </div>
                 </button>
@@ -383,7 +389,10 @@ export function ProductsAdmin({ products: initialProducts, categoryNames }: Prod
                   />
                 </label>
                 <div className="h-11 w-11 overflow-hidden rounded-md">
-                  <ImagePlaceholder />
+                  <ImagePlaceholder
+                    src={productCover(product)?.imageUrl}
+                    alt={productCover(product)?.imageAlt}
+                  />
                 </div>
                 <div className="min-w-0">
                   <div className="text-[15px] font-medium text-forest">{product.name}</div>

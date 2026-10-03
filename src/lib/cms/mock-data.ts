@@ -16,6 +16,8 @@ export const initialSections: CmsSection[] = [
     kind: "header",
     variant: defaultHeaderVariant,
     logoText: "VJA Plantas",
+    logoImageUrl: "",
+    logoImageAlt: "",
     navLinks: [
       { id: "nav-1", label: "Inicio", href: "/" },
       { id: "nav-2", label: "Nosotros", href: "#nosotros" },

@@ -5,6 +5,8 @@ import { cn } from "@/lib/utils";
 
 export type FloatingHeaderProps = {
   logoText?: string;
+  logoImageUrl?: string;
+  logoImageAlt?: string;
   navItems?: NavItem[];
   activeLabel?: string;
   ctaLabel?: string;
@@ -23,6 +25,8 @@ const defaultNavItems: NavItem[] = [
 /** Transparent glass header meant to float on top of a full-bleed hero photo. Mockup ref: 1b. */
 export function FloatingHeader({
   logoText,
+  logoImageUrl,
+  logoImageAlt,
   navItems = defaultNavItems,
   activeLabel = "Inicio",
   ctaLabel = "Comprar ahora",
@@ -33,7 +37,7 @@ export function FloatingHeader({
   return (
     <header className="site-gutter pointer-events-none absolute inset-x-0 top-0 z-20 flex items-center justify-between gap-4 py-4 md:py-[26px] lg:[--site-gutter:3rem]">
       <div className="pointer-events-auto">
-        <Logo text={logoText} tone={light ? "light" : "dark"} size="sm" />
+        <Logo text={logoText} imageUrl={logoImageUrl} imageAlt={logoImageAlt} tone={light ? "light" : "dark"} size="sm" />
       </div>
       <nav
         className={cn(

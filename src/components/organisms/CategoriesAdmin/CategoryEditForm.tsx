@@ -7,8 +7,8 @@ import { TextAreaField } from "@/components/atoms/TextAreaField";
 import { ToggleSwitch } from "@/components/atoms/ToggleSwitch";
 import { SegmentedControl } from "@/components/atoms/SegmentedControl";
 import { AdminButton } from "@/components/atoms/AdminButton";
-import { ImagePlaceholder } from "@/components/atoms/ImagePlaceholder";
 import { FieldCard } from "@/components/molecules/FieldCard/FieldCard";
+import { ImageUploader } from "@/components/molecules/ImageUploader/ImageUploader";
 import { AdminPageHeader } from "@/components/organisms/AdminPageHeader/AdminPageHeader";
 
 interface CategoryEditFormProps {
@@ -117,20 +117,17 @@ export function CategoryEditForm({
           </FieldCard>
 
           <FieldCard title="Imagen de portada">
-            <div className="grid grid-cols-[repeat(auto-fit,minmax(200px,1fr))] gap-3">
-              <div className="h-[200px] overflow-hidden rounded-lg border-2 border-sage">
-                <ImagePlaceholder label="Portada" />
-              </div>
-              <button
-                type="button"
-                className="flex h-[200px] flex-col items-center justify-center gap-1.5 rounded-lg border border-dashed border-[#CFC6B0] bg-paper-light text-taupe transition-colors hover:border-sage hover:bg-[#F4F6F0] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sage"
-              >
-                <span className="text-2xl leading-none text-[#A09D8B]">+</span>
-                <span className="text-[13px]">Cambiar imagen</span>
-              </button>
-            </div>
-            <p className="text-[13px] text-taupe">
-              Se recorta apaisada en la portada del sitio. JPG o WEBP, mínimo 1600 px de ancho.
+            <ImageUploader
+              imageUrl={form.imageUrl}
+              imageAlt={form.imageAlt}
+              placeholderLabel="Portada"
+              onChange={({ imageUrl, imageAlt }) =>
+                setForm((current) => ({ ...current, imageUrl, imageAlt }))
+              }
+            />
+            <p className="text-[13px] leading-[1.5] text-taupe">
+              Se reescala y se convierte a WebP antes de subirse, así que podés cargar la foto tal
+              como la tengas.
             </p>
           </FieldCard>
         </div>

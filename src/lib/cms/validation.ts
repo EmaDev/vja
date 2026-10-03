@@ -94,6 +94,8 @@ function isHeaderSection(record: Record<string, unknown>): record is HeaderSecti
     isString(record.variant) &&
     HEADER_VARIANT_IDS.has(record.variant) &&
     isString(record.logoText) &&
+    isString(record.logoImageUrl) &&
+    isString(record.logoImageAlt) &&
     isNavLinkArray(record.navLinks)
   );
 }

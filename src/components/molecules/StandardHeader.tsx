@@ -5,6 +5,8 @@ import type { NavItem } from "@/components/atoms/NavLink";
 
 export type StandardHeaderProps = {
   logoText?: string;
+  logoImageUrl?: string;
+  logoImageAlt?: string;
   navLeft?: NavItem[];
   ctaLabel?: string;
 };
@@ -22,6 +24,8 @@ const pillClasses = "border-[#CFC6B0] text-[#3A4A3C]";
  * En mobile el logo va primero y la navegación pasa a una fila con scroll horizontal. */
 export function StandardHeader({
   logoText,
+  logoImageUrl,
+  logoImageAlt,
   navLeft = defaultNavLeft,
   ctaLabel = "Contacto",
 }: StandardHeaderProps) {
@@ -38,7 +42,7 @@ export function StandardHeader({
           </Link>
         ))}
       </nav>
-      <Logo text={logoText} size="sm" />
+      <Logo text={logoText} imageUrl={logoImageUrl} imageAlt={logoImageAlt} size="sm" />
       <div className="flex gap-2.5 md:flex-1 md:justify-end">
         <CtaButton tone="forest" variant="outline" shape="pill" size="sm" className={`hidden sm:inline-flex ${pillClasses}`}>
           Buscar

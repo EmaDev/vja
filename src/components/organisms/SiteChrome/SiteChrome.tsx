@@ -25,7 +25,9 @@ export interface SiteChromeProps {
  * sección. Los heros traen su propio header en los mockups del CMS; en la landing
  * se apaga con `showHeader={false}` para que mande el que eligió el cliente. */
 export function SiteChrome({ header, heroTone, hasHero = true, children }: SiteChromeProps) {
-  const { logoText, navLinks } = header;
+  const { logoText, logoImageUrl, logoImageAlt, navLinks } = header;
+  // Las cinco variantes reciben lo mismo; cada una decide cómo lo dibuja.
+  const logo = { logoText, logoImageUrl, logoImageAlt };
   const navItems = navLinks.map(({ label, href }) => ({ label, href }));
   const activeLabel = navItems[0]?.label;
 
@@ -35,7 +37,7 @@ export function SiteChrome({ header, heroTone, hasHero = true, children }: SiteC
       return (
         <>
           <SiteHeaderCentered
-            logoText={logoText}
+            {...logo}
             navLeft={navItems.slice(0, half)}
             navRight={navItems.slice(half)}
           />
@@ -48,7 +50,7 @@ export function SiteChrome({ header, heroTone, hasHero = true, children }: SiteC
       return (
         <div className="relative">
           <FloatingHeader
-            logoText={logoText}
+            {...logo}
             navItems={navItems}
             activeLabel={activeLabel}
             tone={heroTone === "dark" ? "light" : "dark"}
@@ -60,7 +62,7 @@ export function SiteChrome({ header, heroTone, hasHero = true, children }: SiteC
     case "announcement":
       return (
         <>
-          <HeaderWithAnnouncement logoText={logoText} navLeft={navItems} />
+          <HeaderWithAnnouncement {...logo} navLeft={navItems} />
           {children}
         </>
       );
@@ -71,13 +73,13 @@ export function SiteChrome({ header, heroTone, hasHero = true, children }: SiteC
           {/* Abajo de `lg` no hay lugar para una columna fija: cae al header clásico. */}
           <div className="lg:hidden">
             <HeaderWithDot
-              logoText={logoText}
+              {...logo}
               navItems={navItems.map((item, index) => ({ ...item, active: index === 0 }))}
             />
           </div>
           <div className="hidden lg:sticky lg:top-0 lg:block lg:h-screen">
             <SidebarNav
-              logoText={logoText}
+              {...logo}
               navItems={navItems.map((item, index) => ({ ...item, active: index === 0 }))}
             />
           </div>
@@ -90,7 +92,7 @@ export function SiteChrome({ header, heroTone, hasHero = true, children }: SiteC
       return (
         <>
           <HeaderWithDot
-            logoText={logoText}
+            {...logo}
             navItems={navItems.map((item, index) => ({ ...item, active: index === 0 }))}
           />
           {children}

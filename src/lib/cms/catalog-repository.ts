@@ -8,7 +8,13 @@ import type {
   QueryDocumentSnapshot,
 } from "firebase-admin/firestore";
 import { siteDoc } from "./repository";
-import { slugify, type CatalogStatus, type Category, type Product } from "./catalog-types";
+import {
+  slugify,
+  type CatalogStatus,
+  type Category,
+  type Product,
+  type ProductPhoto,
+} from "./catalog-types";
 
 /** Etiqueta de caché del catálogo público. Las acciones del CMS la invalidan
  * para que la landing y las fichas muestren el cambio sin redeploy. */
@@ -34,6 +40,26 @@ function status(value: unknown): CatalogStatus {
   return value === "live" ? "live" : "draft";
 }
 
+/** Normaliza la galería de un producto.
+ *
+ * Antes de que se pudieran cargar fotos, `photos` guardaba un número: cuántas
+ * imágenes iba a tener la ficha. Esos documentos siguen en Firestore, así que
+ * cualquier cosa que no sea una lista de fotos se lee como galería vacía en vez
+ * de romper el editor. */
+function photos(value: unknown): ProductPhoto[] {
+  if (!Array.isArray(value)) return [];
+  return value.flatMap((item, index) => {
+    if (typeof item !== "object" || item === null) return [];
+    const data = item as Record<string, unknown>;
+    const imageUrl = str(data.imageUrl);
+    if (!imageUrl) return [];
+    // El id de respaldo sale de la posición y no de un aleatorio: así una misma
+    // foto se lee siempre con el mismo id y no cambia de identidad entre dos
+    // lecturas, que es lo que React usa como clave.
+    return [{ id: str(data.id) || `photo-${index}`, imageUrl, imageAlt: str(data.imageAlt) }];
+  });
+}
+
 /** Un documento al que le falte un campo no puede llegar como `undefined` a un
  * input controlado del editor, así que todo se normaliza al leer. */
 function toProduct(doc: DocumentSnapshot | QueryDocumentSnapshot): Product {
@@ -50,7 +76,7 @@ function toProduct(doc: DocumentSnapshot | QueryDocumentSnapshot): Product {
     pot: str(data.pot),
     petSafe: str(data.petSafe),
     status: status(data.status),
-    photos: typeof data.photos === "number" ? data.photos : 0,
+    photos: photos(data.photos),
     short: str(data.short),
     long: str(data.long),
     tags: Array.isArray(data.tags) ? data.tags.filter((tag) => typeof tag === "string") : [],
@@ -68,6 +94,8 @@ function toCategory(doc: DocumentSnapshot | QueryDocumentSnapshot): Category {
     description: str(data.description),
     status: status(data.status),
     featured: data.featured === true,
+    imageUrl: str(data.imageUrl),
+    imageAlt: str(data.imageAlt),
   };
 }
 
@@ -101,6 +129,8 @@ function categoryFields(category: Category, nextStatus: CatalogStatus) {
     description: category.description,
     status: nextStatus,
     featured: category.featured,
+    imageUrl: category.imageUrl,
+    imageAlt: category.imageAlt,
   };
 }
 
@@ -167,16 +197,22 @@ export const listProducts = cache(readProducts);
 export const listCategories = cache(readCategories);
 
 /** Lecturas del sitio público. Cacheadas contra `CATALOG_TAG` para no ir a
- * Firestore en cada visita, igual que el contenido publicado. */
+ * Firestore en cada visita, igual que el contenido publicado.
+ *
+ * El sufijo de versión en la clave no es decorativo: lo cacheado sobrevive al
+ * deploy, así que un payload guardado con la forma vieja le llegaría tal cual al
+ * código nuevo. `toProduct` normaliza lo que viene de Firestore, pero no lo que
+ * sale del caché. Cuando cambie la forma de `Product` o `Category` —como cuando
+ * `photos` pasó de ser un conteo a la lista de fotos— hay que subir el número. */
 const getLiveProducts = unstable_cache(
   async () => (await readProducts()).filter((product) => product.status === "live"),
-  ["catalog-live-products"],
+  ["catalog-live-products-v2"],
   { tags: [CATALOG_TAG] },
 );
 
 const getLiveCategories = unstable_cache(
   async () => (await readCategories()).filter((category) => category.status === "live"),
-  ["catalog-live-categories"],
+  ["catalog-live-categories-v2"],
   { tags: [CATALOG_TAG] },
 );
 

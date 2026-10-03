@@ -37,6 +37,10 @@ export interface HeaderSection extends BaseSection {
   kind: "header";
   variant: HeaderVariantId;
   logoText: string;
+  /** Logo cargado desde el CMS. Cuando hay uno, reemplaza al texto en las cinco
+   * variantes; vacío, el header vuelve al wordmark. */
+  logoImageUrl: string;
+  logoImageAlt: string;
   navLinks: NavLink[];
 }
 

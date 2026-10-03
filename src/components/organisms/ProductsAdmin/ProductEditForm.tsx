@@ -1,7 +1,7 @@
 "use client";
 
 import { useRef, useState } from "react";
-import { productUrlPreview, type CatalogStatus, type Product } from "@/lib/cms/catalog-types";
+import { productCover, productUrlPreview, type CatalogStatus, type Product } from "@/lib/cms/catalog-types";
 import { productQrUrl } from "@/lib/cms/qr-labels";
 import { QrCode } from "@/components/atoms/QrCode";
 import { QrPrintDialog } from "@/components/organisms/QrLabels/QrPrintDialog";
@@ -13,6 +13,7 @@ import { AdminButton } from "@/components/atoms/AdminButton";
 import { ImagePlaceholder } from "@/components/atoms/ImagePlaceholder";
 import { FieldCard } from "@/components/molecules/FieldCard/FieldCard";
 import { AdminPageHeader } from "@/components/organisms/AdminPageHeader/AdminPageHeader";
+import { ProductPhotosEditor } from "./ProductPhotosEditor";
 
 interface ProductEditFormProps {
   product: Product;
@@ -35,6 +36,7 @@ export function ProductEditForm({
   onDelete,
 }: ProductEditFormProps) {
   const [form, setForm] = useState<Product>(product);
+  const cover = productCover(form);
   const [newTag, setNewTag] = useState<string | null>(null);
   const [printing, setPrinting] = useState(false);
   const longRef = useRef<HTMLTextAreaElement>(null);
@@ -155,31 +157,11 @@ export function ProductEditForm({
           </FieldCard>
 
           <FieldCard title="Galería de imágenes">
-            <div className="-mt-2 mb-1 flex items-baseline justify-end">
-              <span className="text-[13px] text-taupe">La primera es la portada</span>
-            </div>
-            <div className="grid grid-cols-[repeat(auto-fit,minmax(150px,1fr))] gap-3">
-              <div className="relative h-[200px] overflow-hidden rounded-lg border-2 border-sage">
-                <ImagePlaceholder label="Portada" />
-                <span className="pointer-events-none absolute left-2.5 top-2.5 rounded-full bg-sage px-2.5 py-1 text-[11px] uppercase tracking-[0.1em] text-paper">
-                  Portada
-                </span>
-              </div>
-              <div className="h-[200px] overflow-hidden rounded-lg">
-                <ImagePlaceholder label="Detalle de hoja" />
-              </div>
-              <div className="h-[200px] overflow-hidden rounded-lg">
-                <ImagePlaceholder label="En ambiente" />
-              </div>
-              <button
-                type="button"
-                className="flex h-[200px] flex-col items-center justify-center gap-1.5 rounded-lg border border-dashed border-[#CFC6B0] bg-paper-light text-taupe transition-colors hover:border-sage hover:bg-[#F4F6F0] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sage"
-              >
-                <span className="text-2xl leading-none text-[#A09D8B]">+</span>
-                <span className="text-[13px]">Agregar imagen</span>
-              </button>
-            </div>
-            <p className="text-[13px] text-taupe">JPG o WEBP, mínimo 1200 px de lado. Arrastrá para reordenar.</p>
+            <ProductPhotosEditor
+              photos={form.photos}
+              onChange={(photos) => set("photos", photos)}
+              productName={form.name}
+            />
           </FieldCard>
 
           <FieldCard title="Descripción">
@@ -318,7 +300,7 @@ export function ProductEditForm({
           <FieldCard title="Vista previa de la card">
             <div className="overflow-hidden rounded-lg border border-line-light">
               <div className="h-[150px]">
-                <ImagePlaceholder label="Portada" />
+                <ImagePlaceholder src={cover?.imageUrl} alt={cover?.imageAlt} label="Portada" />
               </div>
               <div className="bg-paper-light px-[15px] pb-[15px] pt-[13px]">
                 <div className="font-display text-xl text-forest">{form.name}</div>

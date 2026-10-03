@@ -26,6 +26,8 @@ const BLANK_CATEGORY: Category = {
   description: "",
   status: "draft",
   featured: false,
+  imageUrl: "",
+  imageAlt: "",
 };
 
 /** Compara ignorando mayúsculas y tildes, para que "flores" encuentre "Flores de corte". */
@@ -267,7 +269,7 @@ export function CategoriesAdmin({
                   className="grid min-w-[860px] grid-cols-[56px_minmax(0,2.2fr)_minmax(0,1.4fr)_110px_120px_150px] items-center gap-4 border-t border-[#EDE6D6] px-[18px] py-3 transition-colors hover:bg-white"
                 >
                   <div className="h-11 w-11 overflow-hidden rounded-md">
-                    <ImagePlaceholder />
+                    <ImagePlaceholder src={category.imageUrl} alt={category.imageAlt} />
                   </div>
                   <button
                     type="button"

@@ -5,7 +5,7 @@ import { ProductCardDrawer } from "@/components/molecules/ProductCardDrawer";
 import { ProductCardEditorialRow } from "@/components/molecules/ProductCardEditorialRow";
 import { ProductCardOverlay } from "@/components/molecules/ProductCardOverlay";
 import { loadLiveProducts } from "@/lib/cms/catalog-repository";
-import { productHref, type Product } from "@/lib/cms/catalog-types";
+import { productCover, productHref, type Product } from "@/lib/cms/catalog-types";
 import type { CardVariantId } from "@/lib/cms/card-variants";
 import { cn } from "@/lib/utils";
 
@@ -51,6 +51,11 @@ function careMeta(product: Product): string {
 
 function renderCard(variant: CardVariantId, product: Product, index: number) {
   const href = productHref(product);
+  // La portada es la primera foto cargada. Sin fotos, `image` queda `undefined` y
+  // la card dibuja el recuadro con el nombre, igual que antes.
+  const cover = productCover(product);
+  const image = cover?.imageUrl;
+  const imageAlt = cover?.imageAlt || product.name;
 
   switch (variant) {
     case "overlay":
@@ -58,6 +63,8 @@ function renderCard(variant: CardVariantId, product: Product, index: number) {
         <ProductCardOverlay
           key={product.id}
           href={href}
+          image={image}
+          imageAlt={imageAlt}
           category={`${product.category} · ${product.light}`}
           name={product.name}
           imageLabel={product.name}
@@ -70,6 +77,8 @@ function renderCard(variant: CardVariantId, product: Product, index: number) {
         <ProductCardArch
           key={product.id}
           href={href}
+          image={image}
+          imageAlt={imageAlt}
           name={product.name}
           subtitle={product.latin}
           imageLabel={product.name}
@@ -86,6 +95,8 @@ function renderCard(variant: CardVariantId, product: Product, index: number) {
         <ProductCardDrawer
           key={product.id}
           href={href}
+          image={image}
+          imageAlt={imageAlt}
           badge={product.category}
           name={product.name}
           imageLabel={product.name}
@@ -98,6 +109,8 @@ function renderCard(variant: CardVariantId, product: Product, index: number) {
         <ProductCardEditorialRow
           key={product.id}
           href={href}
+          image={image}
+          imageAlt={imageAlt}
           index={String(index + 1).padStart(2, "0")}
           category={`${product.category} · ${product.difficulty}`}
           name={product.name}
@@ -111,6 +124,8 @@ function renderCard(variant: CardVariantId, product: Product, index: number) {
         <ProductCardCircle
           key={product.id}
           href={href}
+          image={image}
+          imageAlt={imageAlt}
           name={product.name}
           imageLabel={product.name}
           meta={careMeta(product)}

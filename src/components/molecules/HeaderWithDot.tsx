@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { CtaButton } from "@/components/atoms/CtaButton";
+import { Logo } from "@/components/atoms/Logo";
 
 export type HeaderWithDotNavItem = {
   label: string;
@@ -9,6 +10,8 @@ export type HeaderWithDotNavItem = {
 
 export type HeaderWithDotProps = {
   logoText?: string;
+  logoImageUrl?: string;
+  logoImageAlt?: string;
   navItems?: HeaderWithDotNavItem[];
   ctaLabel?: string;
 };
@@ -23,14 +26,24 @@ const defaultNavItems: HeaderWithDotNavItem[] = [
 /** Header with a solid logo mark, underlined active tab and a boxed contact CTA. Mockup ref: 1c. */
 export function HeaderWithDot({
   logoText = "VJA Plantas",
+  logoImageUrl,
+  logoImageAlt,
   navItems = defaultNavItems,
   ctaLabel = "Contacto",
 }: HeaderWithDotProps) {
   return (
     <header className="site-gutter flex flex-wrap items-center justify-between gap-y-3 bg-paper-light py-4 md:py-6">
+      {/* El círculo verde es el sello de la marca cuando no hay logo cargado. Con
+          un logo propio sobra: la imagen ya trae su propio sello. */}
       <div className="flex items-center gap-3 md:gap-3.5">
-        <div className="h-[26px] w-[26px] rounded-full bg-sage md:h-[34px] md:w-[34px]" />
-        <span className="font-display text-[21px] text-forest md:text-[25px]">{logoText}</span>
+        {logoImageUrl ? (
+          <Logo text={logoText} imageUrl={logoImageUrl} imageAlt={logoImageAlt} />
+        ) : (
+          <>
+            <div className="h-[26px] w-[26px] rounded-full bg-sage md:h-[34px] md:w-[34px]" />
+            <span className="font-display text-[21px] text-forest md:text-[25px]">{logoText}</span>
+          </>
+        )}
       </div>
       <nav className="order-3 -mx-5 flex w-screen gap-6 overflow-x-auto px-5 pb-1 text-[15px] text-[#2F3A30] md:order-none md:mx-0 md:w-auto md:gap-[34px] md:overflow-visible md:px-0 md:pb-0">
         {navItems.map((item) => (

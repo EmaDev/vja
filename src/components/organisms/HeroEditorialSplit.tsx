@@ -2,7 +2,6 @@ import { CtaButton } from "@/components/atoms/CtaButton";
 import { Eyebrow } from "@/components/atoms/Eyebrow";
 import { FloatingBadge } from "@/components/atoms/FloatingBadge";
 import { ImagePlaceholder } from "@/components/atoms/ImagePlaceholder";
-import { StatBlock } from "@/components/atoms/StatBlock";
 import { TextLink } from "@/components/atoms/TextLink";
 import { SiteHeaderCentered } from "@/components/molecules/SiteHeaderCentered";
 
@@ -15,21 +14,16 @@ export type HeroEditorialSplitProps = {
   primaryCtaHref?: string;
   secondaryCtaLabel?: string;
   secondaryCtaHref?: string;
-  stats?: { value: string; label: string }[];
   image?: string;
   imageAlt?: string;
   imageLabel?: string;
-  featured?: { eyebrow: string; title: string; subtitle: string };
+  /** Card flotante sobre la foto. `null` la saca: la landing la apaga cuando
+   * no hay ninguna planta elegida en el panel. */
+  featured?: { eyebrow: string; title: string; subtitle: string } | null;
   /** El header propio de la variante. La landing lo apaga y renderiza el elegido
    * en el CMS, que puede no ser el que trae el mockup de este hero. */
   showHeader?: boolean;
 };
-
-const defaultStats = [
-  { value: "240+", label: "especies" },
-  { value: "24 h", label: "envío en CABA" },
-  { value: "30 d", label: "garantía de vida" },
-];
 
 /** Editorial split hero: centered header, copy left, portrait photo with a favorite callout right. Mockup ref: 1a. */
 export function HeroEditorialSplit({
@@ -41,7 +35,6 @@ export function HeroEditorialSplit({
   primaryCtaHref,
   secondaryCtaLabel = "Armar mi ramo →",
   secondaryCtaHref,
-  stats = defaultStats,
   image,
   imageAlt,
   imageLabel = "Foto vertical: monstera junto a ventana",
@@ -70,20 +63,17 @@ export function HeroEditorialSplit({
             {primaryCtaLabel ? <CtaButton href={primaryCtaHref}>{primaryCtaLabel}</CtaButton> : null}
             {secondaryCtaLabel ? <TextLink href={secondaryCtaHref}>{secondaryCtaLabel}</TextLink> : null}
           </div>
-          <div className="mt-10 flex flex-wrap gap-x-10 gap-y-5 border-t border-line pt-[26px] lg:mt-16">
-            {stats.map((stat) => (
-              <StatBlock key={stat.label} {...stat} />
-            ))}
-          </div>
         </div>
         <div className="relative h-[380px] bg-sand sm:h-[520px] lg:h-auto">
           <ImagePlaceholder src={image} alt={imageAlt ?? titleLine1} label={imageLabel} />
-          <FloatingBadge
-            className="absolute bottom-8 left-5 w-[170px] lg:bottom-14 lg:left-[-56px] lg:w-[196px]"
-            eyebrow={featured.eyebrow}
-            title={featured.title}
-            subtitle={featured.subtitle}
-          />
+          {featured ? (
+            <FloatingBadge
+              className="absolute bottom-8 left-5 w-[170px] lg:bottom-14 lg:left-[-56px] lg:w-[196px]"
+              eyebrow={featured.eyebrow}
+              title={featured.title}
+              subtitle={featured.subtitle}
+            />
+          ) : null}
         </div>
       </div>
     </div>

@@ -10,7 +10,6 @@ import { HeaderEditor } from "@/components/organisms/SectionEditors/HeaderEditor
 import { HeroEditor } from "@/components/organisms/SectionEditors/HeroEditor";
 import { AboutEditor } from "@/components/organisms/SectionEditors/AboutEditor";
 import { ServicesEditor } from "@/components/organisms/SectionEditors/ServicesEditor";
-import { GalleryEditor } from "@/components/organisms/SectionEditors/GalleryEditor";
 import { CareEditor } from "@/components/organisms/SectionEditors/CareEditor";
 import { VisitEditor } from "@/components/organisms/SectionEditors/VisitEditor";
 import { ShippingEditor } from "@/components/organisms/SectionEditors/ShippingEditor";
@@ -23,6 +22,7 @@ import { resolveTab } from "@/lib/cms/tabs";
 import { headerVariants, type HeaderVariantId } from "@/lib/cms/header-variants";
 import { heroVariants, type HeroVariantId } from "@/lib/cms/hero-variants";
 import { cardVariants, type CardVariantId } from "@/lib/cms/card-variants";
+import type { Product } from "@/lib/cms/catalog-types";
 import type {
   AboutSection,
   CardsSection,
@@ -31,7 +31,6 @@ import type {
   ContactSection,
   FaqSection,
   FooterSection,
-  GallerySection,
   HeaderSection,
   HeroSection,
   SeoSection,
@@ -46,7 +45,6 @@ const TAB_META: Record<string, { crumb: string; title: string }> = {
   cards: { crumb: "Diseño / Cards de producto", title: "Elegí cómo se muestran las plantas" },
   nosotros: { crumb: "Secciones / Nosotros", title: "Quiénes somos" },
   servicios: { crumb: "Secciones / Servicios", title: "Servicios del local" },
-  galeria: { crumb: "Secciones / Galería", title: "Galería de fotos" },
   cuidados: { crumb: "Secciones / Cuidados", title: "Notas de cuidado" },
   visitanos: { crumb: "Secciones / Visitanos", title: "Horarios y ubicación" },
   envios: { crumb: "Secciones / Envíos", title: "Zona de envíos" },
@@ -56,10 +54,16 @@ const TAB_META: Record<string, { crumb: string; title: string }> = {
   seo: { crumb: "Contenido / SEO", title: "SEO y redes sociales" },
 };
 
-export function CmsDesignWorkspace() {
+export interface CmsDesignWorkspaceProps {
+  /** Catálogo completo. Sólo lo mira el hero, para elegir la planta destacada. */
+  products: Product[];
+}
+
+export function CmsDesignWorkspace({ products }: CmsDesignWorkspaceProps) {
   const searchParams = useSearchParams();
   const tab = resolveTab(searchParams.get("tab"));
-  const { sections, setSections, saveStatus, publish, publishStatus, publishError } = useCmsDraft();
+  const { sections, setSections, saveStatus, saveError, publish, publishStatus, publishError } =
+    useCmsDraft();
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [justPublished, setJustPublished] = useState(false);
 
@@ -68,7 +72,6 @@ export function CmsDesignWorkspace() {
   const cards = sections.find((s): s is CardsSection => s.kind === "cards")!;
   const about = sections.find((s): s is AboutSection => s.kind === "about")!;
   const services = sections.find((s): s is ServicesSection => s.kind === "services")!;
-  const gallery = sections.find((s): s is GallerySection => s.kind === "gallery")!;
   const care = sections.find((s): s is CareSection => s.kind === "care")!;
   const visit = sections.find((s): s is VisitSection => s.kind === "visit")!;
   const shipping = sections.find((s): s is ShippingSection => s.kind === "shipping")!;
@@ -76,6 +79,11 @@ export function CmsDesignWorkspace() {
   const contact = sections.find((s): s is ContactSection => s.kind === "contact")!;
   const footer = sections.find((s): s is FooterSection => s.kind === "footer")!;
   const seo = sections.find((s): s is SeoSection => s.kind === "seo")!;
+
+  // Sólo las publicadas: una planta en borrador no sale en el sitio, así que
+  // elegirla dejaría la card del hero vacía sin explicación.
+  const liveProducts = products.filter((product) => product.status === "live");
+  const featuredProduct = liveProducts.find((product) => product.id === hero.featuredProductId);
 
   function updateSection(updated: CmsSection) {
     setSections((current) => current.map((section) => (section.id === updated.id ? updated : section)));
@@ -100,7 +108,15 @@ export function CmsDesignWorkspace() {
         title={meta.title}
         actions={
           <>
-            <span className="mr-1.5 flex items-center gap-[7px] text-[13px] text-stone">
+            {/* El motivo del fallo va en el `title`: el cartel solo dice “Error
+                al guardar”, y sin el detalle no hay forma de saber si fue la
+                sesión, la conexión o un campo inválido. */}
+            <span
+              className={`mr-1.5 flex items-center gap-[7px] text-[13px] ${
+                saveStatus === "error" ? "text-terracotta" : "text-stone"
+              }`}
+              title={saveError ?? undefined}
+            >
               <span className={`h-[7px] w-[7px] rounded-full ${dotColor}`} />
               {justPublished ? "Publicado" : SAVE_STATUS_LABEL[saveStatus]}
             </span>
@@ -132,6 +148,7 @@ export function CmsDesignWorkspace() {
                       logoText={header.logoText}
                       logoImageUrl={header.logoImageUrl}
                       logoImageAlt={header.logoImageAlt}
+                      announcements={header.announcements.map((item) => item.text)}
                     />
                   </div>
                 );
@@ -151,10 +168,10 @@ export function CmsDesignWorkspace() {
               renderPreview={(id) => {
                 const variant = heroVariants.find((v) => v.id === id)!;
                 const Variant = variant.Component;
-                return <Variant {...variant.getProps(hero)} />;
+                return <Variant {...variant.getProps({ ...hero, featuredProduct })} />;
               }}
             />
-            <HeroEditor section={hero} onChange={updateSection} />
+            <HeroEditor section={hero} onChange={updateSection} products={liveProducts} />
           </div>
         ) : null}
 
@@ -181,7 +198,6 @@ export function CmsDesignWorkspace() {
 
         {tab === "nosotros" ? <AboutEditor section={about} onChange={updateSection} /> : null}
         {tab === "servicios" ? <ServicesEditor section={services} onChange={updateSection} /> : null}
-        {tab === "galeria" ? <GalleryEditor section={gallery} onChange={updateSection} /> : null}
         {tab === "cuidados" ? <CareEditor section={care} onChange={updateSection} /> : null}
         {tab === "visitanos" ? (
           <VisitEditor section={visit} onChange={updateSection} address={contact.address} />

@@ -5,6 +5,7 @@ import { HeroCollage } from "@/components/organisms/HeroCollage";
 import { HeroAnnouncementArch } from "@/components/organisms/HeroAnnouncementArch";
 import { HeroSidebarProduct } from "@/components/organisms/HeroSidebarProduct";
 import type { WireKind } from "@/components/molecules/VariantWireframe/VariantWireframe";
+import type { Product } from "./catalog-types";
 
 export type HeroVariantId =
   | "editorial-split"
@@ -27,6 +28,11 @@ export interface HeroContentData {
   secondaryCtaHref: string;
   imageUrl: string;
   imageAlt: string;
+  featuredProductId: string;
+  /** La planta de `featuredProductId` ya buscada en el catálogo. La resuelve
+   * quien dibuja el hero —la landing contra lo publicado, el panel contra lo
+   * que ve el cliente— porque este módulo no lee la base. */
+  featuredProduct?: Product | null;
 }
 
 export interface HeroVariantDefinition {
@@ -74,6 +80,15 @@ export const heroVariants: HeroVariantDefinition[] = [
       ...commonProps(data),
       titleLine1: data.title,
       titleEmphasis: data.titleHighlight,
+      // La única variante con card “Favorita”. El dato de cuidado hace de
+      // bajada; si la planta no lo tiene cargado, cae en su categoría.
+      featured: data.featuredProduct
+        ? {
+            eyebrow: "Favorita",
+            title: data.featuredProduct.name,
+            subtitle: data.featuredProduct.light || data.featuredProduct.category,
+          }
+        : null,
     }),
   },
   {

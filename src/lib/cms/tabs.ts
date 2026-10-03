@@ -2,7 +2,6 @@ export type DesignTab = "header" | "hero" | "cards";
 export type SectionTab =
   | "nosotros"
   | "servicios"
-  | "galeria"
   | "cuidados"
   | "visitanos"
   | "envios"
@@ -21,7 +20,6 @@ export const DESIGN_TABS: { tab: DesignTab; label: string }[] = [
 export const SECTION_TABS: { tab: SectionTab; label: string }[] = [
   { tab: "nosotros", label: "Nosotros" },
   { tab: "servicios", label: "Servicios" },
-  { tab: "galeria", label: "Galería" },
   { tab: "cuidados", label: "Cuidados" },
   { tab: "visitanos", label: "Visitanos" },
   { tab: "envios", label: "Envíos" },

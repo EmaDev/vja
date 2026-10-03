@@ -4,6 +4,7 @@ import { cardVariants } from "./card-variants";
 import type {
   AboutSection,
   AboutStat,
+  AnnouncementItem,
   CardsSection,
   CareNote,
   CareSection,
@@ -13,11 +14,9 @@ import type {
   FaqSection,
   FooterColumn,
   FooterSection,
-  GallerySection,
   HeaderSection,
   HeroSection,
   NavLink,
-  SectionImage,
   SeoSection,
   ServiceCard,
   ServicesSection,
@@ -60,8 +59,8 @@ function isArrayOf<T>(guard: (value: unknown) => value is T) {
 
 const isNavLink = isTextRecord<NavLink>(["label", "href"]);
 const isNavLinkArray = isArrayOf(isNavLink);
+const isAnnouncementArray = isArrayOf(isTextRecord<AnnouncementItem>(["text"]));
 
-const isSectionImageArray = isArrayOf(isTextRecord<SectionImage>(["imageUrl", "imageAlt"]));
 const isAboutStatArray = isArrayOf(isTextRecord<AboutStat>(["value", "label"]));
 const isServiceCardArray = isArrayOf(
   isTextRecord<ServiceCard>(["tag", "title", "body", "whatsappSubject", "imageUrl", "imageAlt"]),
@@ -96,7 +95,8 @@ function isHeaderSection(record: Record<string, unknown>): record is HeaderSecti
     isString(record.logoText) &&
     isString(record.logoImageUrl) &&
     isString(record.logoImageAlt) &&
-    isNavLinkArray(record.navLinks)
+    isNavLinkArray(record.navLinks) &&
+    isAnnouncementArray(record.announcements)
   );
 }
 
@@ -114,7 +114,8 @@ function isHeroSection(record: Record<string, unknown>): record is HeroSection &
     isString(record.secondaryCtaLabel) &&
     isString(record.secondaryCtaHref) &&
     isString(record.imageUrl) &&
-    isString(record.imageAlt)
+    isString(record.imageAlt) &&
+    isString(record.featuredProductId)
   );
 }
 
@@ -148,16 +149,6 @@ function isServicesSection(
     isString(record.title) &&
     isString(record.subtitle) &&
     isServiceCardArray(record.items)
-  );
-}
-
-function isGallerySection(record: Record<string, unknown>): record is GallerySection & Record<string, unknown> {
-  return (
-    hasToggleableFields(record) &&
-    isString(record.eyebrow) &&
-    isString(record.title) &&
-    isString(record.subtitle) &&
-    isSectionImageArray(record.images)
   );
 }
 
@@ -236,8 +227,7 @@ function isFooterSection(record: Record<string, unknown>): record is FooterSecti
     Array.isArray(record.columns) &&
     (record.columns as unknown[]).every(isFooterColumn) &&
     isString(record.instagram) &&
-    isString(record.pinterest) &&
-    isBoolean(record.newsletterEnabled)
+    isString(record.pinterest)
   );
 }
 
@@ -266,8 +256,6 @@ export function isCmsSection(value: unknown): value is CmsSection {
       return isCardsSection(record);
     case "services":
       return isServicesSection(record);
-    case "gallery":
-      return isGallerySection(record);
     case "care":
       return isCareSection(record);
     case "visit":

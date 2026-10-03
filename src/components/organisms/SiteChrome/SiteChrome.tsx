@@ -30,6 +30,15 @@ export function SiteChrome({ header, heroTone, hasHero = true, children }: SiteC
   const logo = { logoText, logoImageUrl, logoImageAlt };
   const navItems = navLinks.map(({ label, href }) => ({ label, href }));
   const activeLabel = navItems[0]?.label;
+  // La barra de anuncio sale de la misma sección: sólo la mira la variante que
+  // la dibuja. Los avisos en blanco no se cuentan, para no dejar huecos.
+  //
+  // El `?? []` es por el contenido publicado antes de que existiera el campo:
+  // `getPublishedCached` sigue sirviendo lo que quedó en caché hasta la próxima
+  // publicación, sin pasar por el relleno contra el seed del repositorio.
+  const announcements = (header.announcements ?? [])
+    .map((item) => item.text.trim())
+    .filter((text) => text.length > 0);
 
   switch (header.variant) {
     case "centered": {
@@ -62,7 +71,7 @@ export function SiteChrome({ header, heroTone, hasHero = true, children }: SiteC
     case "announcement":
       return (
         <>
-          <HeaderWithAnnouncement {...logo} navLeft={navItems} />
+          <HeaderWithAnnouncement {...logo} navLeft={navItems} announcements={announcements} />
           {children}
         </>
       );

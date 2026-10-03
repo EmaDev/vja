@@ -8,6 +8,11 @@ export interface NavLink {
   href: string;
 }
 
+export interface AnnouncementItem {
+  id: string;
+  text: string;
+}
+
 export interface FooterColumn {
   id: string;
   title: string;
@@ -25,14 +30,6 @@ interface ToggleableSection extends BaseSection {
   visible: boolean;
 }
 
-/** Una foto cargada desde el CMS. `imageUrl` vacío deja el recuadro de papel en
- * su lugar, así que una sección a medio cargar se sigue viendo entera. */
-export interface SectionImage {
-  id: string;
-  imageUrl: string;
-  imageAlt: string;
-}
-
 export interface HeaderSection extends BaseSection {
   kind: "header";
   variant: HeaderVariantId;
@@ -42,6 +39,9 @@ export interface HeaderSection extends BaseSection {
   logoImageUrl: string;
   logoImageAlt: string;
   navLinks: NavLink[];
+  /** Avisos de la barra que corre arriba del menú. Sólo los dibuja la variante
+   * “Con barra de anuncio”; sin ninguno cargado, esa variante no muestra la barra. */
+  announcements: AnnouncementItem[];
 }
 
 export interface HeroSection extends BaseSection {
@@ -61,6 +61,10 @@ export interface HeroSection extends BaseSection {
   secondaryCtaHref: string;
   imageUrl: string;
   imageAlt: string;
+  /** Planta de la card “Favorita”, por id de producto. Sólo la dibuja la
+   * variante “Split editorial”; vacío —o apuntando a una planta despublicada—
+   * deja el hero sin card. */
+  featuredProductId: string;
 }
 
 export interface CardsSection extends BaseSection {
@@ -110,14 +114,6 @@ export interface ServicesSection extends ToggleableSection {
   title: string;
   subtitle: string;
   items: ServiceCard[];
-}
-
-export interface GallerySection extends ToggleableSection {
-  kind: "gallery";
-  eyebrow: string;
-  title: string;
-  subtitle: string;
-  images: SectionImage[];
 }
 
 export interface CareNote {
@@ -223,7 +219,6 @@ export interface FooterSection extends BaseSection {
   columns: FooterColumn[];
   instagram: string;
   pinterest: string;
-  newsletterEnabled: boolean;
 }
 
 export interface SeoSection extends BaseSection {
@@ -240,7 +235,6 @@ export type CmsSection =
   | AboutSection
   | CardsSection
   | ServicesSection
-  | GallerySection
   | CareSection
   | VisitSection
   | ShippingSection

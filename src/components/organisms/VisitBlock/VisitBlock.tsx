@@ -1,6 +1,8 @@
+import type { ReactNode } from "react";
 import { CtaButton } from "@/components/atoms/CtaButton";
 import { Eyebrow } from "@/components/atoms/Eyebrow";
 import { ClockIcon, MapPinIcon, PhoneIcon } from "@/components/atoms/icons";
+import { cn } from "@/lib/utils";
 import type { ContactSection, VisitSection } from "@/lib/cms/types";
 
 export interface VisitBlockProps {
@@ -8,6 +10,9 @@ export interface VisitBlockProps {
   /** La dirección y el teléfono salen de Contacto: son los mismos datos del local
    * y no tiene sentido cargarlos dos veces. */
   contact?: ContactSection;
+  /** Columna de la derecha. La landing mete acá el verificador de envíos; el
+   * mapa, si hay uno cargado, queda debajo. */
+  aside?: ReactNode;
 }
 
 function InfoRow({
@@ -33,14 +38,23 @@ function InfoRow({
 }
 
 /** "Visitanos": datos del local, horarios día por día y el mapa embebido. */
-export function VisitBlock({ section, contact }: VisitBlockProps) {
+export function VisitBlock({ section, contact, aside }: VisitBlockProps) {
+  // Sin verificador ni mapa no hay segunda columna que armar: a una sola
+  // columna el texto ocupa el ancho entero en vez de dejar media pantalla vacía.
+  const hasSide = Boolean(aside) || Boolean(section.mapEmbedUrl);
+
   return (
     <section
       id="visitanos"
       aria-labelledby="visitanos-titulo"
       className="site-gutter bg-paper-light py-16 md:py-24"
     >
-      <div className="grid gap-12 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.1fr)] lg:gap-20">
+      <div
+        className={cn(
+          "grid gap-12",
+          hasSide && "lg:grid-cols-[minmax(0,1fr)_minmax(0,1.1fr)] lg:gap-20",
+        )}
+      >
         <div>
           {section.eyebrow ? <Eyebrow>{section.eyebrow}</Eyebrow> : null}
           <h2
@@ -99,16 +113,21 @@ export function VisitBlock({ section, contact }: VisitBlockProps) {
           ) : null}
         </div>
 
-        {section.mapEmbedUrl ? (
-          <div className="h-[320px] overflow-hidden rounded-[18px] border border-line bg-sand lg:h-auto lg:min-h-[480px]">
-            <iframe
-              src={section.mapEmbedUrl}
-              title="Ubicación del local"
-              loading="lazy"
-              referrerPolicy="no-referrer-when-downgrade"
-              allowFullScreen
-              className="h-full w-full border-0"
-            />
+        {hasSide ? (
+          <div className="flex flex-col gap-12">
+            {aside}
+            {section.mapEmbedUrl ? (
+              <div className="h-[320px] overflow-hidden rounded-[18px] border border-line bg-sand lg:h-auto lg:min-h-[480px] lg:flex-1">
+                <iframe
+                  src={section.mapEmbedUrl}
+                  title="Ubicación del local"
+                  loading="lazy"
+                  referrerPolicy="no-referrer-when-downgrade"
+                  allowFullScreen
+                  className="h-full w-full border-0"
+                />
+              </div>
+            ) : null}
           </div>
         ) : null}
       </div>

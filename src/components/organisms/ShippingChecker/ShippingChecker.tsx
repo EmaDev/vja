@@ -5,12 +5,17 @@ import { CtaButton } from "@/components/atoms/CtaButton";
 import { CheckIcon, CloseIcon, MapPinIcon } from "@/components/atoms/icons";
 import { SectionHeading } from "@/components/molecules/SectionHeading";
 import { whatsappHref } from "@/lib/cms/whatsapp";
+import { cn } from "@/lib/utils";
 import type { ShippingSection } from "@/lib/cms/types";
 
 export interface ShippingCheckerProps {
   section: ShippingSection;
   /** Número al que se consulta la cotización. Vacío deja el resultado sin botón. */
   whatsappPhone: string;
+  /** `true` cuando va como segunda columna de “Visitanos”: pierde la franja
+   * propia —fondo, márgenes laterales y aire vertical— y aporta sólo su
+   * encabezado y la tarjeta. */
+  embedded?: boolean;
 }
 
 type Result =
@@ -24,7 +29,7 @@ const POSTAL_CODE_LENGTH = 4;
  *
  * Las zonas se cargan en el CMS, así que ampliar la cobertura es sumar una fila y
  * publicar: no hay una lista de códigos postales escrita en el código. */
-export function ShippingChecker({ section, whatsappPhone }: ShippingCheckerProps) {
+export function ShippingChecker({ section, whatsappPhone, embedded = false }: ShippingCheckerProps) {
   const [value, setValue] = useState("");
   const [result, setResult] = useState<Result | null>(null);
 
@@ -72,7 +77,7 @@ export function ShippingChecker({ section, whatsappPhone }: ShippingCheckerProps
     <section
       id="envios"
       aria-labelledby="envios-titulo"
-      className="site-gutter bg-paper py-16 md:py-24"
+      className={embedded ? undefined : "site-gutter bg-paper py-16 md:py-24"}
     >
       <SectionHeading
         eyebrow={section.eyebrow}
@@ -81,7 +86,14 @@ export function ShippingChecker({ section, whatsappPhone }: ShippingCheckerProps
         titleId="envios-titulo"
       />
 
-      <div className="max-w-[620px] rounded-[16px] border border-line bg-paper-light p-6 md:p-8">
+      {/* Embebido el fondo de la sección ya es papel claro, así que la tarjeta
+          invierte los tonos para seguir leyéndose como tarjeta. */}
+      <div
+        className={cn(
+          "rounded-[16px] border border-line p-6 md:p-8",
+          embedded ? "bg-paper" : "max-w-[620px] bg-paper-light",
+        )}
+      >
         <form onSubmit={check}>
           <label htmlFor="codigo-postal" className="flex items-center gap-2 text-[13px] text-ink">
             <MapPinIcon className="h-4 w-4 text-sage" />

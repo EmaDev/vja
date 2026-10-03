@@ -49,15 +49,17 @@ export default async function CmsLayout({
 
   return (
     <CmsDraftProvider initialSections={draft}>
-      <div className="cms-scope grid min-h-screen grid-cols-1 bg-paper text-forest lg:grid-cols-[252px_minmax(0,1fr)]">
-        <Suspense fallback={<div className="bg-forest lg:h-screen lg:w-[252px]" />}>
+      <div className="cms-scope grid min-h-screen grid-cols-1 bg-paper text-forest lg:grid-cols-[268px_minmax(0,1fr)]">
+        <Suspense fallback={<div className="hidden bg-forest lg:block lg:h-screen" />}>
           <AdminSidebar
             products={totals(products)}
             categories={totals(categories)}
             promotions={promotionTotals(promotions)}
           />
         </Suspense>
-        <main className="flex min-w-0 flex-col">{children}</main>
+        {/* `pt-14` deja libre la barra superior fija de mobile; en escritorio esa
+            barra no existe y la columna arranca pegada arriba. */}
+        <main className="flex min-w-0 flex-col pt-14 lg:pt-0">{children}</main>
       </div>
     </CmsDraftProvider>
   );

@@ -26,6 +26,11 @@ export const initialSections: CmsSection[] = [
       { id: "nav-5", label: "Visitanos", href: "#visitanos" },
       { id: "nav-6", label: "Contacto", href: "#contacto" },
     ],
+    announcements: [
+      { id: "ann-1", text: "Vivero abierto de martes a domingo" },
+      { id: "ann-2", text: "Envío sin cargo en CABA" },
+      { id: "ann-3", text: "Garantía de vida 30 días" },
+    ],
   },
   {
     id: "hero",
@@ -41,6 +46,7 @@ export const initialSections: CmsSection[] = [
     secondaryCtaHref: "#contacto",
     imageUrl: "",
     imageAlt: "",
+    featuredProductId: "",
   },
   {
     id: "about",
@@ -118,23 +124,6 @@ export const initialSections: CmsSection[] = [
         imageUrl: "",
         imageAlt: "",
       },
-    ],
-  },
-  {
-    id: "gallery",
-    kind: "gallery",
-    visible: true,
-    eyebrow: "Nuestros espacios",
-    title: "Galería",
-    subtitle:
-      "Una mirada a nuestros cultivos, instalaciones y la belleza que producimos cada día.",
-    images: [
-      { id: "gal-1", imageUrl: "", imageAlt: "" },
-      { id: "gal-2", imageUrl: "", imageAlt: "" },
-      { id: "gal-3", imageUrl: "", imageAlt: "" },
-      { id: "gal-4", imageUrl: "", imageAlt: "" },
-      { id: "gal-5", imageUrl: "", imageAlt: "" },
-      { id: "gal-6", imageUrl: "", imageAlt: "" },
     ],
   },
   {
@@ -296,13 +285,11 @@ export const initialSections: CmsSection[] = [
       ] },
       { id: "col-3", title: "Nosotros", links: [
         { id: "l-8", label: "El vivero", href: "#nosotros" },
-        { id: "l-9", label: "Galería", href: "#galeria" },
         { id: "l-10", label: "Contacto", href: "#contacto" },
       ] },
     ],
     instagram: "@vjaplantas",
     pinterest: "vjaplantas",
-    newsletterEnabled: true,
   },
   {
     id: "seo",

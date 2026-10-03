@@ -1,6 +1,8 @@
 "use client";
 
 import type { HeroSection } from "@/lib/cms/types";
+import type { Product } from "@/lib/cms/catalog-types";
+import { SelectField } from "@/components/atoms/SelectField";
 import { TextField } from "@/components/atoms/TextField";
 import { TextAreaField } from "@/components/atoms/TextAreaField";
 import { FieldCard } from "@/components/molecules/FieldCard/FieldCard";
@@ -9,9 +11,18 @@ import { ImageUploader } from "@/components/molecules/ImageUploader/ImageUploade
 interface HeroEditorProps {
   section: HeroSection;
   onChange: (section: HeroSection) => void;
+  /** Plantas publicadas del catálogo, para elegir la de la card “Favorita”. */
+  products: Product[];
 }
 
-export function HeroEditor({ section, onChange }: HeroEditorProps) {
+export function HeroEditor({ section, onChange, products }: HeroEditorProps) {
+  // La planta guardada puede haberse despublicado o borrado después de elegirla.
+  // Sin esta opción fantasma el `select` se vería vacío y el cliente no sabría
+  // por qué la card no sale en el sitio.
+  const missing =
+    section.featuredProductId.length > 0 &&
+    !products.some((product) => product.id === section.featuredProductId);
+
   return (
     <div className="flex flex-col gap-5">
       <FieldCard
@@ -72,6 +83,39 @@ export function HeroEditor({ section, onChange }: HeroEditorProps) {
             onChange={(event) => onChange({ ...section, secondaryCtaHref: event.target.value })}
           />
         </div>
+      </FieldCard>
+
+      <FieldCard
+        title="Planta destacada"
+        subtitle="La card que flota sobre la foto del hero. Sólo la dibuja la variante “Split editorial”; sin planta elegida, el hero va sin card."
+      >
+        <SelectField
+          label="Planta"
+          value={section.featuredProductId}
+          onChange={(event) => onChange({ ...section, featuredProductId: event.target.value })}
+        >
+          <option value="">Sin planta destacada</option>
+          {products.map((product) => (
+            <option key={product.id} value={product.id}>
+              {product.name}
+            </option>
+          ))}
+          {missing ? (
+            <option value={section.featuredProductId}>La planta elegida ya no está publicada</option>
+          ) : null}
+        </SelectField>
+        {products.length === 0 ? (
+          <p className="text-[13px] leading-[1.5] text-stone">
+            Todavía no hay plantas publicadas en el catálogo. Cargá una desde Catálogo y
+            después elegila acá.
+          </p>
+        ) : null}
+        {missing ? (
+          <p className="text-[13px] leading-[1.5] text-terracotta">
+            La planta destacada ya no está publicada, así que el sitio no muestra la card.
+            Elegí otra o volvé a publicar esa planta.
+          </p>
+        ) : null}
       </FieldCard>
 
       <FieldCard

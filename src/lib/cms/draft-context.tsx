@@ -2,7 +2,6 @@
 
 import {
   createContext,
-  startTransition,
   useCallback,
   useContext,
   useEffect,
@@ -41,6 +40,10 @@ const CmsDraftContext = createContext<CmsDraftContextValue | null>(null);
 
 const AUTOSAVE_DELAY_MS = 1000;
 
+const SAVE_FAILED =
+  "No pudimos guardar el borrador. Revisá tu conexión y, si el problema sigue, volvé a iniciar sesión.";
+const PUBLISH_FAILED = "No pudimos publicar. Probá de nuevo en un momento.";
+
 export function CmsDraftProvider({
   initialSections,
   children,
@@ -54,52 +57,120 @@ export function CmsDraftProvider({
   const [publishStatus, setPublishStatus] = useState<PublishStatus>("idle");
   const [publishError, setPublishError] = useState<string | null>(null);
 
-  const isFirstRender = useRef(true);
+  /** Lo último que escribió el editor y lo último que confirmó el servidor. Al
+   * comparar las dos referencias sabemos si queda algo por mandar, tanto para el
+   * debounce como para el `flush` que corre antes de publicar. */
+  const pendingRef = useRef<CmsSection[]>(initialSections);
+  const savedRef = useRef<CmsSection[]>(initialSections);
   const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  /** Los guardados se encadenan: dos `set` en vuelo podrían llegar a Firestore
+   * en el orden inverso y dejar guardado el borrador viejo. */
+  const queueRef = useRef<Promise<boolean>>(Promise.resolve(true));
+
+  const runSave = useCallback(async (): Promise<boolean> => {
+    const snapshot = pendingRef.current;
+    if (snapshot === savedRef.current) return true;
+
+    setSaveStatus("saving");
+    try {
+      const result = await saveDraftAction(snapshot);
+      if (!result.ok) {
+        setSaveStatus("error");
+        setSaveError(result.error);
+        return false;
+      }
+
+      savedRef.current = snapshot;
+      setSaveError(null);
+      // Si el editor siguió escribiendo mientras guardábamos, lo de recién ya
+      // quedó viejo: el próximo debounce lo manda.
+      setSaveStatus(pendingRef.current === snapshot ? "saved" : "pending");
+      return true;
+    } catch {
+      // `saveDraftAction` puede rechazar (sesión caída, Firestore sin respuesta).
+      // Sin este catch la promesa quedaba sin atender y el cartel se congelaba
+      // en “Guardando…” sin que el editor se enterara de nada.
+      setSaveStatus("error");
+      setSaveError(SAVE_FAILED);
+      return false;
+    }
+  }, []);
+
+  const save = useCallback(() => {
+    queueRef.current = queueRef.current.then(runSave, runSave);
+    return queueRef.current;
+  }, [runSave]);
+
+  /** Guarda ya mismo lo que haya pendiente, sin esperar el debounce. */
+  const flush = useCallback(() => {
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current);
+      timeoutRef.current = null;
+    }
+    return save();
+  }, [save]);
 
   useEffect(() => {
-    if (isFirstRender.current) {
-      isFirstRender.current = false;
-      return;
-    }
+    pendingRef.current = sections;
+    // En el primer render `sections` es lo que vino del servidor: no hay nada
+    // que mandar de vuelta.
+    if (sections === savedRef.current) return;
 
     setSaveStatus("pending");
     if (timeoutRef.current) clearTimeout(timeoutRef.current);
 
     timeoutRef.current = setTimeout(() => {
-      setSaveStatus("saving");
-      startTransition(() => {
-        saveDraftAction(sections).then((result) => {
-          if (result.ok) {
-            setSaveStatus("saved");
-            setSaveError(null);
-          } else {
-            setSaveStatus("error");
-            setSaveError(result.error);
-          }
-        });
-      });
+      timeoutRef.current = null;
+      void save();
     }, AUTOSAVE_DELAY_MS);
 
     return () => {
       if (timeoutRef.current) clearTimeout(timeoutRef.current);
     };
-  }, [sections]);
+  }, [sections, save]);
+
+  // Última red: cerrar la pestaña con el debounce corriendo perdía lo tipeado en
+  // el último segundo sin ningún aviso.
+  useEffect(() => {
+    function warn(event: BeforeUnloadEvent) {
+      if (pendingRef.current === savedRef.current) return;
+      event.preventDefault();
+    }
+
+    window.addEventListener("beforeunload", warn);
+    return () => window.removeEventListener("beforeunload", warn);
+  }, []);
 
   const publish = useCallback(async () => {
     setPublishStatus("publishing");
     setPublishError(null);
 
-    const result = await publishAction();
-    if (result.ok) {
-      setPublishStatus("idle");
-      return true;
+    // `publishAction` copia a publicado lo que haya guardado en Firestore, no lo
+    // que tiene el editor en pantalla. Publicar con el autoguardado todavía en
+    // vuelo —tipear y apretar Publicar enseguida— sacaba al sitio el borrador
+    // anterior y los últimos cambios parecían no haberse guardado nunca.
+    if (!(await flush())) {
+      setPublishStatus("error");
+      setPublishError(`${SAVE_FAILED} No se publicó nada.`);
+      return false;
     }
 
-    setPublishStatus("error");
-    setPublishError(result.error);
-    return false;
-  }, []);
+    try {
+      const result = await publishAction();
+      if (result.ok) {
+        setPublishStatus("idle");
+        return true;
+      }
+
+      setPublishStatus("error");
+      setPublishError(result.error);
+      return false;
+    } catch {
+      setPublishStatus("error");
+      setPublishError(PUBLISH_FAILED);
+      return false;
+    }
+  }, [flush]);
 
   const value = useMemo<CmsDraftContextValue>(
     () => ({ sections, setSections, saveStatus, saveError, publishStatus, publishError, publish }),

@@ -1,10 +1,17 @@
 "use client";
 
-import type { HeaderSection } from "@/lib/cms/types";
+import type { AnnouncementItem, HeaderSection } from "@/lib/cms/types";
 import { TextField } from "@/components/atoms/TextField";
 import { FieldCard } from "@/components/molecules/FieldCard/FieldCard";
 import { ImageUploader } from "@/components/molecules/ImageUploader/ImageUploader";
 import { LinksEditor } from "@/components/molecules/LinksEditor/LinksEditor";
+import { RepeatableList } from "@/components/molecules/RepeatableList/RepeatableList";
+
+const MAX_ANNOUNCEMENTS = 6;
+
+function emptyAnnouncement(): AnnouncementItem {
+  return { id: crypto.randomUUID(), text: "" };
+}
 
 interface HeaderEditorProps {
   section: HeaderSection;
@@ -53,6 +60,31 @@ export function HeaderEditor({ section, onChange }: HeaderEditorProps) {
             texto del logo en su lugar.
           </p>
         ) : null}
+      </FieldCard>
+
+      <FieldCard
+        title="Barra de anuncios"
+        subtitle="Los avisos que corren sobre el menú. Sólo los muestra la variante “Con barra de anuncio”; con la lista vacía, la barra no aparece."
+        className="sm:col-span-full"
+      >
+        <RepeatableList
+          items={section.announcements}
+          onChange={(announcements) => onChange({ ...section, announcements })}
+          createItem={emptyAnnouncement}
+          addLabel="Agregar aviso"
+          max={MAX_ANNOUNCEMENTS}
+          itemMinWidth={240}
+          itemLabel={(item, index) => item.text || `Aviso ${index + 1}`}
+          emptyLabel="Sin avisos cargados, esa variante de header no dibuja la barra."
+          renderItem={(item, update) => (
+            <TextField
+              label="Texto"
+              placeholder="Vivero abierto de martes a domingo"
+              value={item.text}
+              onChange={(event) => update({ text: event.target.value })}
+            />
+          )}
+        />
       </FieldCard>
     </div>
   );

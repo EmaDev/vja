@@ -10,6 +10,10 @@ const defaultItems = [
 
 /** Infinite scrolling ticker bar, typically stacked above a header. Mockup ref: 1d. */
 export function AnnouncementMarquee({ items = defaultItems }: AnnouncementMarqueeProps) {
+  // Sin avisos no hay nada que hacer correr: la franja verde vacía se vería
+  // como un error. El default sólo cubre el caso de no recibir la prop.
+  if (items.length === 0) return null;
+
   const track = (key: string) => (
     <div
       key={key}

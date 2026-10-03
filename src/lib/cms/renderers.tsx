@@ -3,13 +3,13 @@ import { AboutBlock } from "@/components/organisms/AboutBlock/AboutBlock";
 import { CareNotes } from "@/components/organisms/CareNotes/CareNotes";
 import { ContactBlock } from "@/components/organisms/ContactBlock/ContactBlock";
 import { FaqBlock } from "@/components/organisms/FaqBlock/FaqBlock";
-import { GalleryGrid } from "@/components/organisms/GalleryGrid/GalleryGrid";
 import { ProductCatalog } from "@/components/organisms/ProductCatalog/ProductCatalog";
 import { ServicesGrid } from "@/components/organisms/ServicesGrid/ServicesGrid";
 import { ShippingChecker } from "@/components/organisms/ShippingChecker/ShippingChecker";
 import { SiteFooter } from "@/components/organisms/SiteFooter/SiteFooter";
 import { VisitBlock } from "@/components/organisms/VisitBlock/VisitBlock";
 import { heroVariants } from "./hero-variants";
+import type { Product } from "./catalog-types";
 import type {
   AboutSection,
   CardsSection,
@@ -18,7 +18,6 @@ import type {
   ContactSection,
   FaqSection,
   FooterSection,
-  GallerySection,
   HeroSection,
   ServicesSection,
   ShippingSection,
@@ -29,6 +28,12 @@ import type {
  * ejemplo, no guarda casilla de correo propia y usa la de contacto. */
 export interface RenderContext {
   contact?: ContactSection;
+  /** Planta elegida para la card “Favorita” del hero, ya buscada en el
+   * catálogo publicado. */
+  featuredProduct?: Product;
+  /** Envíos cuando la landing decidió dibujarlo dentro de “Visitanos”, como
+   * segunda columna. Vacío, la sección se dibuja sola en su lugar del flujo. */
+  shipping?: ShippingSection;
 }
 
 type SectionRenderer<S extends CmsSection> = (section: S, context: RenderContext) => ReactNode;
@@ -41,14 +46,19 @@ function whatsappPhone(context: RenderContext): string {
   return contact?.whatsappEnabled ? contact.whatsappPhone : "";
 }
 
-function renderHero(section: HeroSection): ReactNode {
+function renderHero(section: HeroSection, context: RenderContext): ReactNode {
   const variant = heroVariants.find((candidate) => candidate.id === section.variant);
   if (!variant) return null;
 
   const { Component } = variant;
   // `showHeader={false}`: el header lo monta `SiteChrome` con la variante elegida
   // en el CMS, que no tiene por qué ser la que trae el mockup de este hero.
-  return <Component {...variant.getProps(section)} showHeader={false} />;
+  return (
+    <Component
+      {...variant.getProps({ ...section, featuredProduct: context.featuredProduct })}
+      showHeader={false}
+    />
+  );
 }
 
 function renderAbout(section: AboutSection): ReactNode {
@@ -63,16 +73,23 @@ function renderServices(section: ServicesSection, context: RenderContext): React
   return <ServicesGrid section={section} contact={context.contact} />;
 }
 
-function renderGallery(section: GallerySection): ReactNode {
-  return <GalleryGrid section={section} />;
-}
-
 function renderCare(section: CareSection): ReactNode {
   return <CareNotes section={section} />;
 }
 
 function renderVisit(section: VisitSection, context: RenderContext): ReactNode {
-  return <VisitBlock section={section} contact={context.contact} />;
+  const { shipping } = context;
+  return (
+    <VisitBlock
+      section={section}
+      contact={context.contact}
+      aside={
+        shipping ? (
+          <ShippingChecker section={shipping} whatsappPhone={whatsappPhone(context)} embedded />
+        ) : null
+      }
+    />
+  );
 }
 
 function renderShipping(section: ShippingSection, context: RenderContext): ReactNode {
@@ -103,7 +120,6 @@ const sectionRenderers: { [K in CmsSection["kind"]]: SectionRenderer<Extract<Cms
   about: renderAbout,
   cards: renderCards,
   services: renderServices,
-  gallery: renderGallery,
   care: renderCare,
   visit: renderVisit,
   shipping: renderShipping,

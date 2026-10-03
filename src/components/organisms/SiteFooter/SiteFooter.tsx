@@ -1,12 +1,11 @@
 import Link from "next/link";
-import { NewsletterForm } from "./NewsletterForm";
 import { cn } from "@/lib/utils";
 import type { ContactSection, FooterSection } from "@/lib/cms/types";
 
 export interface SiteFooterProps {
   section: FooterSection;
-  /** El footer no guarda casilla propia: el alta al newsletter va a la casilla
-   * del local que se carga en la sección de contacto. */
+  /** El footer no guarda dirección propia: la del pie sale de la sección de
+   * contacto. */
   contact?: ContactSection;
 }
 
@@ -74,32 +73,7 @@ export function SiteFooter({ section, contact }: SiteFooterProps) {
           </nav>
         ))}
 
-        <div className="flex flex-col gap-6">
-          {section.newsletterEnabled && contact ? (
-            <div>
-              <h2
-                className={cn(
-                  "text-[11px] uppercase tracking-[0.18em]",
-                  dark ? "text-[#9FB09A]" : "text-taupe",
-                )}
-              >
-                Newsletter
-              </h2>
-              <p
-                className={cn(
-                  "mb-4 mt-3 max-w-[340px] text-[15px] leading-[1.55]",
-                  dark ? "text-[#C7CFC1]" : "text-ink",
-                )}
-              >
-                Una vez por mes: qué está floreciendo, talleres y cuidados de estación.
-              </p>
-              <NewsletterForm
-                recipientEmail={contact.email}
-                tone={section.background}
-              />
-            </div>
-          ) : null}
-
+        <div>
           {socials.length > 0 ? (
             <div>
               <h2

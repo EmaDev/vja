@@ -4,7 +4,6 @@ import { useState } from "react";
 import type { FooterSection, NavLink } from "@/lib/cms/types";
 import { TextField } from "@/components/atoms/TextField";
 import { SelectField } from "@/components/atoms/SelectField";
-import { ToggleSwitch } from "@/components/atoms/ToggleSwitch";
 import { AdminButton } from "@/components/atoms/AdminButton";
 import { ChevronDownIcon, ChevronUpIcon, TrashIcon } from "@/components/atoms/icons";
 import { FieldCard } from "@/components/molecules/FieldCard/FieldCard";
@@ -141,7 +140,7 @@ export function FooterEditor({ section, onChange }: FooterEditorProps) {
           </div>
         </FieldCard>
 
-        <FieldCard title="Redes y newsletter">
+        <FieldCard title="Redes">
           <TextField
             label="Instagram"
             value={section.instagram}
@@ -152,19 +151,6 @@ export function FooterEditor({ section, onChange }: FooterEditorProps) {
             value={section.pinterest}
             onChange={(event) => onChange({ ...section, pinterest: event.target.value })}
           />
-          <div className="flex items-center justify-between gap-4 border-t border-[#EDE6D6] pt-[18px]">
-            <div className="min-w-0">
-              <div className="text-[15px] text-forest">Bloque de newsletter</div>
-              <div className="mt-0.5 text-[13px] text-stone">
-                Muestra el campo de suscripción en el footer
-              </div>
-            </div>
-            <ToggleSwitch
-              checked={section.newsletterEnabled}
-              onChange={(newsletterEnabled) => onChange({ ...section, newsletterEnabled })}
-              label="Bloque de newsletter"
-            />
-          </div>
         </FieldCard>
       </div>
     </div>

@@ -47,6 +47,38 @@
   --foreground: #17301f;
 }
 
+/* Barra de scroll de la navegación del CMS.
+ *
+ * La barra lateral es verde oscuro y el scrollbar que pinta el sistema sobre
+ * ese fondo —gris claro, ancho, con flechas— se lee como un error de maquetado.
+ * Se la deja fina y en un tono del propio panel, y sólo se nota cuando hay algo
+ * que correr. Firefox usa `scrollbar-color`; el resto, los pseudoelementos.
+ *
+ * `scrollbar-gutter: stable` reserva el canal siempre, así los enlaces no se
+ * corren unos pocos pixeles al abrir o cerrar un grupo. */
+.cms-sidebar-scroll {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(246, 241, 231, 0.18) transparent;
+  scrollbar-gutter: stable;
+}
+
+.cms-sidebar-scroll::-webkit-scrollbar {
+  width: 6px;
+}
+
+.cms-sidebar-scroll::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.cms-sidebar-scroll::-webkit-scrollbar-thumb {
+  background-color: rgba(246, 241, 231, 0.16);
+  border-radius: 999px;
+}
+
+.cms-sidebar-scroll:hover::-webkit-scrollbar-thumb {
+  background-color: rgba(246, 241, 231, 0.3);
+}
+
 :root {
   --background: #ffffff;
   --foreground: #171717;
@@ -68,6 +100,27 @@
   :root {
     --background: #0a0a0a;
     --foreground: #ededed;
+  }
+}
+
+/* Navegación entre secciones.
+ *
+ * Los enlaces del menú, del footer y los botones que apuntan a `#catalogo`,
+ * `#contacto` o `#envios` son anclas de la misma página: el salto lo resuelve
+ * el navegador, y con esto lo hace animado en vez de seco.
+ *
+ * Se apaga para quien pidió menos movimiento en su sistema: una página larga
+ * desplazándose sola es justo lo que esa preferencia quiere evitar.
+ *
+ * El `data-scroll-behavior="smooth"` del `<html>` en `layout.tsx` es la otra
+ * mitad: Next 16 dejó de pisar `scroll-behavior` por su cuenta al navegar, y sin
+ * ese atributo abrir la ficha de un producto animaría todo el scroll hasta
+ * arriba en vez de mostrarla desde el principio. Los saltos de ancla quedan
+ * afuera de ese arreglo —Next no lo aplica cuando sólo cambia el hash— así que
+ * siguen siendo suaves. */
+@media (prefers-reduced-motion: no-preference) {
+  html {
+    scroll-behavior: smooth;
   }
 }
 

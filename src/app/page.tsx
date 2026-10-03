@@ -4,6 +4,7 @@ import { SiteChrome } from "@/components/organisms/SiteChrome/SiteChrome";
 import { WhatsAppButton } from "@/components/organisms/WhatsAppButton/WhatsAppButton";
 import { loadPublished, pickSection } from "@/lib/cms/published";
 import { loadLivePromotions } from "@/lib/cms/promo-repository";
+import { loadLiveProducts } from "@/lib/cms/catalog-repository";
 import { heroTone } from "@/lib/cms/hero-variants";
 import { renderSection, type RenderContext } from "@/lib/cms/renderers";
 
@@ -58,11 +59,34 @@ export default async function HomePage() {
   const footer = pickSection(sections, "footer");
   const contact = pickSection(sections, "contact");
 
-  const context: RenderContext = { contact };
+  // La card “Favorita” del hero editorial muestra la planta elegida en el panel.
+  // Se resuelve contra el catálogo publicado —la misma lectura cacheada que usa
+  // la grilla— así que una planta despublicada o borrada deja el hero sin card.
+  const featuredProduct = hero?.featuredProductId
+    ? (await loadLiveProducts()).find((product) => product.id === hero.featuredProductId)
+    : undefined;
+
+  // “Verificá tu zona” se dibuja como segunda columna de “Visitanos”: las dos
+  // contestan lo mismo —cómo llegar al local, o cómo llega lo que comprás— y
+  // juntas llenan el ancho que antes quedaba vacío cuando no hay mapa cargado.
+  // Si alguna de las dos está apagada en el CMS, envíos vuelve a su propia franja.
+  const visit = pickSection(sections, "visit");
+  const shipping = pickSection(sections, "shipping");
+  const pairShipping = Boolean(visit?.visible && shipping?.visible);
+
+  const context: RenderContext = {
+    contact,
+    featuredProduct,
+    shipping: pairShipping ? shipping : undefined,
+  };
   // El header envuelve la página y el footer va fuera del `<main>`; el resto se
   // dibuja en el orden en que quedaron guardadas las secciones.
   const body = sections.filter(
-    (section) => section.kind !== "header" && section.kind !== "footer" && section.kind !== "seo",
+    (section) =>
+      section.kind !== "header" &&
+      section.kind !== "footer" &&
+      section.kind !== "seo" &&
+      !(pairShipping && section.kind === "shipping"),
   );
 
   const content = (

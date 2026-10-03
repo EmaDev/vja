@@ -1,4 +1,3 @@
-import { CtaButton } from "@/components/atoms/CtaButton";
 import { Logo } from "@/components/atoms/Logo";
 import { NavLink, type NavItem } from "@/components/atoms/NavLink";
 import { cn } from "@/lib/utils";
@@ -9,7 +8,6 @@ export type FloatingHeaderProps = {
   logoImageAlt?: string;
   navItems?: NavItem[];
   activeLabel?: string;
-  ctaLabel?: string;
   /** `light` (por defecto) para flotar sobre una foto oscura; `dark` para hacerlo
    * sobre un hero claro, donde el texto en papel sería ilegible. */
   tone?: "light" | "dark";
@@ -29,7 +27,6 @@ export function FloatingHeader({
   logoImageAlt,
   navItems = defaultNavItems,
   activeLabel = "Inicio",
-  ctaLabel = "Comprar ahora",
   tone = "light",
 }: FloatingHeaderProps) {
   const light = tone === "light";
@@ -57,11 +54,6 @@ export function FloatingHeader({
           </NavLink>
         ))}
       </nav>
-      <div className="pointer-events-auto">
-        <CtaButton tone={light ? "paper" : "forest"} size="sm">
-          {ctaLabel}
-        </CtaButton>
-      </div>
     </header>
   );
 }

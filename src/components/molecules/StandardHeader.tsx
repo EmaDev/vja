@@ -18,9 +18,7 @@ const defaultNavLeft: NavItem[] = [
   { label: "Accesorios" },
 ];
 
-const pillClasses = "border-[#CFC6B0] text-[#3A4A3C]";
-
-/** Non-floating shop header with search/account pills and a contact CTA. Mockup ref: 1d.
+/** Non-floating shop header with a contact CTA. Mockup ref: 1d.
  * En mobile el logo va primero y la navegación pasa a una fila con scroll horizontal. */
 export function StandardHeader({
   logoText,
@@ -44,9 +42,6 @@ export function StandardHeader({
       </nav>
       <Logo text={logoText} imageUrl={logoImageUrl} imageAlt={logoImageAlt} size="sm" />
       <div className="flex gap-2.5 md:flex-1 md:justify-end">
-        <CtaButton tone="forest" variant="outline" shape="pill" size="sm" className={`hidden sm:inline-flex ${pillClasses}`}>
-          Buscar
-        </CtaButton>
         <CtaButton href="#contacto" tone="forest" shape="pill" size="sm" className="bg-sage">
           {ctaLabel}
         </CtaButton>

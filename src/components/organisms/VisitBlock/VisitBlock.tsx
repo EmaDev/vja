@@ -2,13 +2,15 @@ import type { ReactNode } from "react";
 import { CtaButton } from "@/components/atoms/CtaButton";
 import { Eyebrow } from "@/components/atoms/Eyebrow";
 import { ClockIcon, MapPinIcon, PhoneIcon } from "@/components/atoms/icons";
+import { HoursList } from "@/components/molecules/HoursList";
+import { filledHours } from "@/lib/cms/contact-info";
 import { cn } from "@/lib/utils";
 import type { ContactSection, VisitSection } from "@/lib/cms/types";
 
 export interface VisitBlockProps {
   section: VisitSection;
-  /** La dirección y el teléfono salen de Contacto: son los mismos datos del local
-   * y no tiene sentido cargarlos dos veces. */
+  /** La dirección, el teléfono y los horarios salen de Contacto: son los mismos
+   * datos del local y no tiene sentido cargarlos dos veces. */
   contact?: ContactSection;
   /** Columna de la derecha. La landing mete acá el verificador de envíos; el
    * mapa, si hay uno cargado, queda debajo. */
@@ -39,6 +41,7 @@ function InfoRow({
 
 /** "Visitanos": datos del local, horarios día por día y el mapa embebido. */
 export function VisitBlock({ section, contact, aside }: VisitBlockProps) {
+  const hours = filledHours(contact);
   // Sin verificador ni mapa no hay segunda columna que armar: a una sola
   // columna el texto ocupa el ancho entero en vez de dejar media pantalla vacía.
   const hasSide = Boolean(aside) || Boolean(section.mapEmbedUrl);
@@ -82,16 +85,9 @@ export function VisitBlock({ section, contact, aside }: VisitBlockProps) {
               </InfoRow>
             ) : null}
 
-            {section.hours.length > 0 ? (
+            {hours.length > 0 ? (
               <InfoRow icon={<ClockIcon className="h-[18px] w-[18px]" />} label="Horarios">
-                <ul className="flex flex-col gap-1.5">
-                  {section.hours.map((row) => (
-                    <li key={row.id} className="flex justify-between gap-6 text-[15px]">
-                      <span>{row.days}</span>
-                      <span className="text-stone">{row.time}</span>
-                    </li>
-                  ))}
-                </ul>
+                <HoursList hours={hours} className="text-[15px]" />
               </InfoRow>
             ) : null}
 

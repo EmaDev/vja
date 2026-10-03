@@ -1,11 +1,14 @@
+import { LoginBackdrop } from "@/components/organisms/LoginForm/LoginBackdrop";
 import { LoginForm } from "@/components/organisms/LoginForm/LoginForm";
 
 export default function CmsLoginPage() {
   return (
-    <main className="cms-scope flex min-h-screen items-center justify-center bg-zinc-50 px-4">
-      <div className="w-full max-w-sm rounded-2xl border border-zinc-200 bg-white p-8 shadow-sm">
-        <LoginForm />
-      </div>
+    /* `overflow-hidden` recorta las ramas del fondo, que a propósito salen de
+     * la pantalla por los cuatro lados: sin esto aparecerían barras de scroll
+     * en una pantalla que no tiene nada para scrollear. */
+    <main className="cms-scope relative flex min-h-screen items-center justify-center overflow-hidden px-4 py-12">
+      <LoginBackdrop />
+      <LoginForm />
     </main>
   );
 }

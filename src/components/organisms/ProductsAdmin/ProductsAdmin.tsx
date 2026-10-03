@@ -51,12 +51,6 @@ export function ProductsAdmin({ products: initialProducts, categoryNames }: Prod
       name: "Nuevo producto",
       latin: "",
       category: categoryNames[0] ?? "",
-      light: "Luz indirecta",
-      water: "Semanal",
-      height: "",
-      difficulty: "Fácil",
-      pot: "Cerámica esmaltada",
-      petSafe: "No",
       status: "draft",
       photos: [],
       short: "",
@@ -365,19 +359,18 @@ export function ProductsAdmin({ products: initialProducts, categoryNames }: Prod
           </div>
         ) : (
           <div className="overflow-x-auto rounded-[10px] border border-line-light bg-paper-light">
-            <div className="grid min-w-[900px] grid-cols-[32px_56px_minmax(0,2.2fr)_minmax(0,1fr)_minmax(0,1.2fr)_120px_92px] items-center gap-4 bg-[#F2EDE0] px-[18px] py-[13px] text-[11px] uppercase tracking-[0.14em] text-taupe">
+            <div className="grid min-w-[780px] grid-cols-[32px_56px_minmax(0,2.2fr)_minmax(0,1fr)_120px_92px] items-center gap-4 bg-[#F2EDE0] px-[18px] py-[13px] text-[11px] uppercase tracking-[0.14em] text-taupe">
               <span />
               <span />
               <span>Producto</span>
               <span>Categoría</span>
-              <span>Luz / riego</span>
               <span>Estado</span>
               <span />
             </div>
             {visibleProducts.map((product) => (
               <div
                 key={product.id}
-                className="grid min-w-[900px] grid-cols-[32px_56px_minmax(0,2.2fr)_minmax(0,1fr)_minmax(0,1.2fr)_120px_92px] items-center gap-4 border-t border-[#EDE6D6] px-[18px] py-3 transition-colors hover:bg-white"
+                className="grid min-w-[780px] grid-cols-[32px_56px_minmax(0,2.2fr)_minmax(0,1fr)_120px_92px] items-center gap-4 border-t border-[#EDE6D6] px-[18px] py-3 transition-colors hover:bg-white"
               >
                 <label className="flex cursor-pointer items-center">
                   <input
@@ -399,9 +392,6 @@ export function ProductsAdmin({ products: initialProducts, categoryNames }: Prod
                   <div className="text-[13px] text-taupe">{product.latin}</div>
                 </div>
                 <span className="text-sm text-ink">{product.category}</span>
-                <span className="text-sm text-ink">
-                  {product.light} · {product.water}
-                </span>
                 <StatusPill live={product.status === "live"} className="justify-self-start" />
                 <AdminButton variant="outline" onClick={() => openProduct(product.id)} className="justify-self-end">
                   Editar

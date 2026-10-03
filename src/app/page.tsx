@@ -109,7 +109,11 @@ export default async function HomePage() {
   if (!header) return content;
 
   return (
-    <SiteChrome header={header} heroTone={hero ? heroTone[hero.variant] : "light"}>
+    <SiteChrome
+      header={header}
+      contact={contact}
+      heroTone={hero ? heroTone[hero.variant] : "light"}
+    >
       {content}
     </SiteChrome>
   );

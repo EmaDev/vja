@@ -21,12 +21,6 @@ export interface Product {
   name: string;
   latin: string;
   category: string;
-  light: string;
-  water: string;
-  height: string;
-  difficulty: string;
-  pot: string;
-  petSafe: string;
   status: CatalogStatus;
   photos: ProductPhoto[];
   short: string;

@@ -1,11 +1,6 @@
 import { CardShell } from "@/components/atoms/CardShell";
 import { ImagePlaceholder } from "@/components/atoms/ImagePlaceholder";
 
-export type ProductCardArchSpec = {
-  label: string;
-  value: string;
-};
-
 export type ProductCardArchProps = {
   image?: string;
   /** Texto alternativo de la foto. Sin él se usa el nombre, que es mejor que
@@ -14,19 +9,19 @@ export type ProductCardArchProps = {
   imageLabel?: string;
   name: string;
   subtitle: string;
-  specs: ProductCardArchSpec[];
+  description: string;
   /** Ficha del producto. Sin esto la card no navega. */
   href?: string;
 };
 
-/** Arched photo card with a three-column care spec row. Mockup ref: 2b. */
+/** Arched photo card with a short description under the name. Mockup ref: 2b. */
 export function ProductCardArch({
   image,
   imageAlt,
   imageLabel,
   name,
   subtitle,
-  specs,
+  description,
   href,
 }: ProductCardArchProps) {
   return (
@@ -40,16 +35,11 @@ export function ProductCardArch({
       </div>
       <div className="mt-[22px] font-display text-[26px] text-forest sm:text-[30px]">{name}</div>
       <div className="mt-0.5 font-display text-base italic text-taupe">{subtitle}</div>
-      <div className="mt-5 grid grid-cols-3 gap-2.5 border-t border-line pt-[18px]">
-        {specs.map((spec) => (
-          <div key={spec.label}>
-            <div className="text-[10px] uppercase tracking-[0.16em] text-[#A09D8B]">
-              {spec.label}
-            </div>
-            <div className="mt-1 text-sm text-[#3A4A3C]">{spec.value}</div>
-          </div>
-        ))}
-      </div>
+      {description ? (
+        <p className="mt-5 border-t border-line pt-[18px] text-sm leading-[1.6] text-[#3A4A3C]">
+          {description}
+        </p>
+      ) : null}
     </CardShell>
   );
 }

@@ -61,37 +61,25 @@ export default function ComponentsPreviewPage() {
           </div>
         </Slot>
 
-        <Slot id="2b" note="Ficha botánica con arco · datos de cuidado en tres columnas">
+        <Slot id="2b" note="Ficha botánica con arco · descripción corta bajo el nombre">
           <div className="grid grid-cols-3 gap-[26px] bg-paper-light p-11">
             <ProductCardArch
               name="Ficus Lyrata"
               subtitle="Higuera hoja de violín"
               imageLabel="Ficus Lyrata"
-              specs={[
-                { label: "Luz", value: "Indirecta" },
-                { label: "Riego", value: "Semanal" },
-                { label: "Altura", value: "1,4 m" },
-              ]}
+              description="Hojas anchas y nervadas, de las que piden un rincón fijo."
             />
             <ProductCardArch
               name="Calathea Orbifolia"
               subtitle="Planta de la oración"
               imageLabel="Calathea"
-              specs={[
-                { label: "Luz", value: "Media" },
-                { label: "Riego", value: "2 por semana" },
-                { label: "Altura", value: "60 cm" },
-              ]}
+              description="Cierra las hojas de noche y las vuelve a abrir al amanecer."
             />
             <ProductCardArch
               name="Zamioculca"
               subtitle="Planta ZZ"
               imageLabel="Zamioculca"
-              specs={[
-                { label: "Luz", value: "Baja" },
-                { label: "Riego", value: "Mensual" },
-                { label: "Altura", value: "70 cm" },
-              ]}
+              description="La más resistente del catálogo: tolera sombra y olvidos."
             />
           </div>
         </Slot>

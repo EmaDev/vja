@@ -86,7 +86,7 @@ export const heroVariants: HeroVariantDefinition[] = [
         ? {
             eyebrow: "Favorita",
             title: data.featuredProduct.name,
-            subtitle: data.featuredProduct.light || data.featuredProduct.category,
+            subtitle: data.featuredProduct.short || data.featuredProduct.category,
           }
         : null,
     }),

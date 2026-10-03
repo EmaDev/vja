@@ -1,5 +1,7 @@
 import { Eyebrow } from "@/components/atoms/Eyebrow";
 import { CtaButton } from "@/components/atoms/CtaButton";
+import { HoursList } from "@/components/molecules/HoursList";
+import { filledHours } from "@/lib/cms/contact-info";
 import { whatsappHref } from "@/lib/cms/whatsapp";
 import type { ContactSection } from "@/lib/cms/types";
 
@@ -22,6 +24,7 @@ export function ContactBlock({ section }: ContactBlockProps) {
   const whatsapp = section.whatsappEnabled
     ? whatsappHref(section.whatsappPhone, section.whatsappMessage)
     : null;
+  const hours = filledHours(section);
 
   return (
     <section
@@ -53,7 +56,11 @@ export function ContactBlock({ section }: ContactBlockProps) {
 
         <dl className="lg:pt-2">
           <DataRow label="Dirección">{section.address}</DataRow>
-          <DataRow label="Horarios">{section.hours}</DataRow>
+          {hours.length > 0 ? (
+            <DataRow label="Horarios">
+              <HoursList hours={hours} />
+            </DataRow>
+          ) : null}
           <DataRow label="Teléfono">
             <a href={`tel:${section.phone.replace(/\s/g, "")}`} className="hover:text-sage">
               {section.phone}

@@ -19,6 +19,7 @@ import { FooterEditor } from "@/components/organisms/SectionEditors/FooterEditor
 import { SeoEditor } from "@/components/organisms/SectionEditors/SeoEditor";
 import { SAVE_STATUS_LABEL, useCmsDraft } from "@/lib/cms/draft-context";
 import { resolveTab } from "@/lib/cms/tabs";
+import { hoursLines } from "@/lib/cms/contact-info";
 import { headerVariants, type HeaderVariantId } from "@/lib/cms/header-variants";
 import { heroVariants, type HeroVariantId } from "@/lib/cms/hero-variants";
 import { cardVariants, type CardVariantId } from "@/lib/cms/card-variants";
@@ -149,6 +150,8 @@ export function CmsDesignWorkspace({ products }: CmsDesignWorkspaceProps) {
                       logoImageUrl={header.logoImageUrl}
                       logoImageAlt={header.logoImageAlt}
                       announcements={header.announcements.map((item) => item.text)}
+                      address={contact.address}
+                      hours={hoursLines(contact)}
                     />
                   </div>
                 );

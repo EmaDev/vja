@@ -16,6 +16,11 @@
   --color-forest: #17301f;
   --color-forest-deep: #0e1f13;
   --color-sage: #3f6b47;
+  /* Verde de hoja a contraluz. El `sage` es el verde de la marca sobre papel
+     claro; sobre el fondo oscuro de la pantalla de ingreso queda casi negro y
+     las ramas desaparecen. Este es el mismo verde subido de luz, para dibujar
+     sobre oscuro. */
+  --color-leaf: #6fa06a;
   --color-terracotta: #c2643b;
   --color-ink: #4b4b41;
   --color-stone: #6b6b5e;
@@ -200,6 +205,74 @@ body {
   }
   to {
     transform: translateX(-50%);
+  }
+}
+
+/* Pantalla de ingreso al panel.
+ *
+ * El fondo es un jardín en penumbra: manchas de luz que respiran, ramas en
+ * silueta que se mecen y algunas motas que suben. Es todo decorativo y vive
+ * detrás de la tarjeta, así que se anima acá y no con JavaScript: son
+ * transformaciones y opacidades que el navegador compone sin tocar el layout,
+ * y el formulario no paga nada por ellas.
+ *
+ * Cada animación recibe su duración, su demora y su amplitud por variable
+ * (`--vja-sway`, `--vja-mote-x`): una sola regla sirve para las siete ramas,
+ * que sólo se diferencian en el ritmo.
+ *
+ * Todas terminan en el estado de reposo —la rama derecha, la luz en su tamaño
+ * base, la mota ya invisible—. El bloque de `prefers-reduced-motion` de más
+ * abajo recorta la duración a un instante y deja el elemento en ese último
+ * fotograma: si alguno terminara a mitad de camino, quedaría torcido o a medio
+ * desvanecer en la pantalla de quien pidió menos movimiento. */
+@keyframes vja-sway {
+  0%,
+  100% {
+    transform: rotate(0deg);
+  }
+  50% {
+    transform: rotate(var(--vja-sway, 3deg));
+  }
+}
+
+@keyframes vja-breathe {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0) scale(1);
+    opacity: 0.5;
+  }
+  50% {
+    transform: translate3d(2%, -3%, 0) scale(1.15);
+    opacity: 0.85;
+  }
+}
+
+@keyframes vja-mote {
+  0% {
+    transform: translate3d(0, 0, 0);
+    opacity: 0;
+  }
+  15%,
+  85% {
+    opacity: var(--vja-mote-opacity, 0.45);
+  }
+  100% {
+    transform: translate3d(var(--vja-mote-x, 30px), -85vh, 0);
+    opacity: 0;
+  }
+}
+
+/* Anillo que se abre alrededor del sello de la tarjeta, como la onda de una
+ * gota. Termina transparente, así que no deja rastro al detenerse. */
+@keyframes vja-pulse {
+  0% {
+    transform: scale(1);
+    opacity: 0.7;
+  }
+  70%,
+  100% {
+    transform: scale(1.8);
+    opacity: 0;
   }
 }
 

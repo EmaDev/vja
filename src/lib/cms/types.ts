@@ -135,23 +135,16 @@ export interface CareSection extends ToggleableSection {
   items: CareNote[];
 }
 
-export interface VisitHours {
-  id: string;
-  days: string;
-  time: string;
-}
-
-/** El bloque "Visitanos": horarios detallados y mapa.
+/** El bloque "Visitanos": el mapa y el enlace a Maps.
  *
- * La dirección y el teléfono no se repiten acá: salen de `ContactSection`, que ya
- * es el único lugar donde se cargan los datos del local. */
+ * La dirección, el teléfono y los horarios no se repiten acá: salen de
+ * `ContactSection`, el único lugar donde se cargan los datos del local. */
 export interface VisitSection extends ToggleableSection {
   kind: "visit";
   eyebrow: string;
   title: string;
   titleHighlight: string;
   subtitle: string;
-  hours: VisitHours[];
   /** `src` del iframe de Google Maps. Vacío oculta el mapa. */
   mapEmbedUrl: string;
   /** Link de "Cómo llegar". Vacío oculta el botón. */
@@ -193,13 +186,25 @@ export interface FaqSection extends ToggleableSection {
   items: FaqItem[];
 }
 
+/** Un tramo del horario de atención: "Lunes a viernes" / "9:00 – 18:00". */
+export interface BusinessHours {
+  id: string;
+  days: string;
+  time: string;
+}
+
+/** Los datos del local, cargados una sola vez.
+ *
+ * Es la única fuente de la dirección, el teléfono y los horarios: "Visitanos",
+ * el footer y el header lateral los leen de acá en vez de guardar una copia
+ * propia que después queda vieja. */
 export interface ContactSection extends BaseSection {
   kind: "contact";
   storeName: string;
   phone: string;
   address: string;
   email: string;
-  hours: string;
+  hours: BusinessHours[];
   /** Botón flotante de WhatsApp, visible en toda la landing. */
   whatsappEnabled: boolean;
   /** Puede ser distinto de `phone`: el fijo del local no suele recibir mensajes. */

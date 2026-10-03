@@ -4,10 +4,15 @@ import { HeaderWithAnnouncement } from "@/components/molecules/HeaderWithAnnounc
 import { HeaderWithDot } from "@/components/molecules/HeaderWithDot";
 import { SidebarNav } from "@/components/molecules/SidebarNav";
 import { SiteHeaderCentered } from "@/components/molecules/SiteHeaderCentered";
-import type { HeaderSection } from "@/lib/cms/types";
+import { hoursLines } from "@/lib/cms/contact-info";
+import type { ContactSection, HeaderSection } from "@/lib/cms/types";
 
 export interface SiteChromeProps {
   header: HeaderSection;
+  /** Datos del local. Sólo los mira la variante lateral, que muestra la
+   * dirección y los horarios al pie de la columna; los lee de Contacto en vez de
+   * guardar una copia propia. */
+  contact?: ContactSection;
   /** Claro u oscuro del hero que va justo debajo. Sólo lo mira la variante
    * flotante, que se apoya encima de él y necesita contrastar. */
   heroTone: "light" | "dark";
@@ -24,7 +29,7 @@ export interface SiteChromeProps {
  * lateral ocupa una columna propia— así que la decisión vive acá y no en cada
  * sección. Los heros traen su propio header en los mockups del CMS; en la landing
  * se apaga con `showHeader={false}` para que mande el que eligió el cliente. */
-export function SiteChrome({ header, heroTone, hasHero = true, children }: SiteChromeProps) {
+export function SiteChrome({ header, contact, heroTone, hasHero = true, children }: SiteChromeProps) {
   const { logoText, logoImageUrl, logoImageAlt, navLinks } = header;
   // Las cinco variantes reciben lo mismo; cada una decide cómo lo dibuja.
   const logo = { logoText, logoImageUrl, logoImageAlt };
@@ -90,6 +95,8 @@ export function SiteChrome({ header, heroTone, hasHero = true, children }: SiteC
             <SidebarNav
               {...logo}
               navItems={navItems.map((item, index) => ({ ...item, active: index === 0 }))}
+              address={contact?.address}
+              hours={hoursLines(contact)}
             />
           </div>
           <div className="min-w-0">{children}</div>

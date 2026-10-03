@@ -5,6 +5,7 @@ import { ProductCardDrawer } from "@/components/molecules/ProductCardDrawer";
 import { ProductCardEditorialRow } from "@/components/molecules/ProductCardEditorialRow";
 import { ProductCardOverlay } from "@/components/molecules/ProductCardOverlay";
 import { loadLiveProducts } from "@/lib/cms/catalog-repository";
+import { markdownToPlain } from "@/lib/cms/markdown";
 import { productCover, productHref, type Product } from "@/lib/cms/catalog-types";
 import type { CardVariantId } from "@/lib/cms/card-variants";
 import { cn } from "@/lib/utils";
@@ -45,10 +46,6 @@ function isDarkVariant(variant: CardVariantId): boolean {
   return variant === "drawer";
 }
 
-function careMeta(product: Product): string {
-  return `${product.light} · riego ${product.water.toLowerCase()}`;
-}
-
 function renderCard(variant: CardVariantId, product: Product, index: number) {
   const href = productHref(product);
   // La portada es la primera foto cargada. Sin fotos, `image` queda `undefined` y
@@ -65,10 +62,10 @@ function renderCard(variant: CardVariantId, product: Product, index: number) {
           href={href}
           image={image}
           imageAlt={imageAlt}
-          category={`${product.category} · ${product.light}`}
+          category={product.category}
           name={product.name}
           imageLabel={product.name}
-          tags={[`Riego ${product.water.toLowerCase()}`, product.difficulty]}
+          tags={product.tags}
         />
       );
 
@@ -82,11 +79,7 @@ function renderCard(variant: CardVariantId, product: Product, index: number) {
           name={product.name}
           subtitle={product.latin}
           imageLabel={product.name}
-          specs={[
-            { label: "Luz", value: product.light },
-            { label: "Riego", value: product.water },
-            { label: "Altura", value: product.height },
-          ]}
+          description={product.short}
         />
       );
 
@@ -100,7 +93,7 @@ function renderCard(variant: CardVariantId, product: Product, index: number) {
           badge={product.category}
           name={product.name}
           imageLabel={product.name}
-          description={product.long}
+          description={markdownToPlain(product.long)}
         />
       );
 
@@ -112,10 +105,10 @@ function renderCard(variant: CardVariantId, product: Product, index: number) {
           image={image}
           imageAlt={imageAlt}
           index={String(index + 1).padStart(2, "0")}
-          category={`${product.category} · ${product.difficulty}`}
+          category={product.category}
           name={product.name}
           imageLabel={product.name}
-          description={product.long}
+          description={markdownToPlain(product.long)}
         />
       );
 
@@ -128,7 +121,7 @@ function renderCard(variant: CardVariantId, product: Product, index: number) {
           imageAlt={imageAlt}
           name={product.name}
           imageLabel={product.name}
-          meta={careMeta(product)}
+          meta={product.short}
         />
       );
   }

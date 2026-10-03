@@ -3,6 +3,7 @@ import Link from "next/link";
 import { CtaButton } from "@/components/atoms/CtaButton";
 import { Eyebrow } from "@/components/atoms/Eyebrow";
 import { ProductGallery, type GalleryPhoto } from "./ProductGallery";
+import { Markdown } from "@/lib/cms/markdown";
 import { whatsappHref } from "@/lib/cms/whatsapp";
 import type { Product } from "@/lib/cms/catalog-types";
 import type { ContactSection } from "@/lib/cms/types";
@@ -12,24 +13,6 @@ export interface ProductDetailProps {
   /** Datos del local, para el botón de consulta. Sin sección de contacto
    * publicada la ficha se muestra igual, sin CTA. */
   contact?: ContactSection;
-}
-
-/** Los cuidados, en el orden en que se leen de un vistazo. `petSafe` se expande
- * porque un "Sí" suelto bajo un rótulo corto no se entiende. */
-function careSpecs(product: Product): { label: string; value: string }[] {
-  return [
-    { label: "Luz", value: product.light },
-    { label: "Riego", value: product.water },
-    { label: "Altura", value: product.height },
-    { label: "Cuidado", value: product.difficulty },
-    { label: "Maceta", value: product.pot },
-    {
-      label: "Mascotas",
-      value: product.petSafe.trim().toLowerCase().startsWith("s")
-        ? "Apta para mascotas"
-        : "No apta para mascotas",
-    },
-  ].filter((spec) => spec.value.trim().length > 0);
 }
 
 /** Consulta con el nombre de la planta ya escrito, para que el visitante no
@@ -84,11 +67,10 @@ function Block({
 /** Ficha pública de una planta.
  *
  * Dos columnas parejas en escritorio: la galería a la izquierda, que queda fija
- * mientras se lee, y a la derecha el detalle partido en bloques titulados
- * —descripción, cuidados, características, consulta— separados por filetes. Por
- * debajo de `lg` se apila, galería primero. */
+ * mientras se lee, y a la derecha el detalle partido en bloques separados por
+ * filetes: la descripción tal como se redactó en el CMS, las características y
+ * la consulta. Por debajo de `lg` se apila, galería primero. */
 export function ProductDetail({ product, contact }: ProductDetailProps) {
-  const specs = careSpecs(product);
   const inquiry = inquiryHref(product, contact);
 
   return (
@@ -126,32 +108,20 @@ export function ProductDetail({ product, contact }: ProductDetailProps) {
             )}
           </header>
 
-          {product.long && (
+          {product.long.trim() && (
             <Block delay="0.08s">
-              <p className="text-base leading-[1.7] text-ink md:text-lg">{product.long}</p>
-            </Block>
-          )}
-
-          {specs.length > 0 && (
-            <Block title="Cuidados" delay="0.16s">
-              <dl className="grid grid-cols-2 gap-px overflow-hidden rounded-lg bg-line sm:grid-cols-3">
-                {specs.map((spec) => (
-                  <div
-                    key={spec.label}
-                    className="bg-paper-light p-4 transition-colors duration-300 hover:bg-white"
-                  >
-                    <dt className="text-[10px] uppercase tracking-[0.18em] text-taupe">
-                      {spec.label}
-                    </dt>
-                    <dd className="mt-2 text-[15px] leading-[1.4] text-forest">{spec.value}</dd>
-                  </div>
-                ))}
-              </dl>
+              {/* Lo que se escribió en el CMS, con su formato. Es el único cuerpo
+                  de texto de la ficha: los cuidados se cuentan acá, redactados,
+                  en vez de repartidos en una grilla de rótulos. */}
+              <Markdown
+                text={product.long}
+                className="text-base text-ink [&>*:first-child]:mt-0 md:text-lg"
+              />
             </Block>
           )}
 
           {product.tags.length > 0 && (
-            <Block title="Características" delay="0.24s">
+            <Block title="Características" delay="0.16s">
               <ul className="flex flex-wrap gap-2">
                 {product.tags.map((tag) => (
                   <li
@@ -165,7 +135,7 @@ export function ProductDetail({ product, contact }: ProductDetailProps) {
             </Block>
           )}
 
-          <Block title="Consultar" delay="0.32s">
+          <Block title="Consultar" delay="0.24s">
             <div className="flex flex-wrap items-center gap-4">
               {inquiry && (
                 <CtaButton href={inquiry} tone="forest">

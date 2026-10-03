@@ -5,6 +5,7 @@ import type {
   AboutSection,
   AboutStat,
   AnnouncementItem,
+  BusinessHours,
   CardsSection,
   CareNote,
   CareSection,
@@ -22,7 +23,6 @@ import type {
   ServicesSection,
   ShippingSection,
   ShippingZone,
-  VisitHours,
   VisitSection,
 } from "./types";
 
@@ -68,7 +68,7 @@ const isServiceCardArray = isArrayOf(
 const isCareNoteArray = isArrayOf(
   isTextRecord<CareNote>(["tag", "title", "summary", "href", "imageUrl", "imageAlt"]),
 );
-const isVisitHoursArray = isArrayOf(isTextRecord<VisitHours>(["days", "time"]));
+const isBusinessHoursArray = isArrayOf(isTextRecord<BusinessHours>(["days", "time"]));
 const isShippingZoneArray = isArrayOf(isTextRecord<ShippingZone>(["postalCode", "locality"]));
 const isFaqItemArray = isArrayOf(isTextRecord<FaqItem>(["question", "answer"]));
 
@@ -169,7 +169,6 @@ function isVisitSection(record: Record<string, unknown>): record is VisitSection
     isString(record.title) &&
     isString(record.titleHighlight) &&
     isString(record.subtitle) &&
-    isVisitHoursArray(record.hours) &&
     isString(record.mapEmbedUrl) &&
     isString(record.directionsUrl) &&
     isString(record.ctaLabel)
@@ -209,7 +208,7 @@ function isContactSection(record: Record<string, unknown>): record is ContactSec
     isString(record.phone) &&
     isString(record.address) &&
     isString(record.email) &&
-    isString(record.hours) &&
+    isBusinessHoursArray(record.hours) &&
     isBoolean(record.whatsappEnabled) &&
     isString(record.whatsappPhone) &&
     isString(record.whatsappLabel) &&

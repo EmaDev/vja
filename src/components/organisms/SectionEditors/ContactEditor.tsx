@@ -1,15 +1,22 @@
 "use client";
 
-import type { ContactSection } from "@/lib/cms/types";
+import type { BusinessHours, ContactSection } from "@/lib/cms/types";
 import { TextField } from "@/components/atoms/TextField";
 import { TextAreaField } from "@/components/atoms/TextAreaField";
 import { ToggleSwitch } from "@/components/atoms/ToggleSwitch";
 import { FieldCard } from "@/components/molecules/FieldCard/FieldCard";
+import { RepeatableList } from "@/components/molecules/RepeatableList/RepeatableList";
 import { whatsappHref } from "@/lib/cms/whatsapp";
 
 interface ContactEditorProps {
   section: ContactSection;
   onChange: (section: ContactSection) => void;
+}
+
+const MAX_HOURS_ROWS = 7;
+
+function emptyHoursRow(): BusinessHours {
+  return { id: crypto.randomUUID(), days: "", time: "" };
 }
 
 export function ContactEditor({ section, onChange }: ContactEditorProps) {
@@ -19,7 +26,10 @@ export function ContactEditor({ section, onChange }: ContactEditorProps) {
   return (
     <div className="grid grid-cols-[repeat(auto-fit,minmax(340px,1fr))] items-start gap-7">
       <div className="flex flex-col gap-5">
-        <FieldCard title="Local y horarios">
+        <FieldCard
+          title="Datos del local"
+          subtitle="Se cargan una sola vez acá. La dirección y el teléfono salen en Visitanos, en el footer y en el header lateral; cambiarlos acá los cambia en todo el sitio."
+        >
           <div className="grid grid-cols-[repeat(auto-fit,minmax(240px,1fr))] gap-4">
             <TextField
               label="Nombre del local"
@@ -42,12 +52,39 @@ export function ContactEditor({ section, onChange }: ContactEditorProps) {
               value={section.email}
               onChange={(event) => onChange({ ...section, email: event.target.value })}
             />
-            <TextField
-              label="Horario"
-              value={section.hours}
-              onChange={(event) => onChange({ ...section, hours: event.target.value })}
-            />
           </div>
+        </FieldCard>
+
+        <FieldCard
+          title="Horarios de atención"
+          subtitle="Un renglón por tramo. Es el único lugar donde se cargan: Visitanos y la ficha de contacto los muestran desde acá."
+        >
+          <RepeatableList
+            items={section.hours}
+            onChange={(hours) => onChange({ ...section, hours })}
+            createItem={emptyHoursRow}
+            addLabel="Agregar renglón"
+            max={MAX_HOURS_ROWS}
+            itemMinWidth={240}
+            itemLabel={(row, index) => row.days || `Renglón ${index + 1}`}
+            emptyLabel="Sin horarios cargados, el sitio no muestra el bloque de horarios."
+            renderItem={(row, update) => (
+              <div className="grid grid-cols-[repeat(auto-fit,minmax(min(100%,140px),1fr))] gap-3">
+                <TextField
+                  label="Días"
+                  placeholder="Lunes a viernes"
+                  value={row.days}
+                  onChange={(event) => update({ days: event.target.value })}
+                />
+                <TextField
+                  label="Horario"
+                  placeholder="9:00 – 18:00"
+                  value={row.time}
+                  onChange={(event) => update({ time: event.target.value })}
+                />
+              </div>
+            )}
+          />
         </FieldCard>
 
         <FieldCard

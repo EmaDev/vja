@@ -1,8 +1,8 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useState } from "react";
 import { productCover, productUrlPreview, type CatalogStatus, type Product } from "@/lib/cms/catalog-types";
-import { productQrUrl } from "@/lib/cms/qr-labels";
+import { productQrUrl, siteUrlInvalid } from "@/lib/cms/qr-labels";
 import { QrCode } from "@/components/atoms/QrCode";
 import { QrPrintDialog } from "@/components/organisms/QrLabels/QrPrintDialog";
 import { TextField } from "@/components/atoms/TextField";
@@ -12,8 +12,20 @@ import { SegmentedControl } from "@/components/atoms/SegmentedControl";
 import { AdminButton } from "@/components/atoms/AdminButton";
 import { ImagePlaceholder } from "@/components/atoms/ImagePlaceholder";
 import { FieldCard } from "@/components/molecules/FieldCard/FieldCard";
+import { MarkdownEditor } from "@/components/molecules/MarkdownEditor/MarkdownEditor";
 import { AdminPageHeader } from "@/components/organisms/AdminPageHeader/AdminPageHeader";
 import { ProductPhotosEditor } from "./ProductPhotosEditor";
+
+/** Ejemplo que ve quien abre un producto sin descripción: muestra de una el
+ * formato que entiende el editor, que si no hay que ir a buscarlo. */
+const PLACEHOLDER = [
+  "Contá cómo es la planta, de dónde viene y para qué ambiente va bien.",
+  "",
+  "## Detalles",
+  "- 🌱 **Origen:** selvas de Centroamérica",
+  "- 📏 **Porte:** hasta 1,4 m en maceta",
+  "- ✨ ++Se entrega ya aclimatada++",
+].join("\n");
 
 interface ProductEditFormProps {
   product: Product;
@@ -39,7 +51,6 @@ export function ProductEditForm({
   const cover = productCover(form);
   const [newTag, setNewTag] = useState<string | null>(null);
   const [printing, setPrinting] = useState(false);
-  const longRef = useRef<HTMLTextAreaElement>(null);
 
   // El QR sale del producto guardado, no del formulario: codifica la URL, y la
   // URL sólo existe una vez que el servidor asignó el id.
@@ -51,45 +62,6 @@ export function ProductEditForm({
 
   function set<K extends keyof Product>(key: K, value: Product[K]) {
     setForm((current) => ({ ...current, [key]: value }));
-  }
-
-  /** Aplica un formato markdown sobre la selección actual del textarea. */
-  function format(tool: "bold" | "italic" | "heading" | "list" | "link") {
-    const field = longRef.current;
-    if (!field) return;
-
-    const { selectionStart: start, selectionEnd: end, value } = field;
-    const selected = value.slice(start, end);
-    const lineStart = value.lastIndexOf("\n", start - 1) + 1;
-
-    let next: string;
-    let caret: number;
-
-    if (tool === "heading" || tool === "list") {
-      const prefix = tool === "heading" ? "## " : "- ";
-      const block = value.slice(lineStart, end) || selected;
-      const prefixed = block
-        .split("\n")
-        .map((line) => (line.startsWith(prefix) ? line : prefix + line))
-        .join("\n");
-      next = value.slice(0, lineStart) + prefixed + value.slice(end);
-      caret = lineStart + prefixed.length;
-    } else {
-      const wrapper = tool === "bold" ? "**" : tool === "italic" ? "_" : null;
-      if (wrapper) {
-        next = value.slice(0, start) + wrapper + selected + wrapper + value.slice(end);
-        caret = end + wrapper.length * 2;
-      } else {
-        next = value.slice(0, start) + `[${selected || "texto"}](https://)` + value.slice(end);
-        caret = start + (selected || "texto").length + 11;
-      }
-    }
-
-    set("long", next);
-    requestAnimationFrame(() => {
-      field.focus();
-      field.setSelectionRange(caret, caret);
-    });
   }
 
   function addTag(value: string) {
@@ -170,57 +142,13 @@ export function ProductEditForm({
               value={form.short}
               onChange={(e) => set("short", e.target.value)}
             />
-            <label className="flex flex-col gap-[7px]">
-              <span className="text-[13px] text-ink">Texto completo</span>
-              <div className="overflow-hidden rounded-md border border-line bg-paper-light focus-within:outline-2 focus-within:outline-offset-1 focus-within:outline-sage">
-                <div className="flex gap-0.5 border-b border-[#EDE6D6] bg-[#F7F2E6] px-[9px] py-[7px]">
-                  <button
-                    type="button"
-                    onClick={() => format("bold")}
-                    aria-label="Negrita"
-                    className="rounded px-[9px] py-1 text-sm font-semibold text-ink transition-colors hover:bg-[#EFE9DA]"
-                  >
-                    B
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => format("italic")}
-                    aria-label="Cursiva"
-                    className="rounded px-[9px] py-1 text-sm italic text-ink transition-colors hover:bg-[#EFE9DA]"
-                  >
-                    I
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => format("heading")}
-                    className="rounded px-[9px] py-1 text-[13px] text-ink transition-colors hover:bg-[#EFE9DA]"
-                  >
-                    Título
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => format("list")}
-                    className="rounded px-[9px] py-1 text-[13px] text-ink transition-colors hover:bg-[#EFE9DA]"
-                  >
-                    Lista
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => format("link")}
-                    className="rounded px-[9px] py-1 text-[13px] text-ink transition-colors hover:bg-[#EFE9DA]"
-                  >
-                    Enlace
-                  </button>
-                </div>
-                <textarea
-                  ref={longRef}
-                  rows={7}
-                  value={form.long}
-                  onChange={(e) => set("long", e.target.value)}
-                  className="w-full resize-y border-0 bg-transparent p-[13px] text-[15px] leading-[1.6] text-forest outline-none"
-                />
-              </div>
-            </label>
+            <MarkdownEditor
+              label="Texto completo · es lo que se lee en la ficha de la planta"
+              value={form.long}
+              onChange={(long) => set("long", long)}
+              rows={12}
+              placeholder={PLACEHOLDER}
+            />
           </FieldCard>
         </div>
 
@@ -328,9 +256,11 @@ export function ProductEditForm({
               </>
             ) : (
               <p className="-mt-2 text-[13px] leading-[1.5] text-stone">
-                {product.id
-                  ? "Falta configurar NEXT_PUBLIC_SITE_URL con el dominio del sitio para poder generar el QR."
-                  : "Guardá el producto primero: el QR necesita la URL definitiva de la ficha."}
+                {!product.id
+                  ? "Guardá el producto primero: el QR necesita la URL definitiva de la ficha."
+                  : siteUrlInvalid
+                    ? "El valor de NEXT_PUBLIC_SITE_URL no se entiende como dirección. Tiene que ser el dominio del sitio, por ejemplo https://vjaplantas.com.ar."
+                    : "Falta configurar NEXT_PUBLIC_SITE_URL con el dominio del sitio para poder generar el QR."}
               </p>
             )}
           </FieldCard>

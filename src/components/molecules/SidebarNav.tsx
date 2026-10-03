@@ -11,8 +11,11 @@ export type SidebarNavProps = {
   logoImageAlt?: string;
   navItems?: SidebarNavItem[];
   ctaLabel?: string;
+  /** Dirección y horarios del local. Salen de Datos de contacto, el único lugar
+   * donde se cargan; sin esos datos el pie de la columna no se dibuja. */
   address?: string;
-  hours?: string;
+  /** Un renglón por tramo, ya formateado por `hoursLines`. */
+  hours?: string[];
 };
 
 const defaultNavItems: SidebarNavItem[] = [
@@ -30,8 +33,8 @@ export function SidebarNav({
   logoImageAlt,
   navItems = defaultNavItems,
   ctaLabel = "Contacto",
-  address = "Av. Libertador 4820",
-  hours = "Mar–Dom · 10 a 19 h",
+  address,
+  hours = [],
 }: SidebarNavProps) {
   return (
     <aside className="flex h-full flex-col justify-between border-r border-paper/16 px-[26px] py-8">
@@ -57,11 +60,16 @@ export function SidebarNav({
         <CtaButton href="#contacto" tone="paper" size="sm" className="text-center">
           {ctaLabel}
         </CtaButton>
-        <span className="text-xs leading-relaxed text-[#8FA68A]">
-          {address}
-          <br />
-          {hours}
-        </span>
+        {address || hours.length > 0 ? (
+          <span className="text-xs leading-relaxed text-[#8FA68A]">
+            {address ? <span className="block">{address}</span> : null}
+            {hours.map((line) => (
+              <span key={line} className="block">
+                {line}
+              </span>
+            ))}
+          </span>
+        ) : null}
       </div>
     </aside>
   );

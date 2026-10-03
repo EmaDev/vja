@@ -8,6 +8,7 @@ import { WhatsAppButton } from "@/components/organisms/WhatsAppButton/WhatsAppBu
 import { defaultCardVariant } from "@/lib/cms/card-variants";
 import { findLiveProduct, loadLiveProducts } from "@/lib/cms/catalog-repository";
 import type { Product } from "@/lib/cms/catalog-types";
+import { markdownToPlain } from "@/lib/cms/markdown";
 import { loadPublished, pickSection } from "@/lib/cms/published";
 
 /** Esta ruta no lleva `loading.tsx` a propósito.
@@ -42,7 +43,9 @@ export async function generateMetadata({
   // primero la planta, que es lo que se buscó.
   const suffix = pickSection(sections, "header")?.logoText;
   const title = suffix ? `${product.name} · ${suffix}` : product.name;
-  const description = product.long || product.short;
+  // Sin las marcas de formato: en Google y en una vista previa de WhatsApp se
+  // leería el markdown crudo.
+  const description = markdownToPlain(product.long) || product.short;
 
   return {
     title,
@@ -97,7 +100,7 @@ export default async function ProductPage({ params }: PageProps<"/producto/[slug
   if (!header) return content;
 
   return (
-    <SiteChrome header={header} heroTone="light" hasHero={false}>
+    <SiteChrome header={header} contact={contact} heroTone="light" hasHero={false}>
       {content}
     </SiteChrome>
   );

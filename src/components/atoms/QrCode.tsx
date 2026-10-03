@@ -9,6 +9,9 @@ export interface QrCodeProps {
   value: string;
   /** Lado del cuadrado, con unidad CSS. En las etiquetas va en `mm`. */
   size: string;
+  /** Color de los módulos oscuros. Tiene que ser oscuro: el fondo queda blanco
+   * para conservar el contraste que el lector necesita. */
+  color?: string;
   className?: string;
 }
 
@@ -18,7 +21,7 @@ export interface QrCodeProps {
  * elementos `<rect>`: el SVG pesa una fracción y, al ser vectorial, sale nítido
  * a cualquier resolución de impresora. `shapeRendering="crispEdges"` evita que
  * el antialiasing borronee los bordes de los módulos en pantalla. */
-export function QrCode({ value, size, className }: QrCodeProps) {
+export function QrCode({ value, size, color = "#000000", className }: QrCodeProps) {
   const qr = qrcode(0, "M");
   qr.addData(value);
   qr.make();
@@ -46,7 +49,7 @@ export function QrCode({ value, size, className }: QrCodeProps) {
       aria-label={`Código QR de ${value}`}
     >
       <rect width={span} height={span} fill="#ffffff" />
-      <path d={path} fill="#000000" />
+      <path d={path} fill={color} />
     </svg>
   );
 }

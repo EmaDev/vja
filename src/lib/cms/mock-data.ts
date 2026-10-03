@@ -175,11 +175,6 @@ export const initialSections: CmsSection[] = [
     titleHighlight: "recibirte",
     subtitle:
       "Pasá por el local y elegí en persona — o pedinos un arreglo y lo preparamos para que retires.",
-    hours: [
-      { id: "hrs-1", days: "Lunes a viernes", time: "9:00 – 18:00" },
-      { id: "hrs-2", days: "Sábados", time: "9:00 – 18:30" },
-      { id: "hrs-3", days: "Domingos", time: "Cerrado" },
-    ],
     mapEmbedUrl: "",
     directionsUrl: "",
     ctaLabel: "Cómo llegar",
@@ -259,7 +254,11 @@ export const initialSections: CmsSection[] = [
     phone: "+54 11 4820-9931",
     address: "Av. Libertador 4820, Buenos Aires",
     email: "hola@vjaplantas.com.ar",
-    hours: "Mar a Dom · 10 a 19 h",
+    hours: [
+      { id: "hrs-1", days: "Lunes a viernes", time: "9:00 – 18:00" },
+      { id: "hrs-2", days: "Sábados", time: "9:00 – 18:30" },
+      { id: "hrs-3", days: "Domingos", time: "Cerrado" },
+    ],
     whatsappEnabled: true,
     whatsappPhone: "+54 9 11 4820-9931",
     whatsappLabel: "Escribinos",

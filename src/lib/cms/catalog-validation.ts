@@ -30,12 +30,6 @@ export function isProduct(value: unknown): value is Product {
     isString(record.name) &&
     isString(record.latin) &&
     isString(record.category) &&
-    isString(record.light) &&
-    isString(record.water) &&
-    isString(record.height) &&
-    isString(record.difficulty) &&
-    isString(record.pot) &&
-    isString(record.petSafe) &&
     isCatalogStatus(record.status) &&
     Array.isArray(record.photos) &&
     record.photos.every(isProductPhoto) &&

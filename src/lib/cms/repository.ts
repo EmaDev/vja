@@ -34,19 +34,56 @@ export function siteDoc() {
  * rellena con el seed sólo lo que falta, en vez de tirar abajo todo lo que el
  * cliente ya había cargado. Sólo se descarta entera si ni siquiera así valida. */
 function normalizeSections(sections: unknown): CmsSection[] {
-  const stored = Array.isArray(sections) ? sections : [];
+  const stored = migrateHours(Array.isArray(sections) ? sections : []);
 
   return initialSections.map((seed) => {
-    const match = stored.find(
-      (section): section is Record<string, unknown> =>
-        typeof section === "object" && section !== null && section.kind === seed.kind,
-    );
+    const match = stored.find((section) => section.kind === seed.kind);
 
     if (!match) return seed;
     if (isCmsSection(match)) return match;
 
     const merged = { ...seed, ...match };
     return isCmsSection(merged) ? merged : seed;
+  });
+}
+
+/** Los horarios se cargaban dos veces: una lista de tramos en "Visitanos" y un
+ * renglón suelto de texto en Contacto. Ahora viven sólo en Contacto, así que lo
+ * guardado antes del cambio se muda acá en la lectura: la lista de "Visitanos"
+ * —la que el cliente cargó con detalle— pasa a Contacto, y si no hay ninguna se
+ * usa el texto viejo como un único tramo.
+ *
+ * Sin esto `normalizeSections` no podría validar la sección de contacto vieja
+ * (su `hours` es un string donde ahora va una lista) y la reemplazaría entera por
+ * el seed, perdiendo la dirección y el teléfono del cliente. */
+function migrateHours(sections: unknown[]): Record<string, unknown>[] {
+  // Lo que no sea un objeto no describe ninguna sección: `normalizeSections` lo
+  // iba a descartar igual, así que se va acá y el resto trabaja con registros.
+  const stored = sections.filter(
+    (section): section is Record<string, unknown> => typeof section === "object" && section !== null,
+  );
+
+  const visit = stored.find((section) => section.kind === "visit");
+  const inherited = Array.isArray(visit?.hours) ? visit.hours : null;
+
+  return stored.map((record) => {
+    if (record.kind === "visit" && "hours" in record) {
+      // La copia vieja se borra en vez de arrastrarse: el guard de "Visitanos" ya
+      // no la mira, y dejarla ahí volvería a guardarse en cada borrador.
+      const rest = { ...record };
+      delete rest.hours;
+      return rest;
+    }
+
+    if (record.kind === "contact" && typeof record.hours === "string") {
+      const legacy = record.hours.trim();
+      return {
+        ...record,
+        hours: inherited ?? (legacy ? [{ id: "hrs-legacy", days: legacy, time: "" }] : []),
+      };
+    }
+
+    return record;
   });
 }
 

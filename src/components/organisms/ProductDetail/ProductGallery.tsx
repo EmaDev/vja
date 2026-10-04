@@ -30,7 +30,7 @@ export function ProductGallery({ photos }: ProductGalleryProps) {
 
   return (
     <div className="animate-[rp-fade_0.8s_ease_both]">
-      <div className="group relative aspect-4/5 overflow-hidden rounded-[180px_180px_12px_12px] bg-sand sm:aspect-square lg:aspect-4/5">
+      <div className="group relative aspect-4/5 overflow-hidden rounded-[18px] bg-sand sm:aspect-square lg:aspect-4/5">
         {photos.map((photo, index) => (
           <div
             key={index}

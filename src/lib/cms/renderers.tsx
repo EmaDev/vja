@@ -3,7 +3,10 @@ import { AboutBlock } from "@/components/organisms/AboutBlock/AboutBlock";
 import { CareNotes } from "@/components/organisms/CareNotes/CareNotes";
 import { ContactBlock } from "@/components/organisms/ContactBlock/ContactBlock";
 import { FaqBlock } from "@/components/organisms/FaqBlock/FaqBlock";
-import { ProductCatalog } from "@/components/organisms/ProductCatalog/ProductCatalog";
+import {
+  LANDING_CATALOG_LIMIT,
+  ProductCatalog,
+} from "@/components/organisms/ProductCatalog/ProductCatalog";
 import { ServicesGrid } from "@/components/organisms/ServicesGrid/ServicesGrid";
 import { ShippingChecker } from "@/components/organisms/ShippingChecker/ShippingChecker";
 import { SiteFooter } from "@/components/organisms/SiteFooter/SiteFooter";
@@ -66,7 +69,16 @@ function renderAbout(section: AboutSection): ReactNode {
 }
 
 function renderCards(section: CardsSection): ReactNode {
-  return <ProductCatalog variant={section.variant} />;
+  // La landing muestra una muestra del catálogo y manda al resto a `/catalogo`,
+  // que es la página con filtro por categoría y paginado.
+  return (
+    <ProductCatalog
+      variant={section.variant}
+      limit={LANDING_CATALOG_LIMIT}
+      moreHref="/catalogo"
+      moreLabel="Ver todo el catálogo"
+    />
+  );
 }
 
 function renderServices(section: ServicesSection, context: RenderContext): ReactNode {

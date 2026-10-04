@@ -1,4 +1,6 @@
 import Link from "next/link";
+import { Reveal, STAGGER } from "@/components/motion/Reveal";
+import { RevealWords } from "@/components/motion/RevealWords";
 import { cn } from "@/lib/utils";
 import type { ContactSection, FooterSection } from "@/lib/cms/types";
 
@@ -30,14 +32,15 @@ export function SiteFooter({ section, contact }: SiteFooterProps) {
         dark ? "bg-forest" : "bg-paper-dark",
       )}
     >
-      <p
+      {/* La frase de cierre es el elemento gráfico de la franja, así que se
+          escribe sola palabra por palabra en vez de aparecer de una pieza. */}
+      <RevealWords
+        text={section.closingPhrase}
         className={cn(
           "max-w-[900px] font-display text-[38px] font-normal leading-[1.05] sm:text-[52px] lg:text-[68px]",
           dark ? "text-[#F9F6EF]" : "text-forest",
         )}
-      >
-        {section.closingPhrase}
-      </p>
+      />
 
       <div
         className={cn(
@@ -45,35 +48,37 @@ export function SiteFooter({ section, contact }: SiteFooterProps) {
           dark ? "border-paper/16" : "border-line",
         )}
       >
-        {section.columns.map((column) => (
-          <nav key={column.id} aria-label={column.title}>
-            <h2
-              className={cn(
-                "text-[11px] uppercase tracking-[0.18em]",
-                dark ? "text-[#9FB09A]" : "text-taupe",
-              )}
-            >
-              {column.title}
-            </h2>
-            <ul className="mt-4 flex flex-col gap-2.5">
-              {column.links.map((link) => (
-                <li key={link.id}>
-                  <Link
-                    href={link.href || "#"}
-                    className={cn(
-                      "text-[15px] transition-colors",
-                      dark ? "text-[#C7CFC1] hover:text-paper" : "text-ink hover:text-forest",
-                    )}
-                  >
-                    {link.label}
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </nav>
+        {section.columns.map((column, index) => (
+          <Reveal key={column.id} delay={index * STAGGER} duration={0.6} amount={0.3}>
+            <nav aria-label={column.title}>
+              <h2
+                className={cn(
+                  "text-[11px] uppercase tracking-[0.18em]",
+                  dark ? "text-[#9FB09A]" : "text-taupe",
+                )}
+              >
+                {column.title}
+              </h2>
+              <ul className="mt-4 flex flex-col gap-2.5">
+                {column.links.map((link) => (
+                  <li key={link.id}>
+                    <Link
+                      href={link.href || "#"}
+                      className={cn(
+                        "inline-block text-[15px] transition-all duration-300 hover:translate-x-1",
+                        dark ? "text-[#C7CFC1] hover:text-paper" : "text-ink hover:text-forest",
+                      )}
+                    >
+                      {link.label}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </nav>
+          </Reveal>
         ))}
 
-        <div>
+        <Reveal delay={section.columns.length * STAGGER} duration={0.6} amount={0.3}>
           {socials.length > 0 ? (
             <div>
               <h2
@@ -104,10 +109,13 @@ export function SiteFooter({ section, contact }: SiteFooterProps) {
               </div>
             </div>
           ) : null}
-        </div>
+        </Reveal>
       </div>
 
-      <div
+      <Reveal
+        animation="fade"
+        duration={0.6}
+        amount={0.5}
         className={cn(
           "mt-10 flex flex-col gap-2 border-t pt-6 text-[13px] sm:flex-row sm:items-center sm:justify-between",
           dark ? "border-paper/16 text-[#8FA68A]" : "border-line text-taupe",
@@ -115,7 +123,7 @@ export function SiteFooter({ section, contact }: SiteFooterProps) {
       >
         <span>{section.legalText}</span>
         {contact ? <span>{contact.address}</span> : null}
-      </div>
+      </Reveal>
     </footer>
   );
 }

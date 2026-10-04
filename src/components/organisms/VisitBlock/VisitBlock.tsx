@@ -3,6 +3,7 @@ import { CtaButton } from "@/components/atoms/CtaButton";
 import { Eyebrow } from "@/components/atoms/Eyebrow";
 import { ClockIcon, MapPinIcon, PhoneIcon } from "@/components/atoms/icons";
 import { HoursList } from "@/components/molecules/HoursList";
+import { Reveal, STAGGER } from "@/components/motion/Reveal";
 import { filledHours } from "@/lib/cms/contact-info";
 import { cn } from "@/lib/utils";
 import type { ContactSection, VisitSection } from "@/lib/cms/types";
@@ -20,14 +21,24 @@ export interface VisitBlockProps {
 function InfoRow({
   icon,
   label,
+  delay,
   children,
 }: {
   icon: React.ReactNode;
   label: string;
+  /** Demora de la entrada. Las filas llegan una después de otra, de arriba
+   * hacia abajo, como se leen. */
+  delay: number;
   children: React.ReactNode;
 }) {
   return (
-    <div className="flex gap-4 border-t border-line py-5">
+    <Reveal
+      animation="left"
+      delay={delay}
+      duration={0.6}
+      amount={0.4}
+      className="flex gap-4 border-t border-line py-5"
+    >
       <span className="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-sage/12 text-sage">
         {icon}
       </span>
@@ -35,11 +46,15 @@ function InfoRow({
         <div className="text-[11px] uppercase tracking-[0.18em] text-taupe">{label}</div>
         <div className="mt-1.5 text-base leading-[1.5] text-forest">{children}</div>
       </div>
-    </div>
+    </Reveal>
   );
 }
 
-/** "Visitanos": datos del local, horarios día por día y el mapa embebido. */
+/** "Visitanos": datos del local, horarios día por día y el mapa embebido.
+ *
+ * La columna de datos entra desde la izquierda fila por fila y el mapa se abre
+ * con una escala corta, así que el bloque se arma de a partes en vez de
+ * aparecer entero de golpe. */
 export function VisitBlock({ section, contact, aside }: VisitBlockProps) {
   const hours = filledHours(contact);
   // Sin verificador ni mapa no hay segunda columna que armar: a una sola
@@ -59,40 +74,60 @@ export function VisitBlock({ section, contact, aside }: VisitBlockProps) {
         )}
       >
         <div>
-          {section.eyebrow ? <Eyebrow>{section.eyebrow}</Eyebrow> : null}
-          <h2
-            id="visitanos-titulo"
-            className="mt-3 text-pretty font-display text-[38px] font-normal leading-[1.05] text-forest sm:text-[48px] lg:text-[56px]"
-          >
-            {section.title}
-            {section.titleHighlight ? (
-              <>
-                <br />
-                <em className="text-sage">{section.titleHighlight}</em>
-              </>
-            ) : null}
-          </h2>
+          {section.eyebrow ? (
+            <Reveal animation="fade" duration={0.5}>
+              <Eyebrow>{section.eyebrow}</Eyebrow>
+            </Reveal>
+          ) : null}
+          <Reveal delay={0.08}>
+            <h2
+              id="visitanos-titulo"
+              className="mt-3 text-pretty font-display text-[38px] font-normal leading-[1.05] text-forest sm:text-[48px] lg:text-[56px]"
+            >
+              {section.title}
+              {section.titleHighlight ? (
+                <>
+                  <br />
+                  <em className="text-sage">{section.titleHighlight}</em>
+                </>
+              ) : null}
+            </h2>
+          </Reveal>
           {section.subtitle ? (
-            <p className="mt-5 max-w-[460px] text-base leading-[1.6] text-ink md:text-lg">
-              {section.subtitle}
-            </p>
+            <Reveal delay={0.16}>
+              <p className="mt-5 max-w-[460px] text-base leading-[1.6] text-ink md:text-lg">
+                {section.subtitle}
+              </p>
+            </Reveal>
           ) : null}
 
           <div className="mt-9">
             {contact?.address ? (
-              <InfoRow icon={<MapPinIcon className="h-[18px] w-[18px]" />} label="Dirección">
+              <InfoRow
+                icon={<MapPinIcon className="h-[18px] w-[18px]" />}
+                label="Dirección"
+                delay={0}
+              >
                 {contact.address}
               </InfoRow>
             ) : null}
 
             {hours.length > 0 ? (
-              <InfoRow icon={<ClockIcon className="h-[18px] w-[18px]" />} label="Horarios">
+              <InfoRow
+                icon={<ClockIcon className="h-[18px] w-[18px]" />}
+                label="Horarios"
+                delay={STAGGER}
+              >
                 <HoursList hours={hours} className="text-[15px]" />
               </InfoRow>
             ) : null}
 
             {contact?.phone ? (
-              <InfoRow icon={<PhoneIcon className="h-[18px] w-[18px]" />} label="Teléfono">
+              <InfoRow
+                icon={<PhoneIcon className="h-[18px] w-[18px]" />}
+                label="Teléfono"
+                delay={STAGGER * 2}
+              >
                 <a href={`tel:${contact.phone.replace(/\s/g, "")}`} className="hover:text-sage">
                   {contact.phone}
                 </a>
@@ -101,11 +136,11 @@ export function VisitBlock({ section, contact, aside }: VisitBlockProps) {
           </div>
 
           {section.directionsUrl ? (
-            <div className="mt-8">
+            <Reveal delay={STAGGER * 3} className="mt-8">
               <CtaButton href={section.directionsUrl} tone="forest">
                 {section.ctaLabel.trim() || "Cómo llegar"}
               </CtaButton>
-            </div>
+            </Reveal>
           ) : null}
         </div>
 
@@ -113,7 +148,12 @@ export function VisitBlock({ section, contact, aside }: VisitBlockProps) {
           <div className="flex flex-col gap-12">
             {aside}
             {section.mapEmbedUrl ? (
-              <div className="h-[320px] overflow-hidden rounded-[18px] border border-line bg-sand lg:h-auto lg:min-h-[480px] lg:flex-1">
+              <Reveal
+                animation="zoom"
+                duration={0.8}
+                amount={0.15}
+                className="h-[320px] overflow-hidden rounded-[18px] border border-line bg-sand lg:h-auto lg:min-h-[480px] lg:flex-1"
+              >
                 <iframe
                   src={section.mapEmbedUrl}
                   title="Ubicación del local"
@@ -122,7 +162,7 @@ export function VisitBlock({ section, contact, aside }: VisitBlockProps) {
                   allowFullScreen
                   className="h-full w-full border-0"
                 />
-              </div>
+              </Reveal>
             ) : null}
           </div>
         ) : null}

@@ -1,5 +1,6 @@
 import { ImagePlaceholder } from "@/components/atoms/ImagePlaceholder";
 import { SectionHeading } from "@/components/molecules/SectionHeading";
+import { Reveal, STAGGER } from "@/components/motion/Reveal";
 import { whatsappHref } from "@/lib/cms/whatsapp";
 import type { ContactSection, ServiceCard, ServicesSection } from "@/lib/cms/types";
 
@@ -16,7 +17,7 @@ function Card({ card, index, href }: { card: ServiceCard; index: number; href: s
         <div className="absolute inset-0 transition-transform duration-700 group-hover:scale-[1.04]">
           <ImagePlaceholder src={card.imageUrl} alt={card.imageAlt} label={card.title} />
         </div>
-        <span className="absolute right-4 top-4 font-display text-[26px] leading-none text-paper/85">
+        <span className="absolute right-4 top-4 font-display text-[26px] leading-none text-paper/85 transition-all duration-500 group-hover:right-5 group-hover:text-paper">
           {String(index + 1).padStart(2, "0")}
         </span>
       </div>
@@ -28,15 +29,21 @@ function Card({ card, index, href }: { card: ServiceCard; index: number; href: s
         <p className="mt-3 text-[15px] leading-[1.6] text-ink">{card.body}</p>
         {href ? (
           <span className="mt-5 inline-block border-b border-forest pb-[3px] text-[15px] text-forest transition-colors group-hover:border-sage group-hover:text-sage">
-            Consultar por WhatsApp →
+            Consultar por WhatsApp{" "}
+            <span className="inline-block transition-transform duration-300 group-hover:translate-x-1">
+              →
+            </span>
           </span>
         ) : null}
       </div>
     </>
   );
 
+  // La card se levanta apenas al pasar el mouse, con la misma curva larga del
+  // resto del sitio. El `will-change` no hace falta: son transform y box-shadow,
+  // que el navegador ya compone sin volver a maquetar.
   const classes =
-    "group flex h-full flex-col overflow-hidden rounded-[14px] border border-line-light bg-paper-light transition-shadow duration-300";
+    "group flex h-full flex-col overflow-hidden rounded-[14px] border border-line-light bg-paper-light transition-[transform,box-shadow,border-color] duration-[400ms] ease-[cubic-bezier(0.22,1,0.36,1)]";
 
   if (!href) return <article className={classes}>{body}</article>;
 
@@ -45,7 +52,7 @@ function Card({ card, index, href }: { card: ServiceCard; index: number; href: s
       href={href}
       target="_blank"
       rel="noopener noreferrer"
-      className={`${classes} hover:shadow-[0_18px_40px_-28px_rgba(23,48,31,0.45)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sage`}
+      className={`${classes} hover:-translate-y-1.5 hover:border-sage/30 hover:shadow-[0_22px_44px_-26px_rgba(23,48,31,0.5)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sage`}
     >
       {body}
     </a>
@@ -73,16 +80,17 @@ export function ServicesGrid({ section, contact }: ServicesGridProps) {
       />
       <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4 lg:gap-[26px]">
         {section.items.map((card, index) => (
-          <Card
-            key={card.id}
-            card={card}
-            index={index}
-            href={
-              phone && card.whatsappSubject
-                ? whatsappHref(phone, `Hola VJA, quería consultar por ${card.whatsappSubject}.`)
-                : null
-            }
-          />
+          <Reveal key={card.id} delay={index * STAGGER} className="h-full">
+            <Card
+              card={card}
+              index={index}
+              href={
+                phone && card.whatsappSubject
+                  ? whatsappHref(phone, `Hola VJA, quería consultar por ${card.whatsappSubject}.`)
+                  : null
+              }
+            />
+          </Reveal>
         ))}
       </div>
     </section>

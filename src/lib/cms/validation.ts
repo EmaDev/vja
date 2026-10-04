@@ -13,6 +13,7 @@ import type {
   ContactSection,
   FaqItem,
   FaqSection,
+  FaviconSection,
   FooterColumn,
   FooterSection,
   HeaderSection,
@@ -240,6 +241,17 @@ function isSeoSection(record: Record<string, unknown>): record is SeoSection & R
   );
 }
 
+function isFaviconSection(record: Record<string, unknown>): record is FaviconSection & Record<string, unknown> {
+  return (
+    hasBaseFields(record) &&
+    isString(record.imageUrl) &&
+    isString(record.imageAlt) &&
+    isString(record.letter) &&
+    isString(record.background) &&
+    isString(record.foreground)
+  );
+}
+
 export function isCmsSection(value: unknown): value is CmsSection {
   if (typeof value !== "object" || value === null) return false;
   const record = value as Record<string, unknown>;
@@ -269,6 +281,8 @@ export function isCmsSection(value: unknown): value is CmsSection {
       return isFooterSection(record);
     case "seo":
       return isSeoSection(record);
+    case "favicon":
+      return isFaviconSection(record);
     default:
       return false;
   }

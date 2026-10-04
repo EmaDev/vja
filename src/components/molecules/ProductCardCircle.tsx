@@ -1,5 +1,8 @@
 import { CardShell } from "@/components/atoms/CardShell";
-import { ImagePlaceholder } from "@/components/atoms/ImagePlaceholder";
+import {
+  CARD_CIRCLE_IMAGE_SIZES,
+  ImagePlaceholder,
+} from "@/components/atoms/ImagePlaceholder";
 
 export type ProductCardCircleProps = {
   image?: string;
@@ -31,7 +34,13 @@ export function ProductCardCircle({
       className="group block rounded-lg bg-paper-light px-6 pb-[26px] pt-7 text-center transition-[transform,box-shadow] duration-[400ms] ease-[cubic-bezier(0.22,1,0.36,1)] hover:-translate-y-[10px] hover:shadow-[0_24px_40px_rgba(23,48,31,0.13)]"
     >
       <div className="mx-auto h-[140px] w-[140px] overflow-hidden rounded-full bg-sand sm:h-[168px] sm:w-[168px]">
-        <ImagePlaceholder src={image} alt={imageAlt ?? name} label={imageLabel ?? name} shape="circle" />
+        <ImagePlaceholder
+          src={image}
+          alt={imageAlt ?? name}
+          label={imageLabel ?? name}
+          shape="circle"
+          sizes={CARD_CIRCLE_IMAGE_SIZES}
+        />
       </div>
       <div className="mt-5 font-display text-2xl text-forest">{name}</div>
       <div className="mt-1 text-sm text-stone">{meta}</div>

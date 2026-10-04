@@ -37,6 +37,7 @@ export function HeroCinematic({
         src={image}
         alt={imageAlt ?? titleLine1}
         label={imageLabel}
+        priority
         className="absolute inset-0"
       />
       <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(180deg,rgba(12,26,16,0.66)_0%,rgba(12,26,16,0.18)_38%,rgba(12,26,16,0.82)_100%)]" />

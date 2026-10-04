@@ -234,6 +234,27 @@ export interface SeoSection extends BaseSection {
   shareImageAlt: string;
 }
 
+/** El ícono del sitio: la pestaña del navegador, el redondelito que Google
+ * dibuja al lado del resultado en el celular y el ícono de "Agregar a inicio".
+ *
+ * Son dos caminos y el cliente elige uno sin saberlo: si cargó una imagen, el
+ * ícono es esa imagen; si no, se dibuja la inicial sobre un fondo de color. La
+ * inicial no es un capricho de diseño sino lo único legible a 48 px, que es el
+ * tamaño al que se ve el ícono casi siempre.
+ *
+ * Los colores se guardan como `#rrggbb`: los dibuja `lib/seo/app-icon.tsx`
+ * dentro de un `ImageResponse`, donde no existen las variables CSS del sitio. */
+export interface FaviconSection extends BaseSection {
+  kind: "favicon";
+  /** PNG cuadrado subido desde el panel. Vacío, el ícono es la inicial. */
+  imageUrl: string;
+  imageAlt: string;
+  /** Una o dos letras. Vacío, se usa la inicial del nombre del negocio. */
+  letter: string;
+  background: string;
+  foreground: string;
+}
+
 export type CmsSection =
   | HeaderSection
   | HeroSection
@@ -246,4 +267,5 @@ export type CmsSection =
   | FaqSection
   | ContactSection
   | FooterSection
-  | SeoSection;
+  | SeoSection
+  | FaviconSection;

@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { getCmsUser } from "@/lib/auth/session-guard";
-import { createUploadTarget } from "@/lib/cms/media";
+import { createUploadTarget, isAllowedContentType } from "@/lib/cms/media";
 
 export async function POST(request: Request) {
   const user = await getCmsUser();
@@ -10,7 +10,7 @@ export async function POST(request: Request) {
 
   const body = (await request.json().catch(() => null)) as { contentType?: string } | null;
 
-  if (body?.contentType !== "image/webp") {
+  if (!body || !isAllowedContentType(body.contentType)) {
     return NextResponse.json({ error: "Tipo de imagen no soportado." }, { status: 400 });
   }
 

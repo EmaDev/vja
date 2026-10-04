@@ -1,55 +1,11 @@
+import { SITE_URL, siteUrlConfigured, siteUrlInvalid } from "@/lib/site-url";
 import { productHref, type Product } from "./catalog-types";
 import { markdownToPlain } from "./markdown";
 
-/** Hosts que sólo existen en la máquina de quien desarrolla. Se los sirve por
- * `http`: en local no hay certificado, y asumir `https` daría un QR que no
- * abre. */
-const LOCAL_HOST = /^(localhost|127\.0\.0\.1|0\.0\.0\.0|\[::1\])(:\d+)?$/i;
-
-const RAW_SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "";
-
-/** Deja el valor del `.env` en forma de URL absoluta, o devuelve `""` si no hay
- * manera de leerlo como tal.
- *
- * Tolera dos descuidos habituales al escribirlo, porque ninguno de los dos
- * cambia a qué host apunta el QR: la barra final y el esquema ausente
- * (`vjaplantas.com.ar`, `localhost:3000`). Lo segundo importa más de lo que
- * parece: sin `://`, `new URL` lee `localhost:3000` como el protocolo
- * `localhost:` con la ruta `3000`, así que el QR quedaba en nada y la pantalla
- * culpaba a la variable por faltar cuando en realidad estaba escrita. */
-function normalizeSiteUrl(raw: string): string {
-  const value = raw.trim().replace(/\/+$/, "");
-  if (value === "") return "";
-
-  const hasScheme = /^[a-z][a-z0-9+.-]*:\/\//i.test(value);
-  const host = value.split("/")[0];
-  const candidate = hasScheme
-    ? value
-    : `${LOCAL_HOST.test(host) ? "http" : "https"}://${value}`;
-
-  try {
-    // Un esquema raro puede parsear sin host al que apuntar (`file:///x`).
-    if (new URL(candidate).host === "") return "";
-    return candidate;
-  } catch {
-    return "";
-  }
-}
-
-/** Dominio público del sitio, para armar la URL absoluta que codifica el QR.
- *
- * No tiene valor por defecto a propósito. Un QR es papel: si se imprimen cien
- * etiquetas apuntando al dominio equivocado no hay forma de corregirlas a
- * distancia, así que es preferible que la pantalla se bloquee y lo pida a que
- * genere códigos que escanean a la nada. */
-export const SITE_URL = normalizeSiteUrl(RAW_SITE_URL);
-
-export const siteUrlConfigured = SITE_URL !== "";
-
-/** La variable tiene algo escrito pero no se pudo leer como URL. Se distingue
- * de "falta configurarla" para que el mensaje en pantalla mande a corregir el
- * valor en vez de a agregar uno que ya está. */
-export const siteUrlInvalid = RAW_SITE_URL.trim() !== "" && !siteUrlConfigured;
+/** El dominio público y sus banderas de configuración viven en
+ * `@/lib/site-url`: los necesitan también el canónico, el sitemap y los datos
+ * estructurados. Se reexportan porque el panel los importa desde acá. */
+export { SITE_URL, siteUrlConfigured, siteUrlInvalid };
 
 /** URL absoluta de la ficha, o `null` si todavía no hay dominio configurado o
  * si el producto no se guardó (sin id no hay ruta que apuntar). */

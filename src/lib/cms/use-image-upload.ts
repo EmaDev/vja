@@ -1,7 +1,13 @@
 "use client";
 
 import { useCallback, useState } from "react";
-import { compressToWebp, ImageCompressionError } from "./image-compression";
+import {
+  compressToSquarePng,
+  compressToWebp,
+  ImageCompressionError,
+  MEDIA_CONTENT_TYPE,
+  type MediaFormat,
+} from "./image-compression";
 import { deleteMediaAction, saveMediaAction } from "./media-actions";
 
 export type ImageUploadStatus =
@@ -41,11 +47,18 @@ function storagePathFromPublicUrl(url: string): string | null {
   }
 }
 
-function putWithProgress(url: string, blob: Blob, onProgress: (pct: number) => void): Promise<void> {
+function putWithProgress(
+  url: string,
+  blob: Blob,
+  contentType: string,
+  onProgress: (pct: number) => void,
+): Promise<void> {
   return new Promise((resolve, reject) => {
     const xhr = new XMLHttpRequest();
     xhr.open("PUT", url);
-    xhr.setRequestHeader("Content-Type", "image/webp");
+    // El mismo tipo con el que se firmó la URL: Storage rechaza la subida si el
+    // encabezado no coincide con lo que se pidió.
+    xhr.setRequestHeader("Content-Type", contentType);
     xhr.upload.onprogress = (event) => {
       if (event.lengthComputable) onProgress(Math.round((event.loaded / event.total) * 100));
     };
@@ -56,6 +69,13 @@ function putWithProgress(url: string, blob: Blob, onProgress: (pct: number) => v
     xhr.onerror = () => reject(new Error("La subida a Storage falló."));
     xhr.send(blob);
   });
+}
+
+export interface UseImageUploadOptions {
+  /** En qué formato se guarda la imagen. `webp` —el de las fotos del sitio—
+   * pesa la mitad; `png` es para el ícono del sitio, que además se recorta al
+   * cuadrado. Ver `image-compression.ts`. */
+  format?: MediaFormat;
 }
 
 export interface UseImageUpload {
@@ -85,7 +105,7 @@ export interface UseImageUpload {
  * El alta es en dos tiempos: primero el archivo va a Storage con una URL firmada
  * (no pasa por el servidor, que no tiene que bancarse varios MB por request) y
  * recién después una Server Action escribe el documento en `media/`. */
-export function useImageUpload(): UseImageUpload {
+export function useImageUpload({ format = "webp" }: UseImageUploadOptions = {}): UseImageUpload {
   const [status, setStatus] = useState<ImageUploadStatus>("idle");
   const [progress, setProgress] = useState(0);
   const [error, setError] = useState<string | null>(null);
@@ -105,16 +125,19 @@ export function useImageUpload(): UseImageUpload {
         return null;
       }
 
+      const contentType = MEDIA_CONTENT_TYPE[format];
+
       try {
         setStatus("compressing");
-        const { blob, width, height, sourceBytes } = await compressToWebp(file);
+        const { blob, width, height, sourceBytes } =
+          format === "png" ? await compressToSquarePng(file) : await compressToWebp(file);
 
         setStatus("uploading");
         setProgress(0);
         const response = await fetch("/api/media/upload-url", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ contentType: "image/webp" }),
+          body: JSON.stringify({ contentType }),
         });
         if (!response.ok) throw new Error("No se pudo iniciar la subida.");
 
@@ -125,7 +148,7 @@ export function useImageUpload(): UseImageUpload {
           publicUrl: string;
         };
 
-        await putWithProgress(uploadUrl, blob, setProgress);
+        await putWithProgress(uploadUrl, blob, contentType, setProgress);
 
         setStatus("saving");
         const result = await saveMediaAction({
@@ -151,7 +174,7 @@ export function useImageUpload(): UseImageUpload {
         return null;
       }
     },
-    [],
+    [format],
   );
 
   const remove = useCallback(

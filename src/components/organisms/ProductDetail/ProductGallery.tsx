@@ -43,7 +43,17 @@ export function ProductGallery({ photos }: ProductGalleryProps) {
             {/* El zoom suave al pasar el mouse le da algo de vida a una foto
                 quieta, sin desbordar por el `overflow-hidden` del contenedor. */}
             <div className="h-full w-full transition-transform duration-[900ms] ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:scale-[1.05]">
-              <ImagePlaceholder src={photo.src} alt={photo.alt} label={photo.label} />
+              <ImagePlaceholder
+                src={photo.src}
+                alt={photo.alt}
+                label={photo.label}
+                sizes="(min-width: 1024px) 45vw, 100vw"
+                // Sólo la primera: es la que se ve al abrir la ficha y la
+                // que mide el LCP. Las demás están en el DOM pero en
+                // `opacity-0`, y precargarlas todas le robaría ancho de
+                // banda justo a la que sí se ve.
+                priority={index === 0}
+              />
             </div>
           </div>
         ))}
@@ -72,7 +82,12 @@ export function ProductGallery({ photos }: ProductGalleryProps) {
                   : "opacity-60 hover:opacity-100",
               )}
             >
-              <ImagePlaceholder src={photo.src} alt="" label={String(index + 1)} />
+              <ImagePlaceholder
+                src={photo.src}
+                alt=""
+                label={String(index + 1)}
+                sizes="(min-width: 1024px) 110px, 20vw"
+              />
             </button>
           ))}
         </div>

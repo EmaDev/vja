@@ -1,15 +1,22 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
+import { JsonLd } from "@/components/atoms/JsonLd";
 import { ProductCatalog } from "@/components/organisms/ProductCatalog/ProductCatalog";
 import { ProductDetail } from "@/components/organisms/ProductDetail/ProductDetail";
 import { SiteChrome } from "@/components/organisms/SiteChrome/SiteChrome";
 import { SiteFooter } from "@/components/organisms/SiteFooter/SiteFooter";
 import { WhatsAppButton } from "@/components/organisms/WhatsAppButton/WhatsAppButton";
 import { defaultCardVariant } from "@/lib/cms/card-variants";
-import { findLiveProduct, loadLiveProducts } from "@/lib/cms/catalog-repository";
-import type { Product } from "@/lib/cms/catalog-types";
+import {
+  findLiveProduct,
+  loadLiveCategories,
+  loadLiveProducts,
+} from "@/lib/cms/catalog-repository";
+import { productHref, type Product } from "@/lib/cms/catalog-types";
 import { markdownToPlain } from "@/lib/cms/markdown";
 import { loadPublished, pickSection } from "@/lib/cms/published";
+import { publicMetadata, siteName } from "@/lib/seo/metadata";
+import { breadcrumbGraph, productGraph } from "@/lib/seo/structured-data";
 
 /** Esta ruta no lleva `loading.tsx` a propósito.
  *
@@ -38,29 +45,19 @@ export async function generateMetadata({
   if (!product) return {};
 
   const sections = await loadPublished();
-  const seo = pickSection(sections, "seo");
   // El nombre del vivero va como sufijo: en la pestaña y en Google se lee
   // primero la planta, que es lo que se buscó.
-  const suffix = pickSection(sections, "header")?.logoText;
-  const title = suffix ? `${product.name} · ${suffix}` : product.name;
+  const title = `${product.name} · ${siteName(sections)}`;
   // Sin las marcas de formato: en Google y en una vista previa de WhatsApp se
   // leería el markdown crudo.
   const description = markdownToPlain(product.long) || product.short;
 
-  return {
+  return publicMetadata({
+    sections,
     title,
     description,
-    alternates: { canonical: `/producto/${product.id}` },
-    openGraph: {
-      title,
-      description,
-      type: "article",
-      locale: "es_AR",
-      images: seo?.shareImageUrl
-        ? [{ url: seo.shareImageUrl, alt: seo.shareImageAlt || title }]
-        : undefined,
-    },
-  };
+    canonical: productHref(product),
+  });
 }
 
 export default async function ProductPage({ params }: PageProps<"/producto/[slug]">) {
@@ -68,7 +65,8 @@ export default async function ProductPage({ params }: PageProps<"/producto/[slug
   const product = await findLiveProduct(slug);
   if (!product) notFound();
 
-  const sections = await loadPublished();
+  const [sections, categories] = await Promise.all([loadPublished(), loadLiveCategories()]);
+  const category = categories.find((candidate) => candidate.name === product.category);
   const header = pickSection(sections, "header");
   const footer = pickSection(sections, "footer");
   const contact = pickSection(sections, "contact");
@@ -79,8 +77,24 @@ export default async function ProductPage({ params }: PageProps<"/producto/[slug
 
   const content = (
     <>
+      {/* Qué planta describe esta página. Sin `offers` —el catálogo no maneja
+          precios— así que no habrá resultado enriquecido de producto, pero sí
+          queda declarado de qué se trata y con qué fotos. */}
+      <JsonLd data={productGraph(product, category)} />
+      <JsonLd
+        data={breadcrumbGraph([
+          { name: "Inicio", path: "/" },
+          { name: "Catálogo", path: "/catalogo" },
+          // La categoría sólo entra si está publicada: enlazar a un filtro que
+          // devuelve 404 sería una miga rota.
+          ...(category
+            ? [{ name: category.name, path: `/catalogo?categoria=${category.slug}` }]
+            : []),
+          { name: product.name },
+        ])}
+      />
       <main className="min-w-0">
-        <ProductDetail product={product} contact={contact} />
+        <ProductDetail product={product} contact={contact} category={category} />
         {related.length > 0 && (
           <ProductCatalog
             variant={cardVariant}

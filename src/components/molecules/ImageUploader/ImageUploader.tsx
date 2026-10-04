@@ -7,6 +7,7 @@ import { TextField } from "@/components/atoms/TextField";
 import { AdminButton } from "@/components/atoms/AdminButton";
 import { TrashIcon } from "@/components/atoms/icons";
 import { useImageUpload } from "@/lib/cms/use-image-upload";
+import type { MediaFormat } from "@/lib/cms/image-compression";
 
 interface ImageUploaderProps {
   imageUrl: string;
@@ -14,6 +15,14 @@ interface ImageUploaderProps {
   onChange: (next: { imageUrl: string; imageAlt: string }) => void;
   /** Texto del recuadro mientras no hay foto. */
   placeholderLabel?: string;
+  /** Formato con el que se guarda. El del ícono del sitio es `png`, porque se
+   * vuelve a dibujar en el servidor; el resto va en `webp`. */
+  format?: MediaFormat;
+  /** Ayuda bajo el texto alternativo. Por defecto habla de SEO y lectores de
+   * pantalla, que es para lo que se usa en las fotos de la landing. */
+  altHint?: string;
+  /** Miniatura cuadrada, para las imágenes que el sitio va a recortar así. */
+  square?: boolean;
 }
 
 /** Campo de imagen del CMS: texto alternativo, miniatura y botón de subida.
@@ -25,9 +34,12 @@ export function ImageUploader({
   imageAlt,
   onChange,
   placeholderLabel = "Sin imagen",
+  format = "webp",
+  altHint = "Describe la imagen para lectores de pantalla y SEO. Obligatorio para subir una foto.",
+  square,
 }: ImageUploaderProps) {
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const { status, progress, error, busy, upload, remove } = useImageUpload();
+  const { status, progress, error, busy, upload, remove } = useImageUpload({ format });
 
   async function handleFile(file: File) {
     const uploaded = await upload(file, imageAlt);
@@ -46,7 +58,13 @@ export function ImageUploader({
      una celda angosta de la grilla de fotos, y ahí al lado no entra. */
   return (
     <div className="@container flex flex-col gap-3 @[26rem]:flex-row @[26rem]:items-start @[26rem]:gap-4">
-      <div className="relative h-[132px] w-full shrink-0 overflow-hidden rounded-lg border border-line-light @[26rem]:h-[124px] @[26rem]:w-[168px]">
+      <div
+        className={
+          square
+            ? "relative h-[124px] w-[124px] shrink-0 overflow-hidden rounded-lg border border-line-light"
+            : "relative h-[132px] w-full shrink-0 overflow-hidden rounded-lg border border-line-light @[26rem]:h-[124px] @[26rem]:w-[168px]"
+        }
+      >
         <ImagePlaceholder src={imageUrl || undefined} alt={imageAlt} label={placeholderLabel} />
         {imageUrl ? (
           <Button
@@ -70,9 +88,7 @@ export function ImageUploader({
           value={imageAlt}
           onChange={(event) => onChange({ imageUrl, imageAlt: event.target.value })}
         />
-        <p className="text-xs leading-[1.45] text-taupe">
-          Describe la imagen para lectores de pantalla y SEO. Obligatorio para subir una foto.
-        </p>
+        <p className="text-xs leading-[1.45] text-taupe">{altHint}</p>
 
         {status === "uploading" ? <ProgressBar value={progress} max={100} showValue label="Subiendo…" /> : null}
         {status === "compressing" ? <p className="text-xs text-taupe">Comprimiendo imagen…</p> : null}

@@ -1,3 +1,4 @@
+import { DEFAULT_ICON_BACKGROUND, DEFAULT_ICON_FOREGROUND } from "./favicon";
 import { defaultHeaderVariant } from "./header-variants";
 import { defaultHeroVariant } from "./hero-variants";
 import { defaultCardVariant } from "./card-variants";
@@ -298,5 +299,14 @@ export const initialSections: CmsSection[] = [
       "Plantas de interior, flores frescas y arreglos a medida. Vivero propio en Tigre y local en Av. Libertador.",
     shareImageUrl: "",
     shareImageAlt: "",
+  },
+  {
+    id: "favicon",
+    kind: "favicon",
+    imageUrl: "",
+    imageAlt: "",
+    letter: "V",
+    background: DEFAULT_ICON_BACKGROUND,
+    foreground: DEFAULT_ICON_FOREGROUND,
   },
 ];

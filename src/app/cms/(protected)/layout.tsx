@@ -1,4 +1,5 @@
 import { Suspense } from "react";
+import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 import { getCmsUser } from "@/lib/auth/session-guard";
 import { CMS_LOGIN_PATH } from "@/lib/firebase/constants";
@@ -10,6 +11,12 @@ import { listPromotions } from "@/lib/cms/promo-repository";
 import { isPromotionActiveAt, siteMoment } from "@/lib/cms/promo-types";
 import type { CatalogStatus } from "@/lib/cms/catalog-types";
 import type { Promotion } from "@/lib/cms/promo-types";
+
+/** El panel no se indexa. El `robots.txt` ya pide no rastrear `/cms`, pero eso
+ * sólo frena al rastreador: una URL que alguien pegó en algún lado puede
+ * indexarse igual sin haber sido leída. El `noindex` en la respuesta es el que
+ * la saca del índice. */
+export const metadata: Metadata = { robots: { index: false, follow: false } };
 
 function totals(items: { status: CatalogStatus }[]) {
   return {

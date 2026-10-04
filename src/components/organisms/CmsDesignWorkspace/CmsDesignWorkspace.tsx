@@ -17,6 +17,7 @@ import { FaqEditor } from "@/components/organisms/SectionEditors/FaqEditor";
 import { ContactEditor } from "@/components/organisms/SectionEditors/ContactEditor";
 import { FooterEditor } from "@/components/organisms/SectionEditors/FooterEditor";
 import { SeoEditor } from "@/components/organisms/SectionEditors/SeoEditor";
+import { FaviconEditor } from "@/components/organisms/SectionEditors/FaviconEditor";
 import { SAVE_STATUS_LABEL, useCmsDraft } from "@/lib/cms/draft-context";
 import { resolveTab } from "@/lib/cms/tabs";
 import { hoursLines } from "@/lib/cms/contact-info";
@@ -31,6 +32,7 @@ import type {
   CmsSection,
   ContactSection,
   FaqSection,
+  FaviconSection,
   FooterSection,
   HeaderSection,
   HeroSection,
@@ -53,6 +55,7 @@ const TAB_META: Record<string, { crumb: string; title: string }> = {
   contacto: { crumb: "Contenido / Contacto", title: "Datos de contacto" },
   footer: { crumb: "Contenido / Footer", title: "Footer del sitio" },
   seo: { crumb: "Contenido / SEO", title: "SEO y redes sociales" },
+  favicon: { crumb: "Contenido / Ícono del sitio", title: "Ícono del sitio" },
 };
 
 export interface CmsDesignWorkspaceProps {
@@ -80,6 +83,7 @@ export function CmsDesignWorkspace({ products }: CmsDesignWorkspaceProps) {
   const contact = sections.find((s): s is ContactSection => s.kind === "contact")!;
   const footer = sections.find((s): s is FooterSection => s.kind === "footer")!;
   const seo = sections.find((s): s is SeoSection => s.kind === "seo")!;
+  const favicon = sections.find((s): s is FaviconSection => s.kind === "favicon")!;
 
   // Sólo las publicadas: una planta en borrador no sale en el sitio, así que
   // elegirla dejaría la card del hero vacía sin explicación.
@@ -211,6 +215,16 @@ export function CmsDesignWorkspace({ products }: CmsDesignWorkspaceProps) {
         {tab === "contacto" ? <ContactEditor section={contact} onChange={updateSection} /> : null}
         {tab === "footer" ? <FooterEditor section={footer} onChange={updateSection} /> : null}
         {tab === "seo" ? <SeoEditor section={seo} onChange={updateSection} /> : null}
+        {tab === "favicon" ? (
+          <FaviconEditor
+            section={favicon}
+            onChange={updateSection}
+            // El mismo nombre que arma el `<title>` de las páginas públicas
+            // (ver `lib/seo/metadata.ts`): así la vista previa del ícono dice
+            // lo que va a decir la pestaña de verdad.
+            siteName={header.logoText.trim() || contact.storeName.trim() || "VJA Plantas"}
+          />
+        ) : null}
       </div>
 
       <Modal

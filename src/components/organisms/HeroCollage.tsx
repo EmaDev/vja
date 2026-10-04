@@ -81,6 +81,8 @@ export function HeroCollage({
               label="Foto principal del collage"
               shape="rounded"
               radius={4}
+              priority
+              sizes="(min-width: 1024px) 50vw, 100vw"
             />
           </div>
           <div className="col-span-2 h-[180px] sm:h-[240px] lg:col-span-4 lg:mt-12 lg:h-[300px]">

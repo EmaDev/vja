@@ -2,6 +2,7 @@ import Link from "next/link";
 import { Reveal, STAGGER } from "@/components/motion/Reveal";
 import { RevealWords } from "@/components/motion/RevealWords";
 import { cn } from "@/lib/utils";
+import { socialLinks } from "@/lib/cms/social";
 import type { ContactSection, FooterSection } from "@/lib/cms/types";
 
 export interface SiteFooterProps {
@@ -11,15 +12,9 @@ export interface SiteFooterProps {
   contact?: ContactSection;
 }
 
-function socialHref(base: string, handle: string): string | null {
-  const clean = handle.trim().replace(/^@/, "");
-  return clean ? `${base}/${clean}` : null;
-}
-
 export function SiteFooter({ section, contact }: SiteFooterProps) {
   const dark = section.background === "forest";
-  const instagram = socialHref("https://instagram.com", section.instagram);
-  const pinterest = socialHref("https://pinterest.com", section.pinterest);
+  const { instagram, pinterest } = socialLinks(section);
   const socials = [
     { href: instagram, label: "Instagram", handle: section.instagram },
     { href: pinterest, label: "Pinterest", handle: section.pinterest },

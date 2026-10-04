@@ -85,7 +85,15 @@ export function HeroEditorialSplit({
               más arriba se la comería. */}
           <div className="absolute inset-0 animate-[rp-fade_1.1s_ease_both] overflow-hidden">
             <div className="h-full w-full transition-transform duration-[1200ms] ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:scale-[1.04]">
-              <ImagePlaceholder src={image} alt={imageAlt ?? titleLine1} label={imageLabel} />
+              <ImagePlaceholder
+                src={image}
+                alt={imageAlt ?? titleLine1}
+                label={imageLabel}
+                // Es la imagen que mide el LCP: se ve sin scrollear, así que se
+                // precarga en vez de esperar al observador de scroll.
+                priority
+                sizes="(min-width: 1024px) 50vw, 100vw"
+              />
             </div>
           </div>
           {featured ? (

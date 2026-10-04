@@ -12,7 +12,7 @@ export default function ProductNotFound() {
       <p className="max-w-[440px] text-base leading-[1.6] text-ink">
         Puede que ya no esté en el catálogo o que el enlace esté mal escrito.
       </p>
-      <CtaButton href="/#catalogo" tone="forest" className="mt-2">
+      <CtaButton href="/catalogo" tone="forest" className="mt-2">
         Ver el catálogo
       </CtaButton>
     </main>

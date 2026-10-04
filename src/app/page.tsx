@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { JsonLd } from "@/components/atoms/JsonLd";
 import { PromoPopup } from "@/components/organisms/PromoPopup/PromoPopup";
 import { SiteChrome } from "@/components/organisms/SiteChrome/SiteChrome";
 import { WhatsAppButton } from "@/components/organisms/WhatsAppButton/WhatsAppButton";
@@ -7,32 +8,22 @@ import { loadLivePromotions } from "@/lib/cms/promo-repository";
 import { loadLiveProducts } from "@/lib/cms/catalog-repository";
 import { heroTone } from "@/lib/cms/hero-variants";
 import { renderSection, type RenderContext } from "@/lib/cms/renderers";
+import { publicMetadata, siteName } from "@/lib/seo/metadata";
+import { siteGraph } from "@/lib/seo/structured-data";
 
 export async function generateMetadata(): Promise<Metadata> {
-  const seo = pickSection(await loadPublished(), "seo");
-  if (!seo) return {};
+  const sections = await loadPublished();
+  const seo = pickSection(sections, "seo");
+  const name = siteName(sections);
 
-  const images = seo.shareImageUrl
-    ? [{ url: seo.shareImageUrl, alt: seo.shareImageAlt || seo.metaTitle }]
-    : undefined;
-
-  return {
-    title: seo.metaTitle,
-    description: seo.metaDescription,
-    openGraph: {
-      title: seo.metaTitle,
-      description: seo.metaDescription,
-      type: "website",
-      locale: "es_AR",
-      images,
-    },
-    twitter: {
-      card: images ? "summary_large_image" : "summary",
-      title: seo.metaTitle,
-      description: seo.metaDescription,
-      images,
-    },
-  };
+  return publicMetadata({
+    sections,
+    // El título que cargó el cliente va tal cual, sin sufijo: en la portada ya
+    // es el nombre del vivero lo que se quiere leer primero en Google.
+    title: seo?.metaTitle?.trim() || name,
+    description: seo?.metaDescription?.trim() ?? "",
+    canonical: "/",
+  });
 }
 
 /** Mientras no se publique nada desde el CMS, `getPublished()` devuelve un array
@@ -79,6 +70,18 @@ export default async function HomePage() {
     featuredProduct,
     shipping: pairShipping ? shipping : undefined,
   };
+
+  // Las secciones apagadas no entran al JSON-LD: declarar la zona de reparto
+  // cuando la franja de envíos está oculta sería afirmarle a Google algo que no
+  // está en la página, y eso lo lee como dato inflado.
+  const businessGraph = siteGraph({
+    header,
+    contact,
+    footer,
+    seo: pickSection(sections, "seo"),
+    visit: visit?.visible ? visit : undefined,
+    shipping: shipping?.visible ? shipping : undefined,
+  });
   // El header envuelve la página y el footer va fuera del `<main>`; el resto se
   // dibuja en el orden en que quedaron guardadas las secciones.
   const body = sections.filter(
@@ -91,6 +94,12 @@ export default async function HomePage() {
 
   const content = (
     <>
+      {/* El vivero como negocio físico: dirección, teléfono, horarios y zona de
+          reparto, todo tomado de lo que el cliente cargó en el panel. Es lo que
+          Google necesita para mostrarlo como local y no como una web más. Va
+          una sola vez, en la portada: las demás páginas lo referencian por su
+          `@id`. */}
+      <JsonLd data={businessGraph} />
       <main className="min-w-0">
         {body.map((section) => (
           <div key={section.id}>{renderSection(section, context)}</div>

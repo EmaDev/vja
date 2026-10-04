@@ -6,7 +6,7 @@ export type SectionTab =
   | "visitanos"
   | "envios"
   | "faq";
-export type ContentTab = "contacto" | "footer" | "seo";
+export type ContentTab = "contacto" | "footer" | "seo" | "favicon";
 export type CmsTab = DesignTab | SectionTab | ContentTab;
 
 export const DESIGN_TABS: { tab: DesignTab; label: string }[] = [
@@ -30,6 +30,7 @@ export const CONTENT_TABS: { tab: ContentTab; label: string }[] = [
   { tab: "contacto", label: "Datos de contacto" },
   { tab: "footer", label: "Footer" },
   { tab: "seo", label: "SEO y social" },
+  { tab: "favicon", label: "Ícono del sitio" },
 ];
 
 export const DEFAULT_TAB: CmsTab = "header";

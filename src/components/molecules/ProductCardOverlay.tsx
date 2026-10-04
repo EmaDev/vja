@@ -1,5 +1,5 @@
 import { CardShell } from "@/components/atoms/CardShell";
-import { ImagePlaceholder } from "@/components/atoms/ImagePlaceholder";
+import { CARD_IMAGE_SIZES, ImagePlaceholder } from "@/components/atoms/ImagePlaceholder";
 
 export type ProductCardOverlayProps = {
   image?: string;
@@ -30,7 +30,13 @@ export function ProductCardOverlay({
       label={name}
       className="group relative block h-[380px] cursor-pointer overflow-hidden rounded-md bg-sand sm:h-[470px]"
     >
-      <ImagePlaceholder src={image} alt={imageAlt ?? name} label={imageLabel ?? name} className="absolute inset-0" />
+      <ImagePlaceholder
+        src={image}
+        alt={imageAlt ?? name}
+        label={imageLabel ?? name}
+        sizes={CARD_IMAGE_SIZES}
+        className="absolute inset-0"
+      />
       <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(180deg,rgba(12,26,16,0)_45%,rgba(12,26,16,0.82)_100%)]" />
       <div className="pointer-events-none absolute inset-x-0 bottom-0 p-6">
         <div className="text-[11px] uppercase tracking-[0.22em] text-[#D9C9A3]">{category}</div>

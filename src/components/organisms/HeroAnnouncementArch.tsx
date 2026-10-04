@@ -79,7 +79,13 @@ export function HeroAnnouncementArch({
         </div>
         <div className="relative h-[420px] sm:h-[540px] lg:h-[620px]">
           <div className="absolute inset-0 overflow-hidden rounded-[200px_200px_12px_12px] bg-sand lg:rounded-[260px_260px_12px_12px]">
-            <ImagePlaceholder src={image} alt={imageAlt ?? titleLine1} label={imageLabel} />
+            <ImagePlaceholder
+              src={image}
+              alt={imageAlt ?? titleLine1}
+              label={imageLabel}
+              priority
+              sizes="(min-width: 1024px) 50vw, 100vw"
+            />
           </div>
           <FloatingBadge pill className="absolute left-0 top-[60px] lg:left-[-40px] lg:top-[78px]">
             Luz indirecta ✓

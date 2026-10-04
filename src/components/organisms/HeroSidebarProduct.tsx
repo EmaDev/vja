@@ -56,7 +56,7 @@ export function HeroSidebarProduct({
     >
       {image ? (
         <div className="pointer-events-none absolute inset-0">
-          <ImagePlaceholder src={image} alt={imageAlt ?? ""} className="absolute inset-0" />
+          <ImagePlaceholder src={image} alt={imageAlt ?? ""} priority className="absolute inset-0" />
           <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(14,31,19,0.82)_0%,rgba(14,31,19,0.68)_55%,rgba(14,31,19,0.92)_100%)]" />
         </div>
       ) : null}

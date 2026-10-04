@@ -5,7 +5,7 @@ import { Eyebrow } from "@/components/atoms/Eyebrow";
 import { ProductGallery, type GalleryPhoto } from "./ProductGallery";
 import { Markdown } from "@/lib/cms/markdown";
 import { whatsappHref } from "@/lib/cms/whatsapp";
-import type { Product } from "@/lib/cms/catalog-types";
+import type { Category, Product } from "@/lib/cms/catalog-types";
 import type { ContactSection } from "@/lib/cms/types";
 
 export interface ProductDetailProps {
@@ -13,6 +13,11 @@ export interface ProductDetailProps {
   /** Datos del local, para el botón de consulta. Sin sección de contacto
    * publicada la ficha se muestra igual, sin CTA. */
   contact?: ContactSection;
+  /** La categoría de la planta, si está publicada. Es el nivel del medio de las
+   * migas de pan, y tiene que ser el mismo que declara el `BreadcrumbList` de
+   * la página: Google compara las migas marcadas con las que se ven y descarta
+   * las que no coinciden. */
+  category?: Category;
 }
 
 /** Consulta con el nombre de la planta ya escrito, para que el visitante no
@@ -70,7 +75,7 @@ function Block({
  * mientras se lee, y a la derecha el detalle partido en bloques separados por
  * filetes: la descripción tal como se redactó en el CMS, las características y
  * la consulta. Por debajo de `lg` se apila, galería primero. */
-export function ProductDetail({ product, contact }: ProductDetailProps) {
+export function ProductDetail({ product, contact, category }: ProductDetailProps) {
   const inquiry = inquiryHref(product, contact);
 
   return (
@@ -83,10 +88,21 @@ export function ProductDetail({ product, contact }: ProductDetailProps) {
           Inicio
         </Link>
         <span className="px-2 text-line">/</span>
-        <Link href="/#catalogo" className="transition-colors duration-300 hover:text-forest">
+        <Link href="/catalogo" className="transition-colors duration-300 hover:text-forest">
           Catálogo
         </Link>
         <span className="px-2 text-line">/</span>
+        {category ? (
+          <>
+            <Link
+              href={{ pathname: "/catalogo", query: { categoria: category.slug } }}
+              className="transition-colors duration-300 hover:text-forest"
+            >
+              {category.name}
+            </Link>
+            <span className="px-2 text-line">/</span>
+          </>
+        ) : null}
         <span className="text-forest">{product.name}</span>
       </nav>
 
@@ -142,7 +158,9 @@ export function ProductDetail({ product, contact }: ProductDetailProps) {
                   Consultar por esta planta
                 </CtaButton>
               )}
-              <CtaButton href="/#catalogo" tone="forest" variant="outline">
+              {/* Al catálogo completo, no al ancla de la portada: desde que
+                  existe `/catalogo` esa es la lista de verdad. */}
+              <CtaButton href="/catalogo" tone="forest" variant="outline">
                 Volver al catálogo
               </CtaButton>
             </div>

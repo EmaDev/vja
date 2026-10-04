@@ -213,6 +213,45 @@ export async function findLiveProduct(slug: string): Promise<Product | undefined
   return (await loadLiveProducts()).find((product) => product.id === slug);
 }
 
+/** Cuándo se editó por última vez cada documento, por id, en ISO.
+ *
+ * Es el `lastmod` del sitemap y nada más, así que va por separado en vez de
+ * sumar un campo a `Product`: ese tipo lo usa el formulario del panel en el
+ * cliente y no tiene por qué cargar con una fecha que ahí no se mira.
+ *
+ * Que sea exacto importa: Google usa `lastmod` para decidir qué revisita, pero
+ * lo ignora si no le cierra. Un `new Date()` en cada build —que es el atajo
+ * habitual— le dice que el sitio entero cambió en cada deploy, y el resultado
+ * es que deja de creerle al sitemap. De ahí que los documentos sin `updatedAt`
+ * queden sin fecha en vez de recibir una inventada. */
+async function readUpdatedAt(ref: CollectionReference): Promise<Record<string, string>> {
+  const snap = await ref.get();
+  const dates: Record<string, string> = {};
+
+  for (const doc of snap.docs) {
+    // `Timestamp` de Firestore. Se consulta por el método en lugar de por
+    // `instanceof` para no acoplar esto a la instancia del SDK.
+    const value: unknown = doc.data().updatedAt;
+    const toDate = (value as { toDate?: () => Date } | undefined)?.toDate;
+    if (typeof toDate === "function") {
+      dates[doc.id] = toDate.call(value).toISOString();
+    }
+  }
+
+  return dates;
+}
+
+const getCatalogUpdatedAt = unstable_cache(
+  async () => ({
+    products: await readUpdatedAt(productsRef()),
+    categories: await readUpdatedAt(categoriesRef()),
+  }),
+  ["catalog-updated-at-v1"],
+  { tags: [CATALOG_TAG] },
+);
+
+export const loadCatalogUpdatedAt = cache(getCatalogUpdatedAt);
+
 /* -------------------------------------------------------------------------- */
 /* Escrituras                                                                  */
 /* -------------------------------------------------------------------------- */

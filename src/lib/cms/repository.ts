@@ -109,6 +109,26 @@ export const getPublishedCached = unstable_cache(getPublished, ["published-secti
   tags: [PUBLISHED_TAG],
 });
 
+/** Cuándo se publicó por última vez, en ISO, o `undefined` si todavía no se
+ * publicó nada. Es el `lastmod` de la portada en el sitemap.
+ *
+ * Va por separado de `getPublished()` en vez de sumarse a su valor de retorno
+ * porque eso cambiaría la forma de lo que queda cacheado, y lo cacheado
+ * sobrevive al deploy: el código nuevo recibiría el payload viejo. Es una
+ * lectura más, pero sólo cuando se regenera el sitemap. */
+async function getPublishedAt(): Promise<string | undefined> {
+  const snap = await siteDoc().get();
+  const published = snap.data()?.published as { publishedAt?: unknown } | undefined;
+  const toDate = (published?.publishedAt as { toDate?: () => Date } | undefined)?.toDate;
+  return typeof toDate === "function"
+    ? toDate.call(published?.publishedAt).toISOString()
+    : undefined;
+}
+
+export const getPublishedAtCached = unstable_cache(getPublishedAt, ["published-at-v1"], {
+  tags: [PUBLISHED_TAG],
+});
+
 export async function saveDraft(sections: CmsSection[], updatedBy: string): Promise<void> {
   await siteDoc().set(
     {

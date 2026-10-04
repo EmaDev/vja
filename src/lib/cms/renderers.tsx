@@ -122,10 +122,12 @@ function renderFooter(section: FooterSection, context: RenderContext): ReactNode
 
 /** Registro `kind → componente`, gemelo del registro de editores del CMS.
  *
- * `header` y `seo` devuelven `null` a propósito: el header envuelve a toda la
- * página (lo resuelve `SiteChrome`) y el SEO alimenta `generateMetadata`, no el
- * árbol visible. Quedan en el mapa igual para que agregar un `kind` nuevo a
- * `CmsSection` rompa la compilación acá hasta que se decida cómo se dibuja. */
+ * `header`, `seo` y `favicon` devuelven `null` a propósito: el header envuelve a
+ * toda la página (lo resuelve `SiteChrome`), el SEO alimenta
+ * `generateMetadata` y el ícono se dibuja en `app/icon.tsx`, fuera del
+ * documento. Ninguno de los tres ocupa un lugar en el árbol visible, pero
+ * quedan en el mapa igual para que agregar un `kind` nuevo a `CmsSection` rompa
+ * la compilación acá hasta que se decida cómo se dibuja. */
 const sectionRenderers: { [K in CmsSection["kind"]]: SectionRenderer<Extract<CmsSection, { kind: K }>> } = {
   header: () => null,
   hero: renderHero,
@@ -139,6 +141,7 @@ const sectionRenderers: { [K in CmsSection["kind"]]: SectionRenderer<Extract<Cms
   contact: renderContact,
   footer: renderFooter,
   seo: () => null,
+  favicon: () => null,
 };
 
 /** Las secciones que el cliente puede apagar desde el CMS. Una sección sin este

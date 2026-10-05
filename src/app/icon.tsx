@@ -7,7 +7,7 @@ import { renderAppIcon } from "@/lib/seo/app-icon";
  * de 48 px— y abajo de eso lo descarta y dibuja un globo gris.
  *
  * El contenido lo decide el cliente desde "Ícono del sitio" en el panel; acá
- * sólo se fija el tamaño. */
+ * sólo se fija el tamaño. test*/
 export const size = { width: 48, height: 48 };
 export const contentType = "image/png";
 

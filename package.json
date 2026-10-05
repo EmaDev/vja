@@ -13,6 +13,12 @@
     "set-role": "node scripts/set-cms-role.mjs",
     "seed-catalog": "node scripts/seed-catalog.mjs"
   },
+  "overrides": {
+    "jose": "^5.10.0"
+  },
+  "resolutions": {
+    "jose": "^5.10.0"
+  },
   "dependencies": {
     "clsx": "^2.1.1",
     "firebase": "^12.19.0",

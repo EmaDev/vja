@@ -142,6 +142,10 @@ media/{yyyy}/{mm}/{uuid}.webp
   - Barra de progreso y preview.
   - Campo `alt` **obligatorio**.
 - Subida directa del navegador al bucket; al terminar se persiste el documento en `media/`.
+  - Como el PUT sale del navegador, el bucket necesita el origen del panel en su
+    configuración CORS: `npm run set-storage-cors -- <origen>`. Vive en el bucket y
+    no en el repo, así que **hay que correrlo de nuevo con cada dominio nuevo** —
+    sin eso la subida falla solo en producción, con "La subida a Storage falló.".
 - Reemplazar el input "URL de imagen" del `HeroEditor` por el uploader.
 - Borrado: elimina el objeto de Storage y el documento de `media/`.
 

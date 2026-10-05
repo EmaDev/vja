@@ -11,7 +11,8 @@
     "start": "next start",
     "lint": "eslint",
     "set-role": "node scripts/set-cms-role.mjs",
-    "seed-catalog": "node scripts/seed-catalog.mjs"
+    "seed-catalog": "node scripts/seed-catalog.mjs",
+    "set-storage-cors": "node scripts/set-storage-cors.mjs"
   },
   "overrides": {
     "jose": "^5.10.0"

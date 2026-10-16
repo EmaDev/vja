@@ -1,6 +1,6 @@
 "use client";
 
-import type { HeroSection } from "@/lib/cms/types";
+import { HERO_TRENDING_LIMIT, type HeroSection } from "@/lib/cms/types";
 import type { Product } from "@/lib/cms/catalog-types";
 import { SelectField } from "@/components/atoms/SelectField";
 import { TextField } from "@/components/atoms/TextField";
@@ -22,6 +22,20 @@ export function HeroEditor({ section, onChange, products }: HeroEditorProps) {
   const missing =
     section.featuredProductId.length > 0 &&
     !products.some((product) => product.id === section.featuredProductId);
+  const trendingMissing = section.trendingProductIds.some(
+    (id) => !products.some((product) => product.id === id),
+  );
+
+  // Se guardan sólo los casilleros con planta: vaciar uno del medio corre los
+  // siguientes, que es el mismo orden en que el sitio los dibuja.
+  function setTrendingSlot(index: number, id: string): string[] {
+    const slots = Array.from(
+      { length: HERO_TRENDING_LIMIT },
+      (_, slot) => section.trendingProductIds[slot] ?? "",
+    );
+    slots[index] = id;
+    return slots.filter(Boolean);
+  }
 
   return (
     <div className="flex flex-col gap-5">
@@ -114,6 +128,45 @@ export function HeroEditor({ section, onChange, products }: HeroEditorProps) {
           <p className="text-[13px] leading-[1.5] text-terracotta">
             La planta destacada ya no está publicada, así que el sitio no muestra la card.
             Elegí otra o volvé a publicar esa planta.
+          </p>
+        ) : null}
+      </FieldCard>
+
+      <FieldCard
+        title="Lo más pedido esta semana"
+        subtitle={`La fila de plantas al pie del hero. Sólo la dibuja la variante “Oscuro con destacados”; hasta ${HERO_TRENDING_LIMIT} plantas, en este orden. Sin ninguna elegida, el hero va sin la fila.`}
+      >
+        <div className="grid grid-cols-[repeat(auto-fit,minmax(200px,1fr))] gap-4">
+          {Array.from({ length: HERO_TRENDING_LIMIT }, (_, index) => {
+            const value = section.trendingProductIds[index] ?? "";
+            const slotMissing = value.length > 0 && !products.some((product) => product.id === value);
+            // Una planta ya elegida en otro casillero no se ofrece de nuevo: la
+            // fila la mostraría dos veces.
+            const taken = section.trendingProductIds.filter((id, other) => other !== index);
+            return (
+              <SelectField
+                key={index}
+                label={`Planta ${index + 1}`}
+                value={value}
+                onChange={(event) => onChange({ ...section, trendingProductIds: setTrendingSlot(index, event.target.value) })}
+              >
+                <option value="">Vacío</option>
+                {products
+                  .filter((product) => !taken.includes(product.id))
+                  .map((product) => (
+                    <option key={product.id} value={product.id}>
+                      {product.name}
+                    </option>
+                  ))}
+                {slotMissing ? <option value={value}>Ya no está publicada</option> : null}
+              </SelectField>
+            );
+          })}
+        </div>
+        {trendingMissing ? (
+          <p className="text-[13px] leading-[1.5] text-terracotta">
+            Alguna de las plantas elegidas ya no está publicada, así que el sitio la saltea.
+            Elegí otra o volvé a publicarla.
           </p>
         ) : null}
       </FieldCard>

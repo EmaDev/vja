@@ -65,7 +65,15 @@ export interface HeroSection extends BaseSection {
    * variante “Split editorial”; vacío —o apuntando a una planta despublicada—
    * deja el hero sin card. */
   featuredProductId: string;
+  /** Plantas de la fila “Lo más pedido esta semana”, por id de producto y en el
+   * orden en que se muestran (hasta `HERO_TRENDING_LIMIT`). Sólo la dibuja la
+   * variante “Oscuro con destacados”; las que estén despublicadas se saltean y,
+   * si no queda ninguna, el hero va sin la fila. */
+  trendingProductIds: string[];
 }
+
+/** Cuántas plantas entran en la fila de destacados del hero oscuro. */
+export const HERO_TRENDING_LIMIT = 4;
 
 export interface CardsSection extends BaseSection {
   kind: "cards";

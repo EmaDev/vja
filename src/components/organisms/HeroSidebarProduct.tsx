@@ -98,7 +98,7 @@ export function HeroSidebarProduct({
             ) : null}
           </div>
         </div>
-        <TrendingProductsRow products={products} />
+        {products.length > 0 ? <TrendingProductsRow products={products} /> : null}
       </div>
     </div>
   );

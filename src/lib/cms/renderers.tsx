@@ -34,6 +34,9 @@ export interface RenderContext {
   /** Planta elegida para la card “Favorita” del hero, ya buscada en el
    * catálogo publicado. */
   featuredProduct?: Product;
+  /** Plantas de la fila de destacados del hero oscuro, ya resueltas contra el
+   * catálogo publicado y en el orden elegido. */
+  trendingProducts?: Product[];
   /** Envíos cuando la landing decidió dibujarlo dentro de “Visitanos”, como
    * segunda columna. Vacío, la sección se dibuja sola en su lugar del flujo. */
   shipping?: ShippingSection;
@@ -58,7 +61,11 @@ function renderHero(section: HeroSection, context: RenderContext): ReactNode {
   // en el CMS, que no tiene por qué ser la que trae el mockup de este hero.
   return (
     <Component
-      {...variant.getProps({ ...section, featuredProduct: context.featuredProduct })}
+      {...variant.getProps({
+        ...section,
+        featuredProduct: context.featuredProduct,
+        trendingProducts: context.trendingProducts,
+      })}
       showHeader={false}
     />
   );

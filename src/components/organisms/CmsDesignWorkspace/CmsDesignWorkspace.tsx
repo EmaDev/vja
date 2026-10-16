@@ -22,7 +22,7 @@ import { SAVE_STATUS_LABEL, useCmsDraft } from "@/lib/cms/draft-context";
 import { resolveTab } from "@/lib/cms/tabs";
 import { hoursLines } from "@/lib/cms/contact-info";
 import { headerVariants, type HeaderVariantId } from "@/lib/cms/header-variants";
-import { heroVariants, type HeroVariantId } from "@/lib/cms/hero-variants";
+import { heroVariants, resolveTrendingProducts, type HeroVariantId } from "@/lib/cms/hero-variants";
 import { cardVariants, type CardVariantId } from "@/lib/cms/card-variants";
 import type { Product } from "@/lib/cms/catalog-types";
 import type {
@@ -89,6 +89,7 @@ export function CmsDesignWorkspace({ products }: CmsDesignWorkspaceProps) {
   // elegirla dejaría la card del hero vacía sin explicación.
   const liveProducts = products.filter((product) => product.status === "live");
   const featuredProduct = liveProducts.find((product) => product.id === hero.featuredProductId);
+  const trendingProducts = resolveTrendingProducts(hero.trendingProductIds, liveProducts);
 
   function updateSection(updated: CmsSection) {
     setSections((current) => current.map((section) => (section.id === updated.id ? updated : section)));
@@ -175,7 +176,7 @@ export function CmsDesignWorkspace({ products }: CmsDesignWorkspaceProps) {
               renderPreview={(id) => {
                 const variant = heroVariants.find((v) => v.id === id)!;
                 const Variant = variant.Component;
-                return <Variant {...variant.getProps({ ...hero, featuredProduct })} />;
+                return <Variant {...variant.getProps({ ...hero, featuredProduct, trendingProducts })} />;
               }}
             />
             <HeroEditor section={hero} onChange={updateSection} products={liveProducts} />

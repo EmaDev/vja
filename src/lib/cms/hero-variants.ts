@@ -5,7 +5,8 @@ import { HeroCollage } from "@/components/organisms/HeroCollage";
 import { HeroAnnouncementArch } from "@/components/organisms/HeroAnnouncementArch";
 import { HeroSidebarProduct } from "@/components/organisms/HeroSidebarProduct";
 import type { WireKind } from "@/components/molecules/VariantWireframe/VariantWireframe";
-import type { Product } from "./catalog-types";
+import type { MiniProductTileProps } from "@/components/molecules/MiniProductTile";
+import { productCover, productHref, type Product } from "./catalog-types";
 
 export type HeroVariantId =
   | "editorial-split"
@@ -33,6 +34,27 @@ export interface HeroContentData {
    * quien dibuja el hero —la landing contra lo publicado, el panel contra lo
    * que ve el cliente— porque este módulo no lee la base. */
   featuredProduct?: Product | null;
+  trendingProductIds: string[];
+  /** Las plantas de `trendingProductIds` ya buscadas, en orden y sin las que no
+   * están publicadas. Ver `resolveTrendingProducts`. */
+  trendingProducts?: Product[];
+}
+
+/** Busca en el catálogo las plantas elegidas para la fila de destacados,
+ * respetando el orden del panel. Las que ya no están en `products` (borradas o
+ * despublicadas) se saltean en vez de dejar un hueco en la fila. */
+export function resolveTrendingProducts(ids: string[], products: Product[]): Product[] {
+  return ids.flatMap((id) => products.find((product) => product.id === id) ?? []);
+}
+
+function toMiniTile(product: Product): MiniProductTileProps {
+  const cover = productCover(product);
+  return {
+    image: cover?.imageUrl,
+    name: product.name,
+    meta: product.short || product.category,
+    href: productHref(product),
+  };
 }
 
 export interface HeroVariantDefinition {
@@ -144,6 +166,9 @@ export const heroVariants: HeroVariantDefinition[] = [
       ...commonProps(data),
       titleLine1: data.title,
       titleEmphasis: data.titleHighlight,
+      // Siempre un array, aunque esté vacío: `undefined` haría caer al
+      // componente en las plantas de ejemplo del mockup.
+      products: (data.trendingProducts ?? []).map(toMiniTile),
     }),
   },
 ];

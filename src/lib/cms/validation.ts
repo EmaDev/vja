@@ -116,7 +116,9 @@ function isHeroSection(record: Record<string, unknown>): record is HeroSection &
     isString(record.secondaryCtaHref) &&
     isString(record.imageUrl) &&
     isString(record.imageAlt) &&
-    isString(record.featuredProductId)
+    isString(record.featuredProductId) &&
+    Array.isArray(record.trendingProductIds) &&
+    record.trendingProductIds.every(isString)
   );
 }
 

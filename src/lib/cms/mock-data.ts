@@ -48,6 +48,7 @@ export const initialSections: CmsSection[] = [
     imageUrl: "",
     imageAlt: "",
     featuredProductId: "",
+    trendingProductIds: [],
   },
   {
     id: "about",

@@ -6,7 +6,7 @@ import { WhatsAppButton } from "@/components/organisms/WhatsAppButton/WhatsAppBu
 import { loadPublished, pickSection } from "@/lib/cms/published";
 import { loadLivePromotions } from "@/lib/cms/promo-repository";
 import { loadLiveProducts } from "@/lib/cms/catalog-repository";
-import { heroTone } from "@/lib/cms/hero-variants";
+import { heroTone, resolveTrendingProducts } from "@/lib/cms/hero-variants";
 import { renderSection, type RenderContext } from "@/lib/cms/renderers";
 import { publicMetadata, siteName } from "@/lib/seo/metadata";
 import { siteGraph } from "@/lib/seo/structured-data";
@@ -53,9 +53,16 @@ export default async function HomePage() {
   // La card “Favorita” del hero editorial muestra la planta elegida en el panel.
   // Se resuelve contra el catálogo publicado —la misma lectura cacheada que usa
   // la grilla— así que una planta despublicada o borrada deja el hero sin card.
+  // Lo mismo para la fila de destacados del hero oscuro: sólo las publicadas,
+  // en el orden elegido.
+  const liveProducts =
+    hero && (hero.featuredProductId || hero.trendingProductIds.length > 0)
+      ? await loadLiveProducts()
+      : [];
   const featuredProduct = hero?.featuredProductId
-    ? (await loadLiveProducts()).find((product) => product.id === hero.featuredProductId)
+    ? liveProducts.find((product) => product.id === hero.featuredProductId)
     : undefined;
+  const trendingProducts = hero ? resolveTrendingProducts(hero.trendingProductIds, liveProducts) : [];
 
   // “Verificá tu zona” se dibuja como segunda columna de “Visitanos”: las dos
   // contestan lo mismo —cómo llegar al local, o cómo llega lo que comprás— y
@@ -68,6 +75,7 @@ export default async function HomePage() {
   const context: RenderContext = {
     contact,
     featuredProduct,
+    trendingProducts,
     shipping: pairShipping ? shipping : undefined,
   };
 

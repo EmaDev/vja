@@ -12,7 +12,8 @@
     "lint": "eslint",
     "set-role": "node scripts/set-cms-role.mjs",
     "seed-catalog": "node scripts/seed-catalog.mjs",
-    "set-storage-cors": "node scripts/set-storage-cors.mjs"
+    "set-storage-cors": "node scripts/set-storage-cors.mjs",
+    "set-media-cache-control": "node scripts/set-media-cache-control.mjs"
   },
   "overrides": {
     "jose": "^5.10.0"

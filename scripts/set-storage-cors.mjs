@@ -44,9 +44,8 @@ const app = initializeApp({
 
 const bucket = getStorage(app).bucket(process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET);
 
-// Solo PUT: la lectura pública de `media/**` no pasa por el navegador —
-// `next/image` baja el archivo desde el servidor— y el borrado lo hace el
-// Admin SDK, también del lado del servidor.
+// Solo PUT: la lectura pública de `media/**` es un `<img>` común, que no
+// necesita CORS, y el borrado lo hace el Admin SDK del lado del servidor.
 await bucket.setCorsConfiguration([
   {
     origin: [...new Set([DEV_ORIGIN, ...origins])],

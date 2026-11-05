@@ -93,21 +93,47 @@ export async function getDraft(): Promise<CmsSection[]> {
   return normalizeSections(draft?.sections);
 }
 
-export async function getPublished(): Promise<CmsSection[]> {
+/** Las secciones publicadas tal como están en Firestore, sin normalizar, o
+ * `null` si todavía no se publicó nada. */
+async function getPublishedRaw(): Promise<unknown[] | null> {
   const snap = await siteDoc().get();
   const published = snap.data()?.published as SiteRevision | undefined;
-  if (!published) return [];
-  return normalizeSections(published.sections);
+  if (!published) return null;
+  return Array.isArray(published.sections) ? published.sections : [];
 }
 
-/** Versión cacheada de `getPublished()` para la landing pública.
+/** Vacío también cuenta como "sin publicar": es lo que dejaba en caché la
+ * versión anterior de `getPublishedCached` cuando no había nada publicado, y
+ * una publicación real nunca viene vacía (sale de un draft ya normalizado). */
+function normalizePublished(raw: unknown[] | null): CmsSection[] {
+  return raw && raw.length > 0 ? normalizeSections(raw) : [];
+}
+
+export async function getPublished(): Promise<CmsSection[]> {
+  return normalizePublished(await getPublishedRaw());
+}
+
+/** Lo publicado tal como viene de Firestore, cacheado.
  *
  * Sin esto cada visita sería una lectura de Firestore. El proyecto no usa
  * Cache Components (`use cache` pide el flag `cacheComponents`), así que va por
- * el modelo anterior: `unstable_cache` + `revalidateTag` al publicar. */
-export const getPublishedCached = unstable_cache(getPublished, ["published-sections"], {
+ * el modelo anterior: `unstable_cache` + `revalidateTag` al publicar.
+ *
+ * Se cachea lo crudo y no lo normalizado porque lo cacheado sobrevive al deploy.
+ * Si se cacheara después de `normalizeSections`, una sección que ganó un campo
+ * nuevo en el código seguiría llegando sin él hasta la próxima publicación (así
+ * pasó con `trendingProductIds` del hero). Un valor que ya estaba en caché de
+ * antes de este cambio es un array de secciones normalizadas, que
+ * `normalizeSections` vuelve a aceptar sin problema. */
+const getPublishedRawCached = unstable_cache(getPublishedRaw, ["published-sections"], {
   tags: [PUBLISHED_TAG],
 });
+
+/** Versión cacheada de `getPublished()` para la landing pública. La
+ * normalización corre en cada lectura, contra el esquema del código actual. */
+export async function getPublishedCached(): Promise<CmsSection[]> {
+  return normalizePublished(await getPublishedRawCached());
+}
 
 /** Cuándo se publicó por última vez, en ISO, o `undefined` si todavía no se
  * publicó nada. Es el `lastmod` de la portada en el sitemap.

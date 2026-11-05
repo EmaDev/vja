@@ -92,7 +92,18 @@ export interface SaveMediaInput {
   createdBy: string;
 }
 
+/** Encabezado de caché de cada foto del bucket. Las imágenes se sirven directo
+ * desde Storage (`images.unoptimized` en `next.config.ts`) y, sin esto,
+ * Firebase las entrega sin caché: cada visita las volvería a descargar. Un año
+ * e `immutable` no tiene riesgo, porque un archivo nunca se pisa: cada subida
+ * tiene su propio `{uuid}`, así que una foto nueva siempre es una URL nueva. */
+export const MEDIA_CACHE_CONTROL = "public, max-age=31536000, immutable";
+
 export async function saveMediaRecord(input: SaveMediaInput): Promise<void> {
+  // Va acá y no en la URL firmada de subida: firmarlo ahí obligaría a mandar
+  // el encabezado desde el navegador y a sumarlo al CORS del bucket.
+  await getBucket().file(input.storagePath).setMetadata({ cacheControl: MEDIA_CACHE_CONTROL });
+
   await mediaCollection()
     .doc(input.mediaId)
     .set({

@@ -24,7 +24,10 @@ const sizeClasses: Record<string, string> = {
   sm: "px-5 py-[11px] text-sm",
   md: "px-6 py-3 text-sm font-medium",
 };
-
+const sizeClasses2: Record<string, string> = {
+  sm: "px-5 py-[11px] text-sm",
+  md: "px-6 py-3 text-sm font-medium",
+};
 /** Pill action button used in the CMS admin chrome (sticky headers, cards). Distinct from the marketing `CtaButton`. */
 export function AdminButton({
   children,
